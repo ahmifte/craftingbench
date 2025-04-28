@@ -1,5 +1,13 @@
 # 🛠️ Crafting Bench 🛠️
 
+A powerful utility for quickly scaffolding various project types with standardized, production-ready structures.
+
+[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+<div align="center">
+  <p><em>Craft your projects with precision and speed</em></p>
+</div>
+
 <br />
 
 ```
@@ -28,14 +36,6 @@
 
 
 <br />
-
-A powerful utility for quickly scaffolding various project types with standardized, production-ready structures.
-
-[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-
-<div align="center">
-  <p><em>Craft your projects with precision and speed</em></p>
-</div>
 
 ---
 
