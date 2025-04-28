@@ -20,7 +20,7 @@
 #   setup_nodejs_backend <project_name> (coming soon)
 #   setup_react_frontend <project_name> (coming soon)
 #   setup_fullstack_project <project_name> (coming soon)
-#
+
 # REQUIREMENTS:
 #   - Git
 #   - bash/zsh shell
@@ -29,7 +29,7 @@
 #     - Go (1.18+) for Go projects
 #     - Node.js (16+) for JavaScript/TypeScript projects
 #   - GitHub CLI (optional, for GitHub integration)
-#
+
 # For more information, visit: https://github.com/yourusername/craftingbench
 # ================================================================
 
