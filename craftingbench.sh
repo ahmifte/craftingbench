@@ -26,6 +26,9 @@
 # Get the directory of this script
 CRAFTINGBENCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# Export this variable so template scripts can use it
+export CRAFTINGBENCH_DIR
+
 # Detect shell type
 if [ -n "$ZSH_VERSION" ]; then
   CRAFTINGBENCH_SHELL="zsh"
@@ -36,20 +39,36 @@ else
 fi
 
 # Source helper functions
-source "$CRAFTINGBENCH_DIR/src/helpers/common.sh"
+if [ -f "$CRAFTINGBENCH_DIR/src/helpers/common.sh" ]; then
+  source "$CRAFTINGBENCH_DIR/src/helpers/common.sh"
+else
+  echo "Error: Helper file not found at $CRAFTINGBENCH_DIR/src/helpers/common.sh"
+  return 1
+fi
 
-# Source template modules
-source "$CRAFTINGBENCH_DIR/src/templates/python.sh"
-source "$CRAFTINGBENCH_DIR/src/templates/nodejs.sh"
-source "$CRAFTINGBENCH_DIR/src/templates/go.sh"
-source "$CRAFTINGBENCH_DIR/src/templates/react.sh"
-source "$CRAFTINGBENCH_DIR/src/templates/fullstack.sh"
+# Source template modules - only source if they exist
+for template in python nodejs go react fullstack; do
+  template_path="$CRAFTINGBENCH_DIR/src/templates/${template}.sh"
+  if [ -f "$template_path" ]; then
+    source "$template_path"
+  else
+    echo "Warning: Template file not found: $template_path"
+  fi
+done
 
 # Source shell completions
-source "$CRAFTINGBENCH_DIR/src/completions/shell.sh"
+if [ -f "$CRAFTINGBENCH_DIR/src/completions/shell.sh" ]; then
+  source "$CRAFTINGBENCH_DIR/src/completions/shell.sh"
+else
+  echo "Warning: Shell completions file not found"
+fi
 
 # Initialize shell completions if in Zsh
-setup_zsh_completions
+if [ "$CRAFTINGBENCH_SHELL" = "zsh" ] && type setup_zsh_completions >/dev/null 2>&1; then
+  setup_zsh_completions
+fi
 
 # Show banner with available commands
-show_banner
+if type show_banner >/dev/null 2>&1; then
+  show_banner
+fi

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Source common helper functions
-source "$(dirname "${BASH_SOURCE[0]}")/../helpers/common.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../helpers/common.sh" 2>/dev/null || source "${CRAFTINGBENCH_DIR}/src/helpers/common.sh"
 
 setup_go_project() {
   if [[ -z "$1" ]]; then

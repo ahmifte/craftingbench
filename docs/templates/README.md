@@ -246,7 +246,7 @@ All templates should follow this basic structure:
 #!/usr/bin/env bash
 
 # Source common helper functions
-source "$(dirname "${BASH_SOURCE[0]}")/../helpers/common.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../helpers/common.sh" 2>/dev/null || source "/Users/ahmediftekhar/src/craftingbench/src/helpers/common.sh"
 
 setup_<technology>_project() {
   # 1. Validate arguments
