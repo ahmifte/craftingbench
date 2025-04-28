@@ -3,8 +3,6 @@
 A powerful utility for quickly scaffolding various project types with standardized, production-ready structures.
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Bash Script](https://img.shields.io/badge/language-bash-green.svg)](craftingbench.sh)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/yourusername/craftingbench/pulls)
 
 <div align="center">
   <img src="https://via.placeholder.com/150?text=CraftingBench" alt="CraftingBench Logo" width="150" height="150">
