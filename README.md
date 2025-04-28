@@ -2,9 +2,7 @@
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-<div align="center">
-  <h2><em><strong>Craft your projects with precision and speed</strong></em></h2>
-</div>
+<h2><em><strong>Craft your projects with precision and speed</strong></em></h2>
 
 **_A powerful utility for quickly scaffolding various project types with standardized, production-ready structures._**
 
