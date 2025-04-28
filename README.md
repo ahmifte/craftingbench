@@ -1,22 +1,21 @@
 <div align="center">
 
 # 🛠️ Crafting Bench 🛠️ 
+<p>Made with ❤️ by <a href="https://github.com/ahmifte">ahmifte</a></p>
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Shell Script](https://img.shields.io/badge/Shell_Script-Bash-4EAA25.svg?logo=gnu-bash&logoColor=white)](craftingbench.sh)
-[![Support Python](https://img.shields.io/badge/Support-Python-blue?logo=python&logoColor=white)](src/templates/python.sh)
-[![Support Go](https://img.shields.io/badge/Support-Go-00ADD8?logo=go&logoColor=white)](src/templates/go.sh)
-[![Support Node.js](https://img.shields.io/badge/Support-Node.js-339933?logo=node.js&logoColor=white)](src/templates/nodejs.sh)
-[![Support React](https://img.shields.io/badge/Support-React-61DAFB?logo=react&logoColor=white)](src/templates/react.sh)
-[![Support Next.js](https://img.shields.io/badge/Support-Next.js-000000?logo=next.js&logoColor=white)](src/templates/fullstack.sh)
 [![Made with Love](https://img.shields.io/badge/Made%20with-Love-ff69b4.svg)](https://github.com/ahmifte/craftingbench)
 
-<p><em><strong>Craft your projects with precision and speed</strong></em></p>
 </div>
 
+---
+
 <div align="center">
-  <p>A powerful utility for quickly scaffolding various project types with standardized, production-ready structures.</p>
+  <h3><em>Craft your projects with precision and speed</em></h3>
 </div>
+
+A powerful utility for quickly scaffolding various project types with standardized, production-ready structures.
 
 <br />
 
@@ -88,8 +87,7 @@ For more information, see [Architecture Documentation](docs/architecture.md).
 
 ## 🚀 Installation
 
-<details open>
-<summary><strong>Getting Started</strong></summary>
+<strong>Getting Started</strong>
 
 1. Clone this repository:
 ```bash
@@ -130,14 +128,12 @@ source ~/.zshrc
 # Or use the shorthand	
 . ~/.zshrc	
 ```
-</details>
 
 ## 📋 Usage	
 
 <p align="center"><strong>Each project template is created with a single command:</strong></p>
 
-<details>
-<summary><h3>🐍 Python Project</h3></summary>
+<h3>🐍 Python Project</h3></summary>
 
 ```bash	
 setup_python_project my_awesome_package	
@@ -157,10 +153,8 @@ my_awesome_package/
 └── tests/	
     └── test_main.py	
 ```	
-</details>
 
-<details>
-<summary><h3>🚀 Node.js Backend</h3></summary>
+<h3>🚀 Node.js Backend</h3></summary>
 
 ```bash	
 setup_nodejs_backend my_api_service	
@@ -181,10 +175,8 @@ my_api_service/
 │   └── middleware/	
 └── tests/	
 ```	
-</details>
 
-<details>
-<summary><h3>🔷 Golang API</h3></summary>
+<h3>🔷 Golang API</h3></summary>
 
 ```bash	
 setup_go_project my_go_service	
@@ -206,10 +198,8 @@ my_go_service/
 ├── pkg/	
 └── test/	
 ```	
-</details>
 
-<details>
-<summary><h3>⚛️ React Frontend</h3></summary>
+<h3>⚛️ React Frontend</h3></summary>
 
 ```bash
 setup_react_frontend my_react_app
@@ -232,10 +222,8 @@ my_react_app/
 │   └── styles/
 └── tsconfig.json
 ```
-</details>
 
-<details>
-<summary><h3>🌐 Full-Stack Web (Next.js)</h3></summary>
+<h3>🌐 Full-Stack Web (Next.js)</h3></summary>
 
 ```bash
 setup_fullstack_project my_nextjs_app
@@ -259,14 +247,12 @@ my_nextjs_app/
 │   └── styles/
 └── tsconfig.json
 ```
-</details>
 
 ## 🧪 Testing and Quality Assurance	
 
 <p align="center"><strong>Each project template includes built-in testing capabilities:</strong></p>
 
-<details>
-<summary><h3>🐍 Python Projects</h3></summary>
+<h3>🐍 Python Projects</h3></summary>
 
 ```bash	
 cd my_python_project	
@@ -274,20 +260,16 @@ make test      # Runs pytest
 make lint      # Runs flake8	
 make format    # Runs black and isort	
 ```	
-</details>
 
-<details>
-<summary><h3>🚀 Node.js Projects</h3></summary>
+<h3>🚀 Node.js Projects</h3></summary>
 
 ```bash	
 cd my_node_project	
 npm run test   # Runs tests	
 npm run lint   # Runs ESLint	
 ```	
-</details>
 
-<details>
-<summary><h3>🔷 Go Projects</h3></summary>
+<h3>🔷 Go Projects</h3></summary>
 
 ```bash	
 cd my_go_project	
@@ -295,10 +277,8 @@ make test      # Runs go test
 make vet       # Runs go vet	
 make fmt       # Runs go fmt	
 ```	
-</details>
 
-<details>
-<summary><h3>⚛️ React Projects</h3></summary>
+<h3>⚛️ React Projects</h3></summary>
 
 ```bash
 cd my_react_app
@@ -306,10 +286,8 @@ npm run test   # Runs Jest tests
 npm run lint   # Runs ESLint
 npm run build  # Creates production build
 ```
-</details>
 
-<details>
-<summary><h3>🌐 Next.js Projects</h3></summary>
+<h3>🌐 Next.js Projects</h3></summary>
 
 ```bash
 cd my_nextjs_app
@@ -318,7 +296,6 @@ npm run lint   # Runs ESLint
 npm run build  # Creates production build
 npm run dev    # Starts development server
 ```
-</details>
 
 ## 🤝 Contributing	
 
@@ -340,8 +317,6 @@ To add a new template, see our [Template Documentation](docs/templates/README.md
 
 ## 📚 Resources	
 
-<div align="center">
-
 | Resource | Description |
 |----------|-------------|
 | [GitHub CLI Documentation](https://cli.github.com/manual/) | Documentation for the GitHub CLI |
@@ -350,14 +325,7 @@ To add a new template, see our [Template Documentation](docs/templates/README.md
 | [Go Project Layout](https://github.com/golang-standards/project-layout) | Standard Go project structure |
 | [Zsh Documentation](https://zsh.sourceforge.io/Doc/) | Documentation for Zsh shell |
 
-</div>
-
 ## 📜 License	
-
-<div align="center">
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-<p>Made with ❤️ by <a href="https://github.com/ahmifte">ahmifte</a></p>
-
-</div>
