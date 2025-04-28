@@ -1,6 +1,6 @@
-# 🧰 CraftingBench Templates
-
 <div align="center">
+
+# 🧰 Templates
 
 **Powerful templates to jumpstart your development journey with style and best practices**
 
