@@ -5,13 +5,13 @@
 # ================================================================
 # Version: 1.0.0
 # MIT License - Copyright (c) 2025 CraftingBench Contributors
-#
+
 # DESCRIPTION:
 #   CraftingBench is a shell utility for quickly scaffolding various
 #   project types with standardized, production-ready structures.
 #   It streamlines project creation by automating the setup of
 #   common development environments and best practices.
-#
+
 # USAGE:
 #   source ./craftingbench.sh
 #   setup_python_project <project_name>
