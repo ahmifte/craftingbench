@@ -1,14 +1,29 @@
-# OS files
+# OS-specific files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
-# Editor files
+# Editor directories and files
 .idea/
 .vscode/
 *.swp
 *.swo
 *~
+.project
+.settings/
 
 # Logs
 logs
-*.log 
+*.log
+npm-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local 
