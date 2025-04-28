@@ -19,7 +19,7 @@
 #   setup_plain_project <project_name>
 #   setup_nodejs_backend <project_name> (coming soon)
 #   setup_react_frontend <project_name> (coming soon)
-#   setup_fullstack_project <project_name> (coming soon)
+#   setup_fullstack_project <project_name> (Next.js fullstack app with state management)
 
 # REQUIREMENTS:
 #   - Git
@@ -85,6 +85,14 @@ check_dependencies() {
       fi
       ;;
     nodejs)
+      if ! command_exists node; then
+        missing_deps+=("node.js (16+ recommended)")
+      fi
+      if ! command_exists npm; then
+        missing_deps+=("npm")
+      fi
+      ;;
+    nextjs)
       if ! command_exists node; then
         missing_deps+=("node.js (16+ recommended)")
       fi
@@ -361,6 +369,440 @@ Ready for review." --base main || echo "Failed to create PR. You may need to cre
   fi
   echo "2. Run 'make install' to set up your environment"
   echo "3. Run 'make update' to generate requirements.txt"
+}
+
+# Setup a Next.js fullstack project with state management
+setup_fullstack_project() {
+  local project_name=$1
+  
+  # Check dependencies
+  if ! check_dependencies "nextjs"; then
+    return 1
+  fi
+  
+  if [ -z "$project_name" ]; then
+    echo "❌ Error: Project name is required"
+    echo "Usage: setup_fullstack_project <project_name>"
+    return 1
+  fi
+  
+  echo "🚀 Creating Next.js fullstack project with state management: $project_name"
+  
+  # Create project directory
+  mkdir -p "$project_name"
+  cd "$project_name" || return 1
+  
+  # Initialize git repository if git exists
+  if command_exists git; then
+    git init .
+  fi
+  
+  # Create Next.js app with TypeScript, ESLint, TailwindCSS and App Router
+  npx create-next-app@latest . --typescript --eslint --tailwind --app --no-src-dir --import-alias "@/*"
+  
+  # Install NextUI and other dependencies for state management
+  npm install @nextui-org/react framer-motion zustand @tanstack/react-query
+
+  # Create app structure
+  mkdir -p app/{components,hooks,lib,services,store}
+  
+  # Create a basic store with Zustand
+  cat > app/store/index.ts << EOF
+import { create } from 'zustand';
+
+// Define the store state interface
+interface StoreState {
+  count: number;
+  increment: () => void;
+  decrement: () => void;
+  reset: () => void;
+}
+
+// Create the store
+export const useStore = create<StoreState>((set) => ({
+  count: 0,
+  increment: () => set((state) => ({ count: state.count + 1 })),
+  decrement: () => set((state) => ({ count: state.count - 1 })),
+  reset: () => set({ count: 0 }),
+}));
+EOF
+
+  # Create a custom hooks folder for React Query
+  cat > app/hooks/useTodos.ts << EOF
+'use client';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+interface Todo {
+  id: string;
+  title: string;
+  completed: boolean;
+}
+
+// Mock API service (in a real app, this would call actual API endpoints)
+const fetchTodos = async (): Promise<Todo[]> => {
+  // Simulating API call
+  return [
+    { id: '1', title: 'Learn Next.js', completed: false },
+    { id: '2', title: 'Build a fullstack app', completed: false },
+    { id: '3', title: 'Deploy to production', completed: false },
+  ];
+};
+
+export function useTodos() {
+  const queryClient = useQueryClient();
+  
+  const query = useQuery({
+    queryKey: ['todos'],
+    queryFn: fetchTodos
+  });
+  
+  const addTodoMutation = useMutation({
+    mutationFn: async (title: string) => {
+      // Simulating API call
+      const newTodo = { id: Date.now().toString(), title, completed: false };
+      return newTodo;
+    },
+    onSuccess: (newTodo) => {
+      queryClient.setQueryData(['todos'], (old: Todo[] | undefined) => 
+        [...(old || []), newTodo]
+      );
+    }
+  });
+  
+  const toggleTodoMutation = useMutation({
+    mutationFn: async (id: string) => {
+      // Simulating API call
+      return id;
+    },
+    onSuccess: (id) => {
+      queryClient.setQueryData(['todos'], (old: Todo[] | undefined) => 
+        old?.map(todo => 
+          todo.id === id ? { ...todo, completed: !todo.completed } : todo
+        ) || []
+      );
+    }
+  });
+  
+  return {
+    todos: query.data || [],
+    isLoading: query.isLoading,
+    isError: query.isError,
+    error: query.error,
+    addTodo: (title: string) => addTodoMutation.mutate(title),
+    toggleTodo: (id: string) => toggleTodoMutation.mutate(id),
+  };
+}
+EOF
+
+  # Create a TodoList component
+  mkdir -p app/components/todos
+  cat > app/components/todos/TodoList.tsx << EOF
+'use client';
+
+import { useState } from 'react';
+import { useTodos } from '@/app/hooks/useTodos';
+import { Button, Checkbox, Input } from '@nextui-org/react';
+
+export function TodoList() {
+  const { todos, isLoading, isError, addTodo, toggleTodo } = useTodos();
+  const [newTodo, setNewTodo] = useState('');
+  
+  const handleAddTodo = () => {
+    if (newTodo.trim()) {
+      addTodo(newTodo);
+      setNewTodo('');
+    }
+  };
+  
+  if (isLoading) {
+    return <div>Loading todos...</div>;
+  }
+  
+  if (isError) {
+    return <div>Error loading todos!</div>;
+  }
+  
+  return (
+    <div className="max-w-md mx-auto p-4">
+      <h2 className="text-2xl font-bold mb-4">Todo List</h2>
+      
+      <div className="flex gap-2 mb-4">
+        <Input
+          type="text"
+          value={newTodo}
+          onChange={(e) => setNewTodo(e.target.value)}
+          placeholder="Add new todo"
+          onKeyPress={(e) => e.key === 'Enter' && handleAddTodo()}
+        />
+        <Button color="primary" onClick={handleAddTodo}>Add</Button>
+      </div>
+      
+      <ul className="space-y-2">
+        {todos.map((todo) => (
+          <li key={todo.id} className="flex items-center gap-2">
+            <Checkbox
+              isSelected={todo.completed}
+              onChange={() => toggleTodo(todo.id)}
+            />
+            <span className={todo.completed ? 'line-through' : ''}>
+              {todo.title}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+EOF
+
+  # Create a Counter component using Zustand
+  mkdir -p app/components/counter
+  cat > app/components/counter/Counter.tsx << EOF
+'use client';
+
+import { useStore } from '@/app/store';
+import { Button } from '@nextui-org/react';
+
+export function Counter() {
+  const { count, increment, decrement, reset } = useStore();
+  
+  return (
+    <div className="max-w-md mx-auto p-4 text-center">
+      <h2 className="text-2xl font-bold mb-4">Counter with Zustand</h2>
+      <div className="text-4xl font-bold mb-4">{count}</div>
+      <div className="flex gap-2 justify-center">
+        <Button color="primary" onClick={increment}>Increment</Button>
+        <Button color="secondary" onClick={decrement}>Decrement</Button>
+        <Button color="danger" onClick={reset}>Reset</Button>
+      </div>
+    </div>
+  );
+}
+EOF
+
+  # Setup NextUI Provider
+  cat > app/providers.tsx << EOF
+'use client';
+
+import { NextUIProvider } from '@nextui-org/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useState } from 'react';
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  const [queryClient] = useState(() => new QueryClient());
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <NextUIProvider>{children}</NextUIProvider>
+    </QueryClientProvider>
+  );
+}
+EOF
+
+  # Update layout.tsx to use the Providers
+  cat > app/layout.tsx << EOF
+import './globals.css';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { Providers } from './providers';
+
+const inter = Inter({ subsets: ['latin'] });
+
+export const metadata: Metadata = {
+  title: '${project_name}',
+  description: 'Full-stack Next.js app with state management',
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}
+EOF
+
+  # Update page.tsx to use the components
+  cat > app/page.tsx << EOF
+import { Counter } from './components/counter/Counter';
+import { TodoList } from './components/todos/TodoList';
+
+export default function Home() {
+  return (
+    <main className="min-h-screen p-8">
+      <h1 className="text-4xl font-bold text-center mb-8">
+        ${project_name}
+      </h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <Counter />
+        </div>
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <TodoList />
+        </div>
+      </div>
+    </main>
+  );
+}
+EOF
+
+  # Update tailwind.config.js to include NextUI
+  cat > tailwind.config.ts << EOF
+import type { Config } from 'tailwindcss';
+import { nextui } from '@nextui-org/react';
+
+const config: Config = {
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}'
+  ],
+  theme: {
+    extend: {},
+  },
+  darkMode: 'class',
+  plugins: [nextui()],
+};
+
+export default config;
+EOF
+
+  # Create a simple API route
+  mkdir -p app/api/todos
+  cat > app/api/todos/route.ts << EOF
+import { NextResponse } from 'next/server';
+
+export async function GET() {
+  const todos = [
+    { id: '1', title: 'Learn Next.js', completed: false },
+    { id: '2', title: 'Build a fullstack app', completed: false },
+    { id: '3', title: 'Deploy to production', completed: false },
+  ];
+  
+  return NextResponse.json(todos);
+}
+
+export async function POST(request: Request) {
+  const { title } = await request.json();
+  const newTodo = { id: Date.now().toString(), title, completed: false };
+  
+  return NextResponse.json(newTodo);
+}
+EOF
+
+  # Update the README.md
+  cat > README.md << EOF
+# ${project_name}
+
+A Next.js full-stack application with state management using Zustand and React Query.
+
+## Features
+
+- **Next.js 14**: Modern React framework with App Router
+- **TypeScript**: Type-safe code
+- **State Management**:
+  - **Zustand**: Simple and efficient state management
+  - **React Query**: For server state management and data fetching
+- **UI Components**: NextUI + TailwindCSS
+- **API Routes**: Built-in API endpoints
+
+## Getting Started
+
+### Development
+
+\`\`\`bash
+# Install dependencies
+npm install
+
+# Run the development server
+npm run dev
+\`\`\`
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
+
+### Build and Production
+
+\`\`\`bash
+# Build the application
+npm run build
+
+# Start the production server
+npm start
+\`\`\`
+
+## Project Structure
+
+\`\`\`
+${project_name}/
+├── app/
+│   ├── api/                # API routes
+│   ├── components/         # UI components
+│   ├── hooks/              # Custom React hooks
+│   ├── store/              # Zustand store
+│   ├── providers.tsx       # React context providers
+│   ├── layout.tsx          # Root layout
+│   └── page.tsx            # Home page
+├── public/                 # Static assets
+├── .gitignore
+├── next.config.js
+├── package.json
+├── README.md
+├── tailwind.config.ts
+└── tsconfig.json
+\`\`\`
+
+## State Management
+
+- **Zustand** is used for client-side state management (see \`app/store/index.ts\`)
+- **React Query** is used for server state management (see \`app/hooks/useTodos.ts\`)
+
+## API Routes
+
+The application includes RESTful API routes in the \`app/api\` directory.
+
+## UI
+
+The application uses NextUI components with TailwindCSS for styling.
+EOF
+
+  # Add all files to git
+  if command_exists git; then
+    git add .
+    git commit -m "Initial commit: Set up Next.js fullstack project with state management"
+  fi
+  
+  # If GitHub CLI is available, create repository and push
+  if command_exists gh && command_exists git; then
+    local github_username=$(git config user.name | tr -d ' ' | tr '[:upper:]' '[:lower:]')
+    
+    # Create GitHub repository if it doesn't exist
+    if ! gh repo view "$github_username/$project_name" &>/dev/null; then
+      echo "Creating GitHub repository: $project_name"
+      gh repo create "$project_name" --private --source=. --remote=origin
+    fi
+    
+    # Push to GitHub
+    git push -u origin main || git push -u origin master
+    
+    echo "✓ Next.js fullstack project '$project_name' is ready!"
+    echo "GitHub: https://github.com/$github_username/$project_name"
+  else
+    echo "✓ Next.js fullstack project '$project_name' is ready locally!"
+  fi
+  
+  echo ""
+  echo "Next steps:"
+  echo "1. cd $project_name"
+  echo "2. npm run dev"
+  echo "3. Open http://localhost:3000 in your browser"
 }
 
 # Setup a Node.js backend project
@@ -2207,13 +2649,9 @@ Ready for review." --base main || echo "Failed to create PR. You may need to cre
   
   echo ""
   echo "Next steps:"
-  if command -v gh &>/dev/null && git remote -v | grep -q origin; then
-    echo "1. Review and merge the PR"
-  fi
-  echo "2. Install dependencies: make install-deps"
-  echo "3. Start development servers: make dev"
-  echo "4. Access the frontend at: http://localhost:3000"
-  echo "5. API is available at: http://localhost:8080/api"
+  echo "1. cd $project_name"
+  echo "2. npm run dev"
+  echo "3. Open http://localhost:3000 in your browser"
 }
 
 # Setup Zsh completion if we're in Zsh
@@ -2222,10 +2660,10 @@ if [ "$CRAFTINGBENCH_SHELL" = "zsh" ] && command -v compdef >/dev/null 2>&1; the
   function _craftingbench_completions() {
     local commands=(
       "setup_python_project:Create a Python project"
-      "setup_nodejs_backend:Create a Node.js backend (Express + TypeScript)"
-      "setup_react_frontend:Create a React frontend (TypeScript)"
+      "setup_nodejs_backend:Create a Node.js backend"
+      "setup_react_frontend:Create a React frontend"
       "setup_go_project:Create a Golang project"
-      "setup_fullstack_project:Create a Go backend with webpack frontend"
+      "setup_fullstack_project:Create a Next.js fullstack app with state management"
       "setup_plain_project:Create a basic project"
     )
     _describe 'CraftingBench commands' commands
@@ -2237,8 +2675,8 @@ fi
 echo "🛠️  CraftingBench loaded!"
 echo "Available commands:"
 echo "  - setup_python_project <name>     : Create a Python project"
-echo "  - setup_nodejs_backend <name>     : Create a Node.js backend (Express + TypeScript)"
-echo "  - setup_react_frontend <name>     : Create a React frontend (TypeScript)"
+echo "  - setup_nodejs_backend <name>     : Create a Node.js backend"
+echo "  - setup_react_frontend <name>     : Create a React frontend"
 echo "  - setup_go_project <name>         : Create a Golang project"
-echo "  - setup_fullstack_project <name>  : Create a Go backend with webpack frontend"
-echo "  - setup_plain_project <name>      : Create a basic project" 
+echo "  - setup_fullstack_project <name>  : Create a Next.js fullstack app with state management"
+echo "  - setup_plain_project <name>      : Create a basic project"

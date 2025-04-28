@@ -21,7 +21,7 @@ CraftingBench provides templates for various project types:
 - **Node.js Backend**: Express-based API with TypeScript and testing framework
 - **React Frontend**: TypeScript + React application with modern tooling
 - **Golang API**: Go-based REST API with standard project layout
-- **Full-Stack Web**: Combined backend/frontend setup with best practices
+- **Full-Stack Web (Next.js)**: Next.js app with built-in API routes and state management
 - **Docker Containerized**: Projects with Docker and Docker Compose configuration
 
 ## 🚀 Installation
@@ -167,11 +167,39 @@ my_go_service/
 └── test/
 ```
 
-### Full-Stack Web Application
+### Full-Stack Web Application (Next.js)
 
 ```bash
 setup_fullstack_project my_web_platform
 ```
+
+Generated structure:
+```
+my_web_platform/
+├── app/
+│   ├── api/                # API routes
+│   ├── components/         # UI components
+│   ├── hooks/              # Custom React hooks
+│   ├── store/              # Zustand store
+│   ├── providers.tsx       # React context providers
+│   ├── layout.tsx          # Root layout
+│   └── page.tsx            # Home page
+├── public/                 # Static assets
+├── .gitignore
+├── next.config.js
+├── package.json
+├── README.md
+├── tailwind.config.ts
+└── tsconfig.json
+```
+
+This template creates a Next.js application with:
+- TypeScript for type safety
+- NextUI components with TailwindCSS
+- Zustand for client-side state management
+- React Query for server state management
+- Built-in API routes
+- Example Todo and Counter components
 
 ### Basic Project (Minimal Setup)
 
@@ -223,7 +251,7 @@ make lint      # Runs flake8
 make format    # Runs black and isort
 ```
 
-### Node.js/React Projects
+### Node.js/React/Next.js Projects
 
 ```bash
 cd my_node_project
@@ -292,6 +320,7 @@ Common issues and their solutions:
 - [Python Project Structure Guide](https://docs.python-guide.org/writing/structure/)
 - [Node.js Best Practices](https://github.com/goldbergyoni/nodebestpractices)
 - [React Project Structure](https://reactjs.org/docs/faq-structure.html)
+- [Next.js Documentation](https://nextjs.org/docs)
 - [Go Project Layout](https://github.com/golang-standards/project-layout)
 - [Zsh Documentation](https://zsh.sourceforge.io/Doc/)
 
