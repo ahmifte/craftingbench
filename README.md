@@ -95,7 +95,7 @@ chmod +x /path/to/craftingbench/craftingbench.sh
 
 3. Add the following to your shell configuration file:
 
-**For Bash users** (`.bashrc`):	**For Bash users** (`.bashrc`)
+**For Bash users** (`.bashrc`):
 ```bash	
 source /path/to/craftingbench/craftingbench.sh	
 ```	
