@@ -16,8 +16,6 @@ ______________________________________________________________________
 <h3>Craft your projects with precision and speed</h3>
 
 _A powerful utility for quickly scaffolding various project types with standardized, production-ready structures._
-
-```
                                                                            
       #@@++++++++++++++++++++++++++++++++++++++++++++++++++++==-+*@@@      
     :@@*+++++++++++++++++++++++++++++++++++++++++++++++++++++++===*#@@#    
@@ -42,8 +40,6 @@ _A powerful utility for quickly scaffolding various project types with standardi
       @=@*                                                        %@-@     
       @-@:                                                        =@-@     
                                                                            
-```
-
 </div>
 
 ______________________________________________________________________
