@@ -17,7 +17,7 @@ ______________________________________________________________________
 
 _A powerful utility for quickly scaffolding various project types with standardized, production-ready structures._
 
-```
+<pre align="center">
                                                                            
       #@@++++++++++++++++++++++++++++++++++++++++++++++++++++==-+*@@@      
     :@@*+++++++++++++++++++++++++++++++++++++++++++++++++++++++===*#@@#    
@@ -41,8 +41,8 @@ _A powerful utility for quickly scaffolding various project types with standardi
       @+@@                                                        @@=@     
       @=@*                                                        %@-@     
       @-@:                                                        =@-@     
-
-```
+                                                                           
+</pre>
 
 </div>
 
