@@ -142,7 +142,7 @@ source ~/.zshrc
 
 <strong>Each project template is created with a single command:</strong>
 
-<h3>🐍 Python Project</h3></summary>
+<h3>🐍 Python Project</h3>
 
 ```bash
 setup_python_project my_awesome_package	
