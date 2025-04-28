@@ -164,7 +164,7 @@ my_awesome_package/
     └── test_main.py	
 ```
 
-<h3>🚀 Node.js Backend</h3></summary>
+<h3>🚀 Node.js Backend</h3>
 
 ```bash
 setup_nodejs_backend my_api_service	
@@ -187,7 +187,7 @@ my_api_service/
 └── tests/	
 ```
 
-<h3>🔷 Golang API</h3></summary>
+<h3>🔷 Golang API</h3>
 
 ```bash
 setup_go_project my_go_service	
@@ -211,7 +211,7 @@ my_go_service/
 └── test/	
 ```
 
-<h3>⚛️ React Frontend</h3></summary>
+<h3>⚛️ React Frontend</h3>
 
 ```bash
 setup_react_frontend my_react_app
@@ -236,7 +236,7 @@ my_react_app/
 └── tsconfig.json
 ```
 
-<h3>🌐 Full-Stack Web (Next.js)</h3></summary>
+<h3>🌐 Full-Stack Web (Next.js)</h3>
 
 ```bash
 setup_fullstack_project my_nextjs_app
@@ -266,7 +266,7 @@ my_nextjs_app/
 
 <p align="center"><strong>Each project template includes built-in testing capabilities:</strong></p>
 
-<h3>🐍 Python Projects</h3></summary>
+<h3>🐍 Python Projects</h3>
 
 ```bash
 cd my_python_project	
@@ -275,7 +275,7 @@ make lint      # Runs flake8
 make format    # Runs black and isort	
 ```
 
-<h3>🚀 Node.js Projects</h3></summary>
+<h3>🚀 Node.js Projects</h3>
 
 ```bash
 cd my_node_project	
@@ -283,7 +283,7 @@ npm run test   # Runs tests
 npm run lint   # Runs ESLint	
 ```
 
-<h3>🔷 Go Projects</h3></summary>
+<h3>🔷 Go Projects</h3>
 
 ```bash
 cd my_go_project	
@@ -292,7 +292,7 @@ make vet       # Runs go vet
 make fmt       # Runs go fmt	
 ```
 
-<h3>⚛️ React Projects</h3></summary>
+<h3>⚛️ React Projects</h3>
 
 ```bash
 cd my_react_app
@@ -301,7 +301,7 @@ npm run lint   # Runs ESLint
 npm run build  # Creates production build
 ```
 
-<h3>🌐 Next.js Projects</h3></summary>
+<h3>🌐 Next.js Projects</h3>
 
 ```bash
 cd my_nextjs_app
