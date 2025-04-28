@@ -1,11 +1,37 @@
-# 🛠️ CraftingBench
+# 🛠️ Crafting Bench 🛠️
+<br />
+```
+      -===============================================      
+    :==================================================:    
+  .-=====================================================.  
+ -========================================================= 
+-======================================================++++=
+      -== .==                                   -= .==-     
+      -== :=-                                   -=. ===     
+      -== -=:                                   -=: ===     
+      === -=.                                   :=- ===     
+     .==- -=                                    .== -==.    
+     .==: ==                                    .+= -==.    
+     :==. ==                                     += :==.    
+     -==..==                                     ==.:==:    
+     === .=-                                     -=..==:    
+     ===                                            .==-    
+     ===                                             ==-    
+    .==-                                             ===    
+    .==:                                             ===.   
+    .==:                                             -==.   
+```
+
+***
+
+
+<br />
 
 A powerful utility for quickly scaffolding various project types with standardized, production-ready structures.
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 <div align="center">
-  <img src="https://via.placeholder.com/150?text=CraftingBench" alt="CraftingBench Logo" width="150" height="150">
   <p><em>Craft your projects with precision and speed</em></p>
 </div>
 
