@@ -19,10 +19,26 @@ CraftingBench provides templates for various project types:
 
 - **Python Projects**: Modern Python package with testing, linting, and CI/CD setup
 - **Node.js Backend**: Express-based API with TypeScript and testing framework
-- **React Frontend**: TypeScript + React application with modern tooling
 - **Golang API**: Go-based REST API with standard project layout
-- **Full-Stack Web (Next.js)**: Next.js app with built-in API routes and state management
-- **Docker Containerized**: Projects with Docker and Docker Compose configuration
+- **Full-Stack Web (Next.js)**: Next.js app with built-in API routes and state management (coming soon)
+- **React Frontend**: TypeScript + React application with modern tooling (coming soon)
+
+## 📂 Project Structure
+
+CraftingBench has been organized into a modular structure for better maintainability:
+
+```
+craftingbench/
+├── craftingbench.sh         # Main entry point script
+├── src/                     # Source code
+│   ├── helpers/             # Helper functions
+│   ├── templates/           # Project templates
+│   └── completions/         # Shell completions
+├── docs/                    # Documentation
+└── README.md                # Main documentation
+```
+
+For more information, see [Architecture Documentation](docs/architecture.md).
 
 ## 🚀 Installation
 
@@ -49,7 +65,7 @@ source /path/to/craftingbench/craftingbench.sh
 source /path/to/craftingbench/craftingbench.sh
 
 # Optional: Enable Zsh completion for CraftingBench commands
-compdef _gnu_generic setup_python_project setup_nodejs_backend setup_react_frontend setup_go_project setup_fullstack_project setup_plain_project
+compdef _gnu_generic setup_python_project setup_nodejs_backend setup_react_frontend setup_go_project setup_fullstack_project
 ```
 
 4. Reload your shell configuration:
@@ -91,7 +107,7 @@ my_awesome_package/
     └── test_main.py
 ```
 
-### Node.js Backend (Express + TypeScript)
+### Node.js Backend (Express)
 
 ```bash
 setup_nodejs_backend my_api_service
@@ -102,45 +118,15 @@ Generated structure:
 my_api_service/
 ├── .eslintrc.js
 ├── .gitignore
-├── .prettierrc
 ├── README.md
-├── jest.config.js
 ├── package.json
 ├── src/
-│   ├── app.ts
+│   ├── index.js
 │   ├── controllers/
 │   ├── models/
 │   ├── routes/
-│   └── server.ts
-├── tests/
-│   └── app.test.ts
-└── tsconfig.json
-```
-
-### React Frontend (TypeScript)
-
-```bash
-setup_react_frontend my_web_app
-```
-
-Generated structure:
-```
-my_web_app/
-├── .eslintrc.js
-├── .gitignore
-├── .prettierrc
-├── README.md
-├── index.html
-├── package.json
-├── public/
-├── src/
-│   ├── App.tsx
-│   ├── components/
-│   ├── hooks/
-│   ├── pages/
-│   └── main.tsx
-├── tests/
-└── tsconfig.json
+│   └── middleware/
+└── tests/
 ```
 
 ### Golang API
@@ -156,87 +142,15 @@ my_go_service/
 ├── Makefile
 ├── README.md
 ├── cmd/
-│   └── server/
+│   └── my_go_service/
 │       └── main.go
 ├── go.mod
-├── go.sum
 ├── internal/
-│   ├── api/
-│   ├── config/
-│   └── models/
+│   ├── app/
+│   └── pkg/
+├── pkg/
 └── test/
 ```
-
-### Full-Stack Web Application (Next.js)
-
-```bash
-setup_fullstack_project my_web_platform
-```
-
-Generated structure:
-```
-my_web_platform/
-├── app/
-│   ├── api/                # API routes
-│   ├── components/         # UI components
-│   ├── hooks/              # Custom React hooks
-│   ├── store/              # Zustand store
-│   ├── providers.tsx       # React context providers
-│   ├── layout.tsx          # Root layout
-│   └── page.tsx            # Home page
-├── public/                 # Static assets
-├── .gitignore
-├── next.config.js
-├── package.json
-├── README.md
-├── tailwind.config.ts
-└── tsconfig.json
-```
-
-This template creates a Next.js application with:
-- TypeScript for type safety
-- NextUI components with TailwindCSS
-- Zustand for client-side state management
-- React Query for server state management
-- Built-in API routes
-- Example Todo and Counter components
-
-### Basic Project (Minimal Setup)
-
-```bash
-setup_plain_project my_simple_project
-```
-
-Generated structure:
-```
-my_simple_project/
-├── .gitignore
-├── Makefile
-├── README.md
-└── tests/
-    └── .gitkeep
-```
-
-## 🔧 What's Included
-
-Each template includes:
-
-- **Git Integration**: Initialized repository with sensible .gitignore
-- **GitHub Automation**: Repository creation and PR workflow (if GitHub CLI is available)
-- **Testing Framework**: Language-appropriate testing setup
-- **Code Quality Tools**: Linting and formatting configured
-- **Documentation**: Basic README and usage examples
-- **CI/CD**: GitHub Actions workflows for testing and deployment
-- **Dependency Management**: Modern package management approaches
-
-## 📦 Requirements
-
-- Git
-- Language-specific tools depending on project type:
-  - Python 3.8+ for Python projects
-  - Node.js 16+ for JavaScript/TypeScript projects
-  - Go 1.18+ for Golang projects
-- GitHub CLI (optional, for GitHub integration)
 
 ## 🧪 Testing and Quality Assurance
 
@@ -251,13 +165,12 @@ make lint      # Runs flake8
 make format    # Runs black and isort
 ```
 
-### Node.js/React/Next.js Projects
+### Node.js Projects
 
 ```bash
 cd my_node_project
-npm run test       # Runs Jest tests
-npm run lint       # Runs ESLint
-npm run format     # Runs Prettier
+npm run test   # Runs tests
+npm run lint   # Runs ESLint
 ```
 
 ### Go Projects
@@ -265,25 +178,9 @@ npm run format     # Runs Prettier
 ```bash
 cd my_go_project
 make test      # Runs go test
-make lint      # Runs golangci-lint
+make vet       # Runs go vet
+make fmt       # Runs go fmt
 ```
-
-### Plain Projects
-
-```bash
-cd my_simple_project
-make help      # Shows available commands
-make test      # Runs basic tests
-```
-
-## 📝 Project Structure Conventions
-
-CraftingBench follows these conventions for all projects:
-
-1. **Separation of Concerns**: Code is organized to separate business logic, interfaces, and data.
-2. **Configuration Management**: Environment-specific settings are separated from application code.
-3. **Testing Strategy**: Tests are organized by type (unit, integration, e2e).
-4. **Documentation**: All projects include comprehensive README and inline documentation.
 
 ## 🤝 Contributing
 
@@ -297,33 +194,16 @@ Contributions are welcome! Feel free to add new project templates or improve exi
 
 ### Development
 
-To add a new template:
-
-1. Create a new function in `craftingbench.sh` following the naming pattern `setup_[platform]_project`
-2. Follow the existing patterns for parameter validation and GitHub integration
-3. Add documentation to this README
-4. Test your template thoroughly
-
-## 🔍 Troubleshooting
-
-Common issues and their solutions:
-
-- **Permission Denied**: Make sure `craftingbench.sh` is executable (`chmod +x craftingbench.sh`)
-- **Command Not Found**: Ensure your shell configuration file is properly sourced
-- **GitHub Authentication**: Run `gh auth login` if GitHub integration isn't working
-- **Repository Creation Failed**: Check your GitHub token and permissions
-- **Zsh Completion Not Working**: Make sure you have compinit loaded in your `.zshrc` file
+To add a new template, see our [Template Documentation](docs/templates/README.md).
 
 ## 📚 Resources
 
 - [GitHub CLI Documentation](https://cli.github.com/manual/)
 - [Python Project Structure Guide](https://docs.python-guide.org/writing/structure/)
 - [Node.js Best Practices](https://github.com/goldbergyoni/nodebestpractices)
-- [React Project Structure](https://reactjs.org/docs/faq-structure.html)
-- [Next.js Documentation](https://nextjs.org/docs)
 - [Go Project Layout](https://github.com/golang-standards/project-layout)
 - [Zsh Documentation](https://zsh.sourceforge.io/Doc/)
 
 ## 📜 License
 
-MIT 
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
