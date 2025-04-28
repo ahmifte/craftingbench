@@ -13,14 +13,9 @@
 ______________________________________________________________________
 
 <div align="center">
-  <h3><em>Craft your projects with precision and speed</em></h3>
-</div>
+<h3><em>Craft your projects with precision and speed</em></h3>
 
-**_A powerful utility for quickly scaffolding various project types with standardized, production-ready structures._**
-
-<br />
-
-<div align="center">
+_A powerful utility for quickly scaffolding various project types with standardized, production-ready structures._
 
 ```
                                                                            
