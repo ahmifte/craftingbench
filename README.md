@@ -2,11 +2,11 @@
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+A powerful utility for quickly scaffolding various project types with standardized, production-ready structures.
+
 <div align="center">
   <p><em><strong>Craft your projects with precision and speed</strong></em></p>
 </div>
-
-A powerful utility for quickly scaffolding various project types with standardized, production-ready structures.
 
 <br />
 
@@ -41,9 +41,9 @@ A powerful utility for quickly scaffolding various project types with standardiz
 
 </div>
 
-<br />
-
 ---
+
+<br />
 
 ## ✨ Features
 
