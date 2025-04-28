@@ -1,12 +1,4 @@
-# 🏗️ CraftingBench Architecture
-
-<div align="center">
-
-**CraftingBench is designed with a modular architecture to promote maintainability, extensibility, and code reuse.**
-
-</div>
-
----
+# 🏗️ Architecture
 
 ## 📂 Project Structure
 
@@ -35,12 +27,8 @@ craftingbench/
 ## 🧩 Component Overview
 
 ### 🔍 Main Script (`craftingbench.sh`)
-
-<div align="center">
-
 **The main script serves as the entry point for CraftingBench.**
 
-</div>
 
 - 📥 Loads helper functions
 - 🔌 Sources project templates
@@ -48,24 +36,16 @@ craftingbench/
 - 🖥️ Provides the main banner/interface
 
 ### 🛠️ Helper Functions (`src/helpers/`)
-
-<div align="center">
-
 **Common utility functions used across multiple templates.**
 
-</div>
 
 - ✅ Dependency checking
 - 🔍 Command existence verification
 - 🔗 GitHub integration helpers
 
 ### 📦 Project Templates (`src/templates/`)
-
-<div align="center">
-
 **Each template is contained in its own file for better separation of concerns.**
 
-</div>
 
 | File | Description |
 |------|-------------|
@@ -77,11 +57,7 @@ craftingbench/
 
 ### 🔄 Shell Completions (`src/completions/`)
 
-<div align="center">
-
 **Provides shell completion functionality for supported shells.**
-
-</div>
 
 - Zsh completion for all template commands
 - Bash completion support (planned) 

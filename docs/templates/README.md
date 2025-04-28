@@ -1,52 +1,58 @@
-# 📚 Templates
+# 🧰 CraftingBench Templates
 
 <div align="center">
 
-**Crafting Bench provides powerful templates to jumpstart your development journey.**  
-Each template follows industry best practices and modern architecture patterns.
+**Powerful templates to jumpstart your development journey with style and best practices**
 
 </div>
 
 ---
 
-## 🧰 Available Templates
+## 📋 Available Templates
 
-| Icon | Template | Command | Source | Description |
-|:----:|----------|---------|--------|-------------|
-| 🐍 | **Python** | `setup_python_project` | [python.sh](../../src/templates/python.sh) | Modern Python package with testing, linting, and CI/CD setup |
-| 🚀 | **Node.js Backend** | `setup_nodejs_backend` | [nodejs.sh](../../src/templates/nodejs.sh) | Express-based API with best practices |
-| 🔷 | **Go** | `setup_go_project` | [go.sh](../../src/templates/go.sh) | Go-based application with standard project layout |
-| ⚛️ | **React Frontend** | `setup_react_frontend` | [react.sh](../../src/templates/react.sh) | TypeScript + React application with modern tooling |
-| 🌐 | **Full-Stack Web** | `setup_fullstack_project` | [fullstack.sh](../../src/templates/fullstack.sh) | Next.js app with built-in API routes and state management |
+<div align="center">
+
+| Icon | Template | Command | Description |
+|:----:|:--------:|:-------:|:------------|
+| 🐍 | **Python** | `setup_python_project` | Modern Python package with testing, linting, and CI/CD setup |
+| 🚀 | **Node.js** | `setup_nodejs_backend` | Express-based API with TypeScript and testing framework |
+| 🔷 | **Go** | `setup_go_project` | Go-based REST API with standard project layout |
+| ⚛️ | **React** | `setup_react_frontend` | TypeScript + React application with modern tooling |
+| 🌐 | **Next.js** | `setup_fullstack_project` | Next.js app with built-in API routes and state management |
+
+</div>
 
 ---
 
 ## 🔍 Template Details
 
+<h3>🐍 Python Project</h3>
 
-<summary><h3>🐍 Python Project</h3></summary>
+<div align="center">
 
-The Python template creates a modern Python package with best practices for professional development.
+**A modern Python package scaffold with all the essential tools for professional development**
+
+</div>
 
 #### ✨ Features
 
-- 📁 Project structure following Python packaging standards
-- 📄 Modern `pyproject.toml` configuration
+- 📦 Project structure following Python packaging standards
+- 🛠️ Modern `pyproject.toml` configuration
 - 🧪 Testing with pytest
 - 🧹 Linting with flake8, black, and isort
-- 📦 Dependency management
-- 🛠️ Makefile for common tasks
+- 📊 Dependency management
+- ⚙️ Makefile for common tasks
 
-#### 📊 Generated Structure
+#### 📂 Generated Structure
 
 ```
-project_name/
+my_python_project/
 ├── .gitignore
 ├── .python-version
 ├── Makefile
 ├── README.md
 ├── main.py
-├── project_name/
+├── my_python_project/
 │   └── __init__.py
 ├── pyproject.toml
 └── tests/
@@ -55,10 +61,13 @@ project_name/
 
 ---
 
+<h3>🚀 Node.js Backend</h3>
 
-<summary><h3>🚀 Node.js Backend</h3></summary>
+<div align="center">
 
-The Node.js backend template sets up an Express-based API ready for rapid development.
+**A robust Express-based API boilerplate with MVC architecture and best practices**
+
+</div>
 
 #### ✨ Features
 
@@ -69,10 +78,10 @@ The Node.js backend template sets up an Express-based API ready for rapid develo
 - 🔐 Environment variable management
 - ⚠️ Error handling
 
-#### 📊 Generated Structure
+#### 📂 Generated Structure
 
 ```
-project_name/
+my_api_service/
 ├── .eslintrc.js
 ├── .gitignore
 ├── README.md
@@ -82,17 +91,20 @@ project_name/
 │   ├── controllers/
 │   ├── models/
 │   ├── routes/
-│   ├── middleware/
-│   └── utils/
+│   └── middleware/
 └── tests/
 ```
 
+
 ---
 
+<h3>🔷 Go Project</h3>
 
-<summary><h3>🔷 Go Project</h3></summary>
+<div align="center">
 
-The Go template follows the standard Go project layout for maintainable applications.
+**A clean Go application structure following industry standard layout and practices**
+
+</div>
 
 #### ✨ Features
 
@@ -102,15 +114,15 @@ The Go template follows the standard Go project layout for maintainable applicat
 - 🛠️ Makefile for build, test, and other tasks
 - 📦 Proper module configuration
 
-#### 📊 Generated Structure
+#### 📂 Generated Structure
 
 ```
-project_name/
+my_go_service/
 ├── .gitignore
 ├── Makefile
 ├── README.md
 ├── cmd/
-│   └── project_name/
+│   └── my_go_service/
 │       └── main.go
 ├── go.mod
 ├── internal/
@@ -120,12 +132,16 @@ project_name/
 └── test/
 ```
 
+
 ---
 
+<h3>⚛️ React Frontend</h3>
 
-<summary><h3>⚛️ React Frontend</h3></summary>
+<div align="center">
 
-The React frontend template provides a TypeScript-based React application scaffold.
+**A modern React application with TypeScript, component organization, and development tools**
+
+</div>
 
 #### ✨ Features
 
@@ -136,12 +152,16 @@ The React frontend template provides a TypeScript-based React application scaffo
 - 🧭 Routing
 - 🔄 API integration
 
+<div align="center">
+
 > 🚧 **Note**: This template is currently in development.
 
-#### 📊 Generated Structure
+</div>
+
+#### 📂 Generated Structure
 
 ```
-project_name/
+my_react_app/
 ├── .eslintrc.js
 ├── .gitignore
 ├── README.md
@@ -159,10 +179,13 @@ project_name/
 
 ---
 
+<h3>🌐 Full-Stack Web (Next.js)</h3>
 
-<summary><h3>🌐 Full-Stack Web (Next.js)</h3></summary>
+<div align="center">
 
-The Next.js template delivers a complete full-stack application environment.
+**A complete Next.js application with both frontend and backend capabilities in one project**
+
+</div>
 
 #### ✨ Features
 
@@ -175,12 +198,16 @@ The Next.js template delivers a complete full-stack application environment.
 - 🔐 Authentication system
 - 🗂️ Database integration
 
+<div align="center">
+
 > 🚧 **Note**: This template is currently in development.
 
-#### 📊 Generated Structure
+</div>
+
+#### 📂 Generated Structure
 
 ```
-project_name/
+my_nextjs_app/
 ├── .eslintrc.js
 ├── .gitignore
 ├── README.md
@@ -199,19 +226,17 @@ project_name/
 
 ---
 
----
-
 ## 🛠️ Creating a New Template
 
 <div align="center">
 
-**Want to contribute a new template?** Follow these steps:
+**Want to contribute a new template? Follow these steps to expand CraftingBench.**
 
 </div>
 
 1. Create a new shell script in the `src/templates/` directory
-2. Make sure it sources the common helper functions
-3. Implement a single main function named `setup_<technology>_project`
+2. Source the common helper functions
+3. Implement a main function named `setup_<technology>_project`
 4. Add the template to the main `craftingbench.sh` file
 5. Update documentation and shell completions
 
@@ -232,4 +257,13 @@ setup_<technology>_project() {
   # 4. Generate configuration files
   # 5. Initialize version control
   # 6. Display next steps
-} 
+}
+```
+
+<div align="center">
+
+---
+
+**Happy crafting!** 🛠️
+
+</div>
