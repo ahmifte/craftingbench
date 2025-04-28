@@ -61,8 +61,8 @@ CraftingBench provides templates for various project types:
 - **Python Projects**: Modern Python package with testing, linting, and CI/CD setup
 - **Node.js Backend**: Express-based API with TypeScript and testing framework
 - **Golang API**: Go-based REST API with standard project layout
-- **Full-Stack Web (Next.js)**: Next.js app with built-in API routes and state management (coming soon)
-- **React Frontend**: TypeScript + React application with modern tooling (coming soon)
+- **React Frontend**: TypeScript + React application with modern tooling
+- **Full-Stack Web (Next.js)**: Next.js app with built-in API routes and state management
 
 ## 📂 Project Structure
 
@@ -193,6 +193,55 @@ my_go_service/
 └── test/	
 ```	
 
+### React Frontend
+
+```bash
+setup_react_frontend my_react_app
+```
+
+Generated structure:
+```
+my_react_app/
+├── .eslintrc.js
+├── .gitignore
+├── README.md
+├── package.json
+├── public/
+│   ├── index.html
+│   └── favicon.ico
+├── src/
+│   ├── App.tsx
+│   ├── index.tsx
+│   ├── components/
+│   └── styles/
+└── tsconfig.json
+```
+
+### Full-Stack Web (Next.js)
+
+```bash
+setup_fullstack_project my_nextjs_app
+```
+
+Generated structure:
+```
+my_nextjs_app/
+├── .eslintrc.js
+├── .gitignore
+├── README.md
+├── package.json
+├── public/
+│   └── favicon.ico
+├── src/
+│   ├── pages/
+│   │   ├── index.tsx
+│   │   ├── _app.tsx
+│   │   └── api/
+│   ├── components/
+│   └── styles/
+└── tsconfig.json
+```
+
 ## 🧪 Testing and Quality Assurance	
 
 Each project template includes built-in testing capabilities:	
@@ -222,6 +271,25 @@ make test      # Runs go test
 make vet       # Runs go vet	
 make fmt       # Runs go fmt	
 ```	
+
+### React Projects
+
+```bash
+cd my_react_app
+npm run test   # Runs Jest tests
+npm run lint   # Runs ESLint
+npm run build  # Creates production build
+```
+
+### Next.js Projects
+
+```bash
+cd my_nextjs_app
+npm run test   # Runs Jest tests
+npm run lint   # Runs ESLint
+npm run build  # Creates production build
+npm run dev    # Starts development server
+```
 
 ## 🤝 Contributing	
 
