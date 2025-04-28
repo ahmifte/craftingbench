@@ -1,6 +1,7 @@
 <div align="center">
 
-# 🛠️ Crafting Bench 🛠️ 
+# 🛠️ Crafting Bench 🛠️
+
 <p>Made with ❤️ by <a href="https://github.com/ahmifte">ahmifte</a></p>
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -9,7 +10,7 @@
 
 </div>
 
----
+______________________________________________________________________
 
 <div align="center">
   <h3><em>Craft your projects with precision and speed</em></h3>
@@ -50,7 +51,7 @@ A powerful utility for quickly scaffolding various project types with standardiz
 
 </div>
 
----
+______________________________________________________________________
 
 ## ✨ Features
 
@@ -90,11 +91,13 @@ For more information, see [Architecture Documentation](docs/architecture.md).
 <strong>Getting Started</strong>
 
 1. Clone this repository:
+
 ```bash
 git clone https://github.com/ahmifte/craftingbench.git
 ```
 
 2. Make the script executable:
+
 ```bash
 chmod +x /path/to/craftingbench/craftingbench.sh
 ```
@@ -102,45 +105,50 @@ chmod +x /path/to/craftingbench/craftingbench.sh
 3. Add the following to your shell configuration file:
 
 **For Bash users** (`.bashrc`):
-```bash	
-source /path/to/craftingbench/craftingbench.sh	
-```	
 
-**For Zsh users** (`.zshrc`):	
-```zsh	
+```bash
+source /path/to/craftingbench/craftingbench.sh	
+```
+
+**For Zsh users** (`.zshrc`):
+
+```zsh
 # Load CraftingBench	
 source /path/to/craftingbench/craftingbench.sh	
 
 # Optional: Enable Zsh completion for CraftingBench commands	
 compdef _gnu_generic setup_python_project setup_nodejs_backend setup_react_frontend setup_go_project setup_fullstack_project	
-```	
+```
 
-4. Reload your shell configuration:	
+4. Reload your shell configuration:
 
-**For Bash users**:	
-```bash	
+**For Bash users**:
+
+```bash
 source ~/.bashrc	
-```	
+```
 
-**For Zsh users**:	
-```zsh	
+**For Zsh users**:
+
+```zsh
 source ~/.zshrc	
 # Or use the shorthand	
 . ~/.zshrc	
 ```
 
-## 📋 Usage	
+## 📋 Usage
 
 <p align="center"><strong>Each project template is created with a single command:</strong></p>
 
 <h3>🐍 Python Project</h3></summary>
 
-```bash	
+```bash
 setup_python_project my_awesome_package	
-```	
+```
 
-Generated structure:	
-```	
+Generated structure:
+
+```
 my_awesome_package/	
 ├── .gitignore	
 ├── .python-version	
@@ -152,16 +160,17 @@ my_awesome_package/
 ├── pyproject.toml	
 └── tests/	
     └── test_main.py	
-```	
+```
 
 <h3>🚀 Node.js Backend</h3></summary>
 
-```bash	
+```bash
 setup_nodejs_backend my_api_service	
-```	
+```
 
-Generated structure:	
-```	
+Generated structure:
+
+```
 my_api_service/	
 ├── .eslintrc.js	
 ├── .gitignore	
@@ -174,16 +183,17 @@ my_api_service/
 │   ├── routes/	
 │   └── middleware/	
 └── tests/	
-```	
+```
 
 <h3>🔷 Golang API</h3></summary>
 
-```bash	
+```bash
 setup_go_project my_go_service	
-```	
+```
 
-Generated structure:	
-```	
+Generated structure:
+
+```
 my_go_service/	
 ├── .gitignore	
 ├── Makefile	
@@ -197,7 +207,7 @@ my_go_service/
 │   └── pkg/	
 ├── pkg/	
 └── test/	
-```	
+```
 
 <h3>⚛️ React Frontend</h3></summary>
 
@@ -206,6 +216,7 @@ setup_react_frontend my_react_app
 ```
 
 Generated structure:
+
 ```
 my_react_app/
 ├── .eslintrc.js
@@ -230,6 +241,7 @@ setup_fullstack_project my_nextjs_app
 ```
 
 Generated structure:
+
 ```
 my_nextjs_app/
 ├── .eslintrc.js
@@ -248,35 +260,35 @@ my_nextjs_app/
 └── tsconfig.json
 ```
 
-## 🧪 Testing and Quality Assurance	
+## 🧪 Testing and Quality Assurance
 
 <p align="center"><strong>Each project template includes built-in testing capabilities:</strong></p>
 
 <h3>🐍 Python Projects</h3></summary>
 
-```bash	
+```bash
 cd my_python_project	
 make test      # Runs pytest	
 make lint      # Runs flake8	
 make format    # Runs black and isort	
-```	
+```
 
 <h3>🚀 Node.js Projects</h3></summary>
 
-```bash	
+```bash
 cd my_node_project	
 npm run test   # Runs tests	
 npm run lint   # Runs ESLint	
-```	
+```
 
 <h3>🔷 Go Projects</h3></summary>
 
-```bash	
+```bash
 cd my_go_project	
 make test      # Runs go test	
 make vet       # Runs go vet	
 make fmt       # Runs go fmt	
-```	
+```
 
 <h3>⚛️ React Projects</h3></summary>
 
@@ -297,7 +309,7 @@ npm run build  # Creates production build
 npm run dev    # Starts development server
 ```
 
-## 🤝 Contributing	
+## 🤝 Contributing
 
 <div align="center">
 
@@ -305,17 +317,17 @@ npm run dev    # Starts development server
 
 </div>
 
-1. Fork the repository	
-2. Create your feature branch (`git checkout -b feature/amazing-template`)	
-3. Commit your changes (`git commit -m 'Add amazing template'`)	
-4. Push to the branch (`git push origin feature/amazing-template`)	
-5. Open a Pull Request	
+1. Fork the repository
+1. Create your feature branch (`git checkout -b feature/amazing-template`)
+1. Commit your changes (`git commit -m 'Add amazing template'`)
+1. Push to the branch (`git push origin feature/amazing-template`)
+1. Open a Pull Request
 
-### Development	
+### Development
 
-To add a new template, see our [Template Documentation](docs/templates/README.md).	
+To add a new template, see our [Template Documentation](docs/templates/README.md).
 
-## 📚 Resources	
+## 📚 Resources
 
 | Resource | Description |
 |----------|-------------|
@@ -325,7 +337,6 @@ To add a new template, see our [Template Documentation](docs/templates/README.md
 | [Go Project Layout](https://github.com/golang-standards/project-layout) | Standard Go project structure |
 | [Zsh Documentation](https://zsh.sourceforge.io/Doc/) | Documentation for Zsh shell |
 
-## 📜 License	
+## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-

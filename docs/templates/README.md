@@ -6,7 +6,7 @@
 
 </div>
 
----
+______________________________________________________________________
 
 ## 📋 Available Templates
 
@@ -22,7 +22,7 @@
 
 </div>
 
----
+______________________________________________________________________
 
 ## 🔍 Template Details
 
@@ -59,7 +59,7 @@ my_python_project/
     └── test_main.py
 ```
 
----
+______________________________________________________________________
 
 <h3>🚀 Node.js Backend</h3>
 
@@ -95,8 +95,7 @@ my_api_service/
 └── tests/
 ```
 
-
----
+______________________________________________________________________
 
 <h3>🔷 Go Project</h3>
 
@@ -132,8 +131,7 @@ my_go_service/
 └── test/
 ```
 
-
----
+______________________________________________________________________
 
 <h3>⚛️ React Frontend</h3>
 
@@ -177,7 +175,7 @@ my_react_app/
 └── tsconfig.json
 ```
 
----
+______________________________________________________________________
 
 <h3>🌐 Full-Stack Web (Next.js)</h3>
 
@@ -224,7 +222,7 @@ my_nextjs_app/
 └── tsconfig.json
 ```
 
----
+______________________________________________________________________
 
 ## 🛠️ Creating a New Template
 
@@ -235,10 +233,10 @@ my_nextjs_app/
 </div>
 
 1. Create a new shell script in the `src/templates/` directory
-2. Source the common helper functions
-3. Implement a main function named `setup_<technology>_project`
-4. Add the template to the main `craftingbench.sh` file
-5. Update documentation and shell completions
+1. Source the common helper functions
+1. Implement a main function named `setup_<technology>_project`
+1. Add the template to the main `craftingbench.sh` file
+1. Update documentation and shell completions
 
 ### 📝 Template Structure
 
@@ -262,7 +260,7 @@ setup_<technology>_project() {
 
 <div align="center">
 
----
+______________________________________________________________________
 
 **Happy crafting!** 🛠️
 

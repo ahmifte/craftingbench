@@ -22,13 +22,13 @@ craftingbench/
 └── README.md                # Main documentation
 ```
 
----
+______________________________________________________________________
 
 ## 🧩 Component Overview
 
 ### 🔍 Main Script (`craftingbench.sh`)
-**The main script serves as the entry point for CraftingBench.**
 
+**The main script serves as the entry point for CraftingBench.**
 
 - 📥 Loads helper functions
 - 🔌 Sources project templates
@@ -36,16 +36,16 @@ craftingbench/
 - 🖥️ Provides the main banner/interface
 
 ### 🛠️ Helper Functions (`src/helpers/`)
-**Common utility functions used across multiple templates.**
 
+**Common utility functions used across multiple templates.**
 
 - ✅ Dependency checking
 - 🔍 Command existence verification
 - 🔗 GitHub integration helpers
 
 ### 📦 Project Templates (`src/templates/`)
-**Each template is contained in its own file for better separation of concerns.**
 
+**Each template is contained in its own file for better separation of concerns.**
 
 | File | Description |
 |------|-------------|
@@ -60,4 +60,4 @@ craftingbench/
 **Provides shell completion functionality for supported shells.**
 
 - Zsh completion for all template commands
-- Bash completion support (planned) 
+- Bash completion support (planned)
