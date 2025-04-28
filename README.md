@@ -140,7 +140,7 @@ source ~/.zshrc
 
 ## 📋 Usage
 
-<p align="center"><strong>Each project template is created with a single command:</strong></p>
+<strong>Each project template is created with a single command:</strong>
 
 <h3>🐍 Python Project</h3></summary>
 
