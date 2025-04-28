@@ -20,7 +20,7 @@
 #   setup_react_frontend <project_name>
 #   setup_fullstack_project <project_name> (Next.js fullstack app with state management)
 
-# For more information, visit: https://github.com/yourusername/craftingbench
+# For more information, visit: https://github.com/ahmifte/craftingbench
 # ================================================================
 
 # Get the directory of this script

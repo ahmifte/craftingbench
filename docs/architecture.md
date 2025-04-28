@@ -1,8 +1,6 @@
-# CraftingBench Architecture
+# 🏗️ Architecture
 
-CraftingBench is designed with a modular architecture to promote maintainability, extensibility, and code reuse.
-
-## Project Structure
+## 📂 Project Structure
 
 ```
 craftingbench/
@@ -13,7 +11,9 @@ craftingbench/
 │   ├── templates/           # Project templates
 │   │   ├── python.sh        # Python project template
 │   │   ├── nodejs.sh        # Node.js backend template
-│   │   └── go.sh            # Go project template
+│   │   ├── go.sh            # Go project template
+│   │   ├── react.sh         # React frontend template
+│   │   └── fullstack.sh     # Next.js fullstack template
 │   └── completions/         # Shell completions
 │       └── shell.sh         # Zsh/Bash completion definitions
 ├── docs/                    # Documentation
@@ -22,30 +22,42 @@ craftingbench/
 └── README.md                # Main documentation
 ```
 
-## Component Overview
+______________________________________________________________________
 
-### Main Script (`craftingbench.sh`)
+## 🧩 Component Overview
 
-The main script serves as the entry point for CraftingBench. It:
-- Loads helper functions
-- Sources project templates
-- Sets up shell completions
-- Provides the main banner/interface
+### 🔍 Main Script (`craftingbench.sh`)
 
-### Helper Functions (`src/helpers/`)
+**The main script serves as the entry point for CraftingBench.**
 
-Common utility functions used across multiple templates, including:
-- Dependency checking
-- Command existence verification
-- GitHub integration helpers
+- 📥 Loads helper functions
+- 🔌 Sources project templates
+- 🛠️ Sets up shell completions
+- 🖥️ Provides the main banner/interface
 
-### Project Templates (`src/templates/`)
+### 🛠️ Helper Functions (`src/helpers/`)
 
-Each template is contained in its own file for better separation of concerns:
-- `python.sh`: Python project setup
-- `nodejs.sh`: Node.js backend setup
-- `go.sh`: Go project setup
+**Common utility functions used across multiple templates.**
 
-### Shell Completions (`src/completions/`)
+- ✅ Dependency checking
+- 🔍 Command existence verification
+- 🔗 GitHub integration helpers
 
-Provides shell completion functionality for supported shells (Zsh, Bash). 
+### 📦 Project Templates (`src/templates/`)
+
+**Each template is contained in its own file for better separation of concerns.**
+
+| File | Description |
+|------|-------------|
+| `python.sh` | 🐍 Python project setup |
+| `nodejs.sh` | 🚀 Node.js backend setup |
+| `go.sh` | 🔷 Go project setup |
+| `react.sh` | ⚛️ React frontend setup |
+| `fullstack.sh` | 🌐 Next.js fullstack setup |
+
+### 🔄 Shell Completions (`src/completions/`)
+
+**Provides shell completion functionality for supported shells.**
+
+- Zsh completion for all template commands
+- Bash completion support (planned)
