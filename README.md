@@ -10,6 +10,8 @@ A powerful utility for quickly scaffolding various project types with standardiz
 
 <br />
 
+<div align="center">
+
 ```
       -===============================================      
     :==================================================:    
@@ -31,6 +33,8 @@ A powerful utility for quickly scaffolding various project types with standardiz
     .==:                                             ===.   
     .==:                                             -==.   
 ```
+
+</div>
 
 ***
 
