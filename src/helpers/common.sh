@@ -35,16 +35,16 @@ check_dependencies() {
       if ! command_exists node; then
         missing_deps+=("node.js (16+ recommended)")
       fi
-      if ! command_exists npm; then
-        missing_deps+=("npm")
+      if ! command_exists pnpm; then
+        missing_deps+=("pnpm")
       fi
       ;;
     nextjs)
       if ! command_exists node; then
         missing_deps+=("node.js (16+ recommended)")
       fi
-      if ! command_exists npm; then
-        missing_deps+=("npm")
+      if ! command_exists pnpm; then
+        missing_deps+=("pnpm")
       fi
       ;;
   esac

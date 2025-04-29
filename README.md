@@ -54,6 +54,30 @@ ______________________________________________________________________
 
 <br />
 
+## Table of Contents
+
+- [Features](#-features)
+- [Project Structure](#-project-structure)
+- [Installation](#-installation)
+- [Usage](#-usage)
+  - [Python Project](#-python-project)
+  - [Node.js Backend](#-nodejs-backend) 
+  - [Golang API](#-golang-api)
+  - [React Frontend](#-react-frontend)
+  - [Next.js Projects](#-nextjs-projects)
+  - [Full-Stack Web Applications](#-full-stack-web-applications)
+  - [Command Completion](#command-completion)
+- [UI Framework](#-ui-framework)
+- [Technology Stack](#-technology-stack)
+- [Package Management](#-package-management)
+- [Testing and Quality Assurance](#-testing-and-quality-assurance)
+- [Development Tools](#-development-tools)
+- [Customizing Templates](#customizing-templates)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#-contributing)
+- [Resources](#-resources)
+- [License](#-license)
+
 ## ✨ Features
 
 <p align="center"><strong>CraftingBench provides templates for various project types:</strong></p>
@@ -82,18 +106,13 @@ craftingbench/
 │   ├── templates/           # Project templates
 │   └── completions/         # Shell completions
 ├── docs/                    # Documentation
-│   ├── USER_GUIDE.md        # Comprehensive user guide
 │   ├── RELEASING.md         # Release process documentation
 │   ├── architecture.md      # Architecture documentation
 │   └── templates/           # Template-specific documentation
 └── README.md                # Main documentation
 ```
 
-For detailed usage instructions, see the [User Guide](docs/USER_GUIDE.md).
-
 ## 🚀 Installation
-
-<strong>Getting Started</strong>
 
 ### Option 1: Automated Install (Recommended)
 
@@ -154,15 +173,55 @@ source ~/.zshrc
 . ~/.zshrc	
 ```
 
+### Shell Integration
+
+After installation, you should see the CraftingBench banner when your shell starts, indicating successful installation:
+
+```
+🛠️  CraftingBench loaded!
+Available commands:
+  - setup_python_project <n>       : Create a Python project
+  - setup_nodejs_backend <n>       : Create a TypeScript Node.js backend
+  - setup_react_frontend <n>       : Create a TypeScript React frontend with Material UI
+  - setup_go_project <n>           : Create a Golang project
+  - setup_fullstack_project <n>    : Create a TypeScript fullstack app
+    Options:
+      --backend=nextjs                : Use Next.js (default)
+      --backend=flask                 : Use Flask backend + TypeScript React frontend
+      --backend=golang                : Use Go backend + TypeScript React frontend
+
+Development tools:
+  - lint                              : Run ESLint on TypeScript code
+  - format                            : Format code with Prettier
+  - typecheck                         : Run TypeScript type checking
+```
+
 ## 📋 Usage
 
 <strong>Each project template is created with a single command:</strong>
 
-<h3>🐍 Python Project</h3>
+### Command Completion
+
+CraftingBench provides command completion for Zsh shells. When you type a partial command and press Tab, it will show available options.
+
+For example:
+```bash
+setup_fullstack_project myapp --backend=[TAB]
+# Will show: nextjs flask golang
+```
+
+### 🐍 Python Project
 
 ```bash
 setup_python_project my_awesome_package	
 ```
+
+This creates a Python project with:
+- Modern pyproject.toml configuration
+- Testing setup with pytest
+- Linting with flake8
+- Formatting with black and isort
+- Virtual environment management
 
 Generated structure:
 
@@ -180,11 +239,18 @@ my_awesome_package/
     └── test_main.py	
 ```
 
-<h3>🚀 Node.js Backend</h3>
+### 🚀 Node.js Backend
 
 ```bash
 setup_nodejs_backend my_api_service	
 ```
+
+This creates a complete Express API with:
+- TypeScript configuration
+- Project structure with controllers, routes, models, and middleware
+- Testing setup with Jest
+- ESLint and Prettier configuration
+- Environment variable management with dotenv
 
 Generated structure:
 
@@ -203,11 +269,17 @@ my_api_service/
 └── tests/	
 ```
 
-<h3>🔷 Golang API</h3>
+### 🔷 Golang API
 
 ```bash
 setup_go_project my_go_service	
 ```
+
+This creates a Go project with:
+- Standard Go project layout
+- Basic HTTP server setup
+- Configuration management
+- Makefile for common tasks
 
 Generated structure:
 
@@ -227,11 +299,18 @@ my_go_service/
 └── test/	
 ```
 
-<h3>⚛️ React Frontend</h3>
+### ⚛️ React Frontend
 
 ```bash
 setup_react_frontend my_react_app
 ```
+
+This creates a React application with:
+- TypeScript support
+- Material UI components
+- Project structure for components, hooks, and pages
+- ESLint and Prettier configuration
+- Testing setup
 
 Generated structure:
 
@@ -252,7 +331,9 @@ my_react_app/
 └── tsconfig.json
 ```
 
-<h3>🌐 Next.js Projects</h3>
+### 🌐 Next.js Projects
+
+After creating a Next.js project, you can use these commands:
 
 ```bash
 cd my_nextjs_app
@@ -262,7 +343,7 @@ pnpm build  # Creates production build
 pnpm dev    # Starts development server
 ```
 
-<h3>🌐 Full-Stack Web Applications</h3>
+### 🌐 Full-Stack Web Applications
 
 Create complete fullstack applications with various backend options, all featuring Material UI for consistent, beautiful interfaces.
 
@@ -312,6 +393,9 @@ CraftingBench utilizes **Material UI** for all frontend templates, providing:
 - Responsive layouts that work well on all devices
 - Optimized performance with Next.js integration
 - Comprehensive theming system
+- Dark/light mode support out of the box
+
+Material UI provides a solid foundation for building professional user interfaces with minimal effort. All components are built with accessibility in mind and follow best practices for responsive design.
 
 ## 💻 Technology Stack
 
@@ -327,7 +411,7 @@ CraftingBench utilizes **Material UI** for all frontend templates, providing:
 
 <p align="center"><strong>Each project template includes built-in testing capabilities:</strong></p>
 
-<h3>🐍 Python Projects</h3>
+### 🐍 Python Projects
 
 ```bash
 cd my_python_project	
@@ -336,15 +420,15 @@ make lint      # Runs flake8
 make format    # Runs black and isort	
 ```
 
-<h3>🚀 Node.js Projects</h3>
+### 🚀 Node.js Projects
 
 ```bash
 cd my_node_project	
-npm run test   # Runs tests	
-npm run lint   # Runs ESLint	
+pnpm test      # Runs tests	
+pnpm lint      # Runs ESLint	
 ```
 
-<h3>🔷 Go Projects</h3>
+### 🔷 Go Projects
 
 ```bash
 cd my_go_project	
@@ -353,7 +437,7 @@ make vet       # Runs go vet
 make fmt       # Runs go fmt	
 ```
 
-<h3>⚛️ React Projects</h3>
+### ⚛️ React Projects
 
 ```bash
 cd my_react_app
@@ -362,7 +446,7 @@ pnpm lint   # Runs ESLint
 pnpm build  # Creates production build
 ```
 
-<h3>🌐 Next.js Projects</h3>
+### 🌐 Next.js Projects
 
 ```bash
 cd my_nextjs_app
@@ -374,7 +458,7 @@ pnpm dev    # Starts development server
 
 ## 📦 Package Management
 
-CraftingBench now uses [pnpm](https://pnpm.io/) as the preferred package manager for TypeScript projects. PNPM offers several advantages:
+CraftingBench uses [pnpm](https://pnpm.io/) as the preferred package manager for TypeScript projects. PNPM offers several advantages:
 
 - **Disk space efficiency**: Stores all package versions in a single place on disk
 - **Strict dependency management**: Prevents phantom dependencies
@@ -394,7 +478,7 @@ public-hoist-pattern[]=*types*
 
 ### Using PNPM with Templates
 
-For React and Next.js templates, commands automatically use pnpm:
+All TypeScript templates (React, Node.js, and Fullstack) are configured to use pnpm:
 
 ```bash
 cd my_react_app
@@ -467,6 +551,37 @@ pnpm typecheck    # TypeScript type checking
 pnpm dev          # Run with hot reloading
 ```
 
+## Customizing Templates
+
+CraftingBench templates are designed as starting points. To customize:
+
+1. Generate a project using the appropriate template
+2. Modify the generated files to fit your needs
+3. Consider creating a fork of CraftingBench with your customizations if you need reusable templates
+
+Advanced users can modify the template scripts directly at `src/templates/`.
+
+## Troubleshooting
+
+### Common Issues
+
+**Issue**: Command not found error
+**Solution**: Ensure that you've properly sourced the script in your shell configuration. Try running `source ~/.craftingbench/craftingbench.sh` manually.
+
+**Issue**: Permission denied when running scripts
+**Solution**: Ensure the script is executable with `chmod +x craftingbench.sh`
+
+**Issue**: Dependencies missing error
+**Solution**: CraftingBench checks for required dependencies before creating projects. Install any missing dependencies mentioned in the error message.
+
+### Getting Help
+
+If you encounter issues:
+
+1. Check the [GitHub Issues](https://github.com/ahmifte/craftingbench/issues) for similar problems
+2. Read the documentation in `docs/` directory
+3. Create a new issue if you can't find a solution
+
 ## 🤝 Contributing
 
 <div align="center">
@@ -494,6 +609,8 @@ To add a new template, see our [Template Documentation](docs/templates/README.md
 | [Node.js Best Practices](https://github.com/goldbergyoni/nodebestpractices) | Comprehensive guide for Node.js projects |
 | [Go Project Layout](https://github.com/golang-standards/project-layout) | Standard Go project structure |
 | [Zsh Documentation](https://zsh.sourceforge.io/Doc/) | Documentation for Zsh shell |
+| [Material UI Documentation](https://mui.com/material-ui/) | Complete guide to Material UI components |
+| [pnpm Documentation](https://pnpm.io/) | Official pnpm documentation |
 
 ## 📜 License
 

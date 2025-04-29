@@ -86,7 +86,7 @@ All frontend templates now use Material UI instead of Tailwind CSS. To ensure co
 
 1. Include the core Material UI packages:
    ```bash
-   npm install @mui/material @mui/icons-material @emotion/react @emotion/styled
+   pnpm add @mui/material @mui/icons-material @emotion/react @emotion/styled
    ```
 
 2. Set up a theme with light/dark mode support:
@@ -114,7 +114,7 @@ Ensure all JavaScript templates use TypeScript by default:
 
 1. Include TypeScript and necessary dependencies:
    ```bash
-   npm install typescript @types/node @types/react @types/express --save-dev
+   pnpm add -D typescript @types/node @types/react @types/express
    ```
 
 2. Create proper `tsconfig.json` with recommended settings
@@ -132,5 +132,5 @@ To test your template:
 ls -la test-project/
 
 # Test the project functionality
-cd test-project && npm run dev  # Or appropriate command
+cd test-project && pnpm dev  # Or appropriate command
 ```

@@ -29,7 +29,7 @@ Before creating a new release, ensure the following steps are completed:
    - Deprecated functionality
 
 3. ✅ **Audit the TypeScript codebase:**
-   - Run linting checks: `npm run lint`
+   - Run linting checks: `pnpm lint`
    - Fix any identified issues
    - Ensure type safety across all components
 

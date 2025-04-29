@@ -1,0 +1,12 @@
+# Ignore test output directory
+test-output/
+
+# Node modules
+node_modules/
+
+# Jest coverage
+coverage/
+
+# Temporary files
+*.log
+.DS_Store 

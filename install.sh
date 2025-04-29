@@ -69,6 +69,12 @@ check_prerequisites() {
     echo -e "${YELLOW}Warning: Node.js is not installed. Some templates may not work correctly.${CLEAR}"
   fi
   
+  # Check for pnpm (optional)
+  if ! command -v pnpm &> /dev/null; then
+    echo -e "${YELLOW}Warning: pnpm is not installed. TypeScript templates require pnpm.${CLEAR}"
+    echo -e "${YELLOW}Install pnpm: curl -fsSL https://get.pnpm.io/install.sh | sh -${CLEAR}"
+  fi
+  
   echo -e "${GREEN}✓ Prerequisites checked${CLEAR}"
 }
 

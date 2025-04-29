@@ -73,6 +73,10 @@ setup_python_project() {
   # Expand README.md with more content
   echo -e "\n## Development\n\n### Setup\n\n\`\`\`bash\n# Install dependencies\nmake install\n\n# Update dependencies\nmake update\n\`\`\`" >> README.md
   
+  # Add CI badge to README
+  sed -i.bak "1 s|# $project_name|# $project_name\n\n[![Python CI](https://github.com/$github_username/$project_name/actions/workflows/python-ci.yml/badge.svg)](https://github.com/$github_username/$project_name/actions/workflows/python-ci.yml)|" README.md
+  rm -f README.md.bak
+  
   # Create .gitignore for Python
   cat > .gitignore << EOF
 # Python
@@ -146,6 +150,67 @@ line-length = 88
 profile = "black"
 line_length = 88
 EOF
+  
+  # Create GitHub Actions workflow directory
+  mkdir -p .github/workflows
+  
+  # Copy GitHub Actions workflow file
+  workflow_template="${CRAFTINGBENCH_DIR}/src/templates/github-workflows/python-workflow.yml"
+  if [ -f "$workflow_template" ]; then
+    cp "$workflow_template" .github/workflows/python-ci.yml
+  else
+    # Create GitHub Actions workflow file if template is not available
+    cat > .github/workflows/python-ci.yml << EOF
+name: Python CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11']
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python \${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: \${{ matrix.python-version }}
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install pytest pytest-cov
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install -e .
+    
+    - name: Lint with flake8
+      run: |
+        pip install flake8
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    
+    - name: Test with pytest
+      run: |
+        pytest --cov=./ --cov-report=xml
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        fail_ci_if_error: false
+EOF
+  fi
   
   # Create main Python module
   mkdir -p "$project_name"
