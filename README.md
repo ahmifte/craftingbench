@@ -7,6 +7,7 @@
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Shell Script](https://img.shields.io/badge/Shell_Script-Bash-4EAA25.svg?logo=gnu-bash&logoColor=white)](craftingbench.sh)
 [![Version](https://img.shields.io/badge/Version-0.2.0%20(Beta)-orange.svg)](CHANGELOG.md)
+[![Dependabot](https://img.shields.io/badge/Dependabot-Active-brightgreen.svg)](https://github.com/features/security)
 [![Made with Love](https://img.shields.io/badge/Made%20with-Love-ff69b4.svg)](https://github.com/ahmifte/craftingbench)
 
 </div>
@@ -314,8 +315,6 @@ CraftingBench utilizes **Material UI** for all frontend templates, providing:
 
 ## 💻 Technology Stack
 
-<div align="center">
-
 | Category | Technologies |
 |----------|--------------|
 | **Frontend** | React, TypeScript, Material UI, Emotion |
@@ -323,8 +322,6 @@ CraftingBench utilizes **Material UI** for all frontend templates, providing:
 | **State Management** | React Query, Zustand |
 | **API Integration** | Axios, Fetch API |
 | **Tooling** | ESLint, Prettier, Jest |
-
-</div>
 
 ## 🧪 Testing and Quality Assurance
 
