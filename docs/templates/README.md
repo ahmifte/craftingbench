@@ -1,267 +1,136 @@
-<div align="center">
+# Templates
 
-# 🧰 Templates
+This directory contains documentation for the templates available in CraftingBench.
 
-**Powerful templates to jumpstart your development journey with style and best practices**
+## Structure
 
-</div>
-
-______________________________________________________________________
-
-## 📋 Available Templates
-
-<div align="center">
-
-| Icon | Template | Command | Description |
-|:----:|:--------:|:-------:|:------------|
-| 🐍 | **Python** | `setup_python_project` | Modern Python package with testing, linting, and CI/CD setup |
-| 🚀 | **Node.js** | `setup_nodejs_backend` | Express-based API with TypeScript and testing framework |
-| 🔷 | **Go** | `setup_go_project` | Go-based REST API with standard project layout |
-| ⚛️ | **React** | `setup_react_frontend` | TypeScript + React application with modern tooling |
-| 🌐 | **Next.js** | `setup_fullstack_project` | Next.js app with built-in API routes and state management |
-
-</div>
-
-______________________________________________________________________
-
-## 🔍 Template Details
-
-<h3>🐍 Python Project</h3>
-
-<div align="center">
-
-**A modern Python package scaffold with all the essential tools for professional development**
-
-</div>
-
-#### ✨ Features
-
-- 📦 Project structure following Python packaging standards
-- 🛠️ Modern `pyproject.toml` configuration
-- 🧪 Testing with pytest
-- 🧹 Linting with flake8, black, and isort
-- 📊 Dependency management
-- ⚙️ Makefile for common tasks
-
-#### 📂 Generated Structure
+All templates in CraftingBench follow a standardized structure:
 
 ```
-my_python_project/
-├── .gitignore
-├── .python-version
-├── Makefile
-├── README.md
-├── main.py
-├── my_python_project/
-│   └── __init__.py
-├── pyproject.toml
-└── tests/
-    └── test_main.py
+src/templates/
+├── template_name.sh            # Main template script
+├── common.sh                   # Common utilities shared across templates
+└── assets/                     # Template-specific assets
+    └── template_name/          # Assets organized by template
 ```
 
-______________________________________________________________________
+## Available Templates
 
-<h3>🚀 Node.js Backend</h3>
+| Template | Description | Key Features |
+|----------|-------------|--------------|
+| **nodejs** | TypeScript Node.js backend | Express, MongoDB, structured architecture |
+| **react** | TypeScript React frontend | Material UI, responsive layouts |
+| **go** | Go backend service | Clean architecture, testing setup |
+| **python** | Python application | Package structure, virtual environments |
+| **fullstack** | Full-stack applications | Multiple backend options with TypeScript frontend |
 
-<div align="center">
+## Fullstack
 
-**A robust Express-based API boilerplate with MVC architecture and best practices**
+The fullstack template supports three backend options:
 
-</div>
+1. **Next.js** - Full TypeScript stack with API routes
+2. **Flask** - Python backend with TypeScript React frontend
+3. **Go** - Go backend with TypeScript React frontend
 
-#### ✨ Features
+All fullstack templates include:
 
-- 🏗️ MVC architecture with controllers, models, and routes
-- 🔄 Middleware integration
-- 🧪 Testing setup with Jest
-- 🧹 ESLint configuration
-- 🔐 Environment variable management
-- ⚠️ Error handling
+- Material UI integration with theme customization
+- API client for backend communication
+- Responsive layouts and components
+- Development and production configurations
 
-#### 📂 Generated Structure
+## Creating a New Template
 
-```
-my_api_service/
-├── .eslintrc.js
-├── .gitignore
-├── README.md
-├── package.json
-├── src/
-│   ├── index.js
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   └── middleware/
-└── tests/
-```
+To create a new template:
 
-______________________________________________________________________
+1. Create a new script in `src/templates/` named `your_template.sh`
+2. Implement the required functions:
+   - `setup_your_template_project()`
+   - `create_your_template_files()`
+   - Any helper functions needed
 
-<h3>🔷 Go Project</h3>
+3. Add template-specific assets to `src/templates/assets/your_template/`
+4. Update `src/helpers/common.sh` to include your template
+5. Add documentation for your template
 
-<div align="center">
-
-**A clean Go application structure following industry standard layout and practices**
-
-</div>
-
-#### ✨ Features
-
-- 📁 Command and package separation
-- 🔒 Internal and external package organization
-- 🧪 Testing structure
-- 🛠️ Makefile for build, test, and other tasks
-- 📦 Proper module configuration
-
-#### 📂 Generated Structure
-
-```
-my_go_service/
-├── .gitignore
-├── Makefile
-├── README.md
-├── cmd/
-│   └── my_go_service/
-│       └── main.go
-├── go.mod
-├── internal/
-│   ├── app/
-│   └── pkg/
-├── pkg/
-└── test/
-```
-
-______________________________________________________________________
-
-<h3>⚛️ React Frontend</h3>
-
-<div align="center">
-
-**A modern React application with TypeScript, component organization, and development tools**
-
-</div>
-
-#### ✨ Features
-
-- ⚛️ React with TypeScript setup
-- ⚡ Modern tooling with Vite
-- 🧩 Component organization
-- 🗃️ State management
-- 🧭 Routing
-- 🔄 API integration
-
-<div align="center">
-
-> 🚧 **Note**: This template is currently in development.
-
-</div>
-
-#### 📂 Generated Structure
-
-```
-my_react_app/
-├── .eslintrc.js
-├── .gitignore
-├── README.md
-├── package.json
-├── public/
-│   ├── index.html
-│   └── favicon.ico
-├── src/
-│   ├── App.tsx
-│   ├── index.tsx
-│   ├── components/
-│   └── styles/
-└── tsconfig.json
-```
-
-______________________________________________________________________
-
-<h3>🌐 Full-Stack Web (Next.js)</h3>
-
-<div align="center">
-
-**A complete Next.js application with both frontend and backend capabilities in one project**
-
-</div>
-
-#### ✨ Features
-
-- 📱 Next.js with App Router
-- 🔷 TypeScript configuration
-- 🎨 TailwindCSS integration
-- 🚀 API Routes
-- 🗃️ State Management with Zustand
-- 🔄 Server State with React Query
-- 🔐 Authentication system
-- 🗂️ Database integration
-
-<div align="center">
-
-> 🚧 **Note**: This template is currently in development.
-
-</div>
-
-#### 📂 Generated Structure
-
-```
-my_nextjs_app/
-├── .eslintrc.js
-├── .gitignore
-├── README.md
-├── package.json
-├── public/
-│   └── favicon.ico
-├── src/
-│   ├── pages/
-│   │   ├── index.tsx
-│   │   ├── _app.tsx
-│   │   └── api/
-│   ├── components/
-│   └── styles/
-└── tsconfig.json
-```
-
-______________________________________________________________________
-
-## 🛠️ Creating a New Template
-
-<div align="center">
-
-**Want to contribute a new template? Follow these steps to expand CraftingBench.**
-
-</div>
-
-1. Create a new shell script in the `src/templates/` directory
-1. Source the common helper functions
-1. Implement a main function named `setup_<technology>_project`
-1. Add the template to the main `craftingbench.sh` file
-1. Update documentation and shell completions
-
-### 📝 Template Structure
-
-All templates should follow this basic structure:
+### Template Script Structure
 
 ```bash
-#!/usr/bin/env bash
+#!/bin/bash
 
-# Source common helper functions
-source "$(dirname "${BASH_SOURCE[0]}")/../helpers/common.sh" 2>/dev/null || source "/Users/ahmediftekhar/src/craftingbench/src/helpers/common.sh"
+# Source common utilities
+source "$(dirname "$0")/../helpers/common.sh"
 
-setup_<technology>_project() {
-  # 1. Validate arguments
-  # 2. Check dependencies
-  # 3. Create project structure
-  # 4. Generate configuration files
-  # 5. Initialize version control
-  # 6. Display next steps
+# Main setup function
+setup_your_template_project() {
+    local project_name=$1
+    local project_dir=$2
+    
+    # Template implementation
 }
+
+# Create project files
+create_your_template_files() {
+    local project_dir=$1
+    
+    # Create files and directories
+}
+
+# Initialize your template
+setup_your_template_project "$@"
 ```
 
-<div align="center">
+## Material UI Integration
 
-______________________________________________________________________
+All frontend templates now use Material UI instead of Tailwind CSS. To ensure consistent Material UI implementation:
 
-**Happy crafting!** 🛠️
+1. Include the core Material UI packages:
+   ```bash
+   npm install @mui/material @mui/icons-material @emotion/react @emotion/styled
+   ```
 
-</div>
+2. Set up a theme with light/dark mode support:
+   ```typescript
+   // theme.ts
+   import { createTheme, responsiveFontSizes } from '@mui/material/styles';
+   
+   export const theme = responsiveFontSizes(createTheme({
+     palette: {
+       primary: {
+         main: '#1976d2',
+       },
+       secondary: {
+         main: '#dc004e',
+       },
+     },
+   }));
+   ```
+
+3. Create reusable layout components that use Material UI
+
+## TypeScript Configuration
+
+Ensure all JavaScript templates use TypeScript by default:
+
+1. Include TypeScript and necessary dependencies:
+   ```bash
+   npm install typescript @types/node @types/react @types/express --save-dev
+   ```
+
+2. Create proper `tsconfig.json` with recommended settings
+3. Set up proper type definitions for all components and functions
+
+## Testing Your Template
+
+To test your template:
+
+```bash
+# Development testing
+./craftingbench.sh create test-project your_template
+
+# Verify all files are created correctly
+ls -la test-project/
+
+# Test the project functionality
+cd test-project && npm run dev  # Or appropriate command
+```

@@ -6,16 +6,19 @@
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Shell Script](https://img.shields.io/badge/Shell_Script-Bash-4EAA25.svg?logo=gnu-bash&logoColor=white)](craftingbench.sh)
+[![Version](https://img.shields.io/badge/Version-0.2.0%20(Beta)-orange.svg)](CHANGELOG.md)
 [![Made with Love](https://img.shields.io/badge/Made%20with-Love-ff69b4.svg)](https://github.com/ahmifte/craftingbench)
 
 </div>
+
+> **⚠️ BETA STATUS:** CraftingBench v0.2.0 is currently in beta. APIs and usage may change before the stable 1.0.0 release. Please review our [Security Policy](SECURITY.md) for important information.
 
 ______________________________________________________________________
 
 <div align="center">
 <h3>Craft your projects with precision and speed</h3>
 
-_A powerful utility for quickly scaffolding various project types with standardized, production-ready structures._
+_A powerful CLI utility for quickly scaffolding various project types with standardized, production-ready structures._
 
 <pre align="center">
                                                                            
@@ -61,8 +64,8 @@ ______________________________________________________________________
 | 🐍 | **Python Projects** | Modern Python package with testing, linting, and CI/CD setup |
 | 🚀 | **Node.js Backend** | Express-based API with TypeScript and testing framework |
 | 🔷 | **Golang API** | Go-based REST API with standard project layout |
-| ⚛️ | **React Frontend** | TypeScript + React application with modern tooling |
-| 🌐 | **Full-Stack Web (Next.js)** | Next.js app with built-in API routes and state management |
+| ⚛️ | **React Frontend** | TypeScript + React application with Material UI components |
+| 🌐 | **Full-Stack Web** | Fullstack applications with multiple backend options and Material UI |
 
 </div>
 
@@ -78,14 +81,31 @@ craftingbench/
 │   ├── templates/           # Project templates
 │   └── completions/         # Shell completions
 ├── docs/                    # Documentation
+│   ├── USER_GUIDE.md        # Comprehensive user guide
+│   ├── RELEASING.md         # Release process documentation
+│   ├── architecture.md      # Architecture documentation
+│   └── templates/           # Template-specific documentation
 └── README.md                # Main documentation
 ```
 
-For more information, see [Architecture Documentation](docs/architecture.md).
+For detailed usage instructions, see the [User Guide](docs/USER_GUIDE.md).
 
 ## 🚀 Installation
 
 <strong>Getting Started</strong>
+
+### Option 1: Automated Install (Recommended)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ahmifte/craftingbench/v0.2.0/install.sh | bash
+```
+
+This script will:
+- Download CraftingBench v0.2.0
+- Install it to ~/.craftingbench
+- Configure your shell by adding the necessary source line to your .bashrc or .zshrc
+
+### Option 2: Manual Installation
 
 1. Clone this repository:
 
@@ -231,13 +251,40 @@ my_react_app/
 └── tsconfig.json
 ```
 
-<h3>🌐 Full-Stack Web (Next.js)</h3>
+<h3>🌐 Next.js Projects</h3>
 
 ```bash
-setup_fullstack_project my_nextjs_app
+cd my_nextjs_app
+pnpm test   # Runs Jest tests
+pnpm lint   # Runs ESLint
+pnpm build  # Creates production build
+pnpm dev    # Starts development server
 ```
 
-Generated structure:
+<h3>🌐 Full-Stack Web Applications</h3>
+
+Create complete fullstack applications with various backend options, all featuring Material UI for consistent, beautiful interfaces.
+
+```bash
+# Create with Next.js (default)
+setup_fullstack_project my_nextjs_app
+
+# Create with Flask backend
+setup_fullstack_project my_flask_app --backend=flask
+
+# Create with Go backend
+setup_fullstack_project my_go_app --backend=golang
+```
+
+Each fullstack template includes:
+
+- Modern React frontend with Material UI components
+- Responsive layouts with theme customization
+- Dark/light mode support
+- Proper API integration between frontend and backend
+- Best practices for project structure and code organization
+
+Generated structure (Next.js example):
 
 ```
 my_nextjs_app/
@@ -248,14 +295,36 @@ my_nextjs_app/
 ├── public/
 │   └── favicon.ico
 ├── src/
-│   ├── pages/
-│   │   ├── index.tsx
-│   │   ├── _app.tsx
-│   │   └── api/
-│   ├── components/
-│   └── styles/
+│   ├── app/             # Next.js App Router
+│   ├── components/      # Reusable UI components with Material UI
+│   ├── lib/             # Utility functions and theme configuration
+│   ├── stores/          # State management
+│   └── types/           # TypeScript types
 └── tsconfig.json
 ```
+
+## 🎨 UI Framework
+
+CraftingBench utilizes **Material UI** for all frontend templates, providing:
+
+- Beautiful, customizable components based on Material Design
+- Responsive layouts that work well on all devices
+- Optimized performance with Next.js integration
+- Comprehensive theming system
+
+## 💻 Technology Stack
+
+<div align="center">
+
+| Category | Technologies |
+|----------|--------------|
+| **Frontend** | React, TypeScript, Material UI, Emotion |
+| **Backend** | Next.js, Flask, Go, Express |
+| **State Management** | React Query, Zustand |
+| **API Integration** | Axios, Fetch API |
+| **Tooling** | ESLint, Prettier, Jest |
+
+</div>
 
 ## 🧪 Testing and Quality Assurance
 
@@ -291,19 +360,114 @@ make fmt       # Runs go fmt
 
 ```bash
 cd my_react_app
-npm run test   # Runs Jest tests
-npm run lint   # Runs ESLint
-npm run build  # Creates production build
+pnpm test   # Runs Jest tests
+pnpm lint   # Runs ESLint
+pnpm build  # Creates production build
 ```
 
 <h3>🌐 Next.js Projects</h3>
 
 ```bash
 cd my_nextjs_app
-npm run test   # Runs Jest tests
-npm run lint   # Runs ESLint
-npm run build  # Creates production build
-npm run dev    # Starts development server
+pnpm test   # Runs Jest tests
+pnpm lint   # Runs ESLint
+pnpm build  # Creates production build
+pnpm dev    # Starts development server
+```
+
+## 📦 Package Management
+
+CraftingBench now uses [pnpm](https://pnpm.io/) as the preferred package manager for TypeScript projects. PNPM offers several advantages:
+
+- **Disk space efficiency**: Stores all package versions in a single place on disk
+- **Strict dependency management**: Prevents phantom dependencies
+- **Faster installation**: Up to 2x faster than npm and yarn
+- **Optimized for monorepos**: Built-in workspace support
+
+### PNPM Configuration
+
+All TypeScript templates include optimal pnpm configuration:
+
+```
+# .npmrc file included in templates
+public-hoist-pattern[]=*@mui/*
+public-hoist-pattern[]=*@emotion/*
+public-hoist-pattern[]=*types*
+```
+
+### Using PNPM with Templates
+
+For React and Next.js templates, commands automatically use pnpm:
+
+```bash
+cd my_react_app
+pnpm dev    # Start development server
+pnpm build  # Build for production
+pnpm test   # Run tests
+```
+
+To manually install dependencies:
+
+```bash
+pnpm install  # Install all dependencies
+pnpm add package-name  # Add a new dependency
+pnpm add -D package-name  # Add a dev dependency
+```
+
+## 🛠️ Development Tools
+
+CraftingBench includes a comprehensive set of development tools for both frontend and backend templates:
+
+### ESLint Configuration
+
+All TypeScript templates are preconfigured with ESLint using the modern flat config format:
+
+```bash
+# Run linting on the project
+pnpm lint
+```
+
+Features include:
+- TypeScript integration with strict type checking
+- React and React Hooks rules
+- Import order enforcement
+- Proper compatibility with Prettier
+
+### Prettier Integration
+
+Consistent code formatting across all templates:
+
+```bash
+# Format all files
+pnpm format
+```
+
+### TypeScript Support
+
+TypeScript configuration that works for both frontend and backend:
+
+- Modern ES2022 target
+- Path aliases for cleaner imports (`@/components/Button` instead of `../../components/Button`)
+- Strict type checking enabled by default
+- JSX support for React projects
+
+### Template-specific Development Tools
+
+Each project template includes these development tools out of the box:
+
+#### TypeScript Frontend (React):
+```bash
+pnpm lint         # Run ESLint
+pnpm format       # Run Prettier
+pnpm typecheck    # TypeScript type checking
+```
+
+#### TypeScript Backend (Node.js):
+```bash
+pnpm lint         # Run ESLint
+pnpm format       # Run Prettier
+pnpm typecheck    # TypeScript type checking
+pnpm dev          # Run with hot reloading
 ```
 
 ## 🤝 Contributing

@@ -18,7 +18,7 @@ setup_fullstack_project() {
     return 1
   fi
   
-  echo "🚀 Setting up fullstack project: $project_name"
+  echo "🚀 Setting up TypeScript fullstack project: $project_name"
   
   # Create project directory
   mkdir -p "$project_name"
@@ -34,7 +34,7 @@ setup_fullstack_project() {
   cat > README.md << EOF
 # $project_name
 
-A fullstack Next.js application created with CraftingBench.
+A TypeScript fullstack Next.js application created with CraftingBench.
 
 ## Getting Started
 
@@ -45,7 +45,7 @@ This is a placeholder. The full fullstack template will be implemented soon.
 This template will include:
 - Next.js with App Router
 - TypeScript
-- TailwindCSS
+- Material UI
 - API Routes
 - State Management with Zustand
 - Server State with React Query
@@ -63,13 +63,15 @@ EOF
   "name": "$project_name",
   "version": "0.1.0",
   "private": true,
-  "description": "Fullstack Next.js application",
+  "description": "TypeScript Fullstack Next.js application with Material UI",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "nextjs",
-    "fullstack"
+    "typescript",
+    "fullstack",
+    "material-ui"
   ],
   "author": "",
   "license": "MIT"
@@ -78,9 +80,9 @@ EOF
 
   # Initial git commit
   git add .
-  git commit -m "Initial commit: Fullstack project skeleton"
+  git commit -m "Initial commit: TypeScript Fullstack project skeleton"
   
-  echo "✅ Fullstack placeholder created: $project_name"
+  echo "✅ TypeScript Fullstack placeholder created: $project_name"
   echo ""
   echo "🚧 Note: This template is still under development."
   echo "📋 Next steps:"

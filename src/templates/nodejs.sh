@@ -17,7 +17,7 @@ setup_nodejs_backend() {
     return 1
   fi
   
-  echo "🚀 Creating Node.js backend project: $project_name"
+  echo "🚀 Creating TypeScript Node.js backend project: $project_name"
   
   # Create project directory
   mkdir -p "$project_name"
@@ -32,17 +32,42 @@ setup_nodejs_backend() {
   npm init -y
   
   # Update package.json with better defaults
-  sed -i.bak 's/"scripts": {/"scripts": {\n    "start": "node src\/index.js",\n    "dev": "nodemon src\/index.js",\n    "test": "jest",\n    "lint": "eslint .",/g' package.json
+  sed -i.bak 's/"scripts": {/"scripts": {\n    "start": "node dist\/index.js",\n    "dev": "ts-node-dev --respawn src\/index.ts",\n    "build": "tsc",\n    "test": "jest",\n    "lint": "eslint src --ext .ts",\n    "typecheck": "tsc --noEmit",/g' package.json
   rm package.json.bak
   
   # Install common dependencies
   npm install express dotenv cors helmet mongoose
+
+  # Install TypeScript and type definitions
+  npm install --save-dev typescript ts-node ts-node-dev @types/node @types/express @types/cors @types/helmet @types/mongoose
   
   # Install development dependencies
-  npm install --save-dev nodemon jest eslint eslint-config-airbnb-base eslint-plugin-import
+  npm install --save-dev nodemon jest ts-jest @types/jest eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser
+  
+  # Create TypeScript configuration
+  cat > tsconfig.json << EOF
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "declaration": true,
+    "sourceMap": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.test.ts"]
+}
+EOF
   
   # Create project structure
-  mkdir -p src/{config,controllers,models,routes,middleware,utils,tests}
+  mkdir -p src/{config,controllers,models,routes,middleware,utils,tests,types}
   
   # Create .env file
   cat > .env << EOF
@@ -104,21 +129,25 @@ coverage
 .LSOverride
 EOF
 
-  # Create main application file
-  cat > src/index.js << EOF
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-require('dotenv').config();
+  # Create main application file with TypeScript
+  cat > src/index.ts << EOF
+import express, { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import dotenv from 'dotenv';
+import { Server } from 'http';
 
 // Import routes
-const apiRoutes = require('./routes');
+import apiRoutes from './routes';
+
+// Initialize environment variables
+dotenv.config();
 
 // Initialize express app
 const app = express();
 
 // Set port
-const PORT = process.env.PORT || 3000;
+const PORT: number = parseInt(process.env.PORT || '3000', 10);
 
 // Middleware
 app.use(helmet());
@@ -130,54 +159,67 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api', apiRoutes);
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'UP' });
 });
 
+// Error interface
+interface AppError extends Error {
+  status?: number;
+}
+
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err: AppError, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
+  res.status(err.status || 500).json({ message: err.message || 'Something went wrong!' });
 });
 
 // Start the server
-app.listen(PORT, () => {
+const server: Server = app.listen(PORT, () => {
   console.log(\`Server running on port \${PORT}\`);
 });
 
-module.exports = app; // For testing
+export default app; // For testing
 EOF
 
-  # Create routes index file
-  cat > src/routes/index.js << EOF
-const express = require('express');
+  # Create routes index file with TypeScript
+  cat > src/routes/index.ts << EOF
+import express, { Request, Response } from 'express';
 const router = express.Router();
 
 // Import other route modules
-// const userRoutes = require('./user.routes');
+// import userRoutes from './user.routes';
 
 // Define routes
 // router.use('/users', userRoutes);
 
 // Default route
-router.get('/', (req, res) => {
+router.get('/', (req: Request, res: Response) => {
   res.json({ message: 'Welcome to $project_name API!' });
 });
 
-module.exports = router;
+export default router;
 EOF
 
-  # Create sample controller
-  cat > src/controllers/sample.controller.js << EOF
+  # Create sample controller with TypeScript
+  cat > src/controllers/sample.controller.ts << EOF
+import { Request, Response } from 'express';
+
+// Sample item interface
+interface Item {
+  id: number;
+  name: string;
+}
+
 /**
  * Sample controller with common CRUD operations
  */
 
 // Get all items
-exports.getAll = async (req, res) => {
+export const getAll = async (req: Request, res: Response): Promise<Response> => {
   try {
     // Replace with your actual data fetching logic
-    const items = [{ id: 1, name: 'Sample Item' }];
+    const items: Item[] = [{ id: 1, name: 'Sample Item' }];
     return res.status(200).json(items);
   } catch (error) {
     console.error('Error in getAll:', error);
@@ -186,164 +228,113 @@ exports.getAll = async (req, res) => {
 };
 
 // Get single item by ID
-exports.getById = async (req, res) => {
+export const getById = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { id } = req.params;
     // Replace with your actual data fetching logic
-    const item = { id: parseInt(id), name: 'Sample Item' };
+    const item: Item = { id: parseInt(id), name: 'Sample Item' };
     return res.status(200).json(item);
   } catch (error) {
     console.error('Error in getById:', error);
     return res.status(500).json({ message: 'Failed to retrieve item' });
   }
 };
-
-// Create new item
-exports.create = async (req, res) => {
-  try {
-    const newItem = req.body;
-    // Replace with your actual data creation logic
-    return res.status(201).json({ id: Date.now(), ...newItem });
-  } catch (error) {
-    console.error('Error in create:', error);
-    return res.status(500).json({ message: 'Failed to create item' });
-  }
-};
-
-// Update item
-exports.update = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updates = req.body;
-    // Replace with your actual update logic
-    return res.status(200).json({ id: parseInt(id), ...updates });
-  } catch (error) {
-    console.error('Error in update:', error);
-    return res.status(500).json({ message: 'Failed to update item' });
-  }
-};
-
-// Delete item
-exports.delete = async (req, res) => {
-  try {
-    const { id } = req.params;
-    // Replace with your actual delete logic
-    return res.status(200).json({ message: 'Item deleted successfully' });
-  } catch (error) {
-    console.error('Error in delete:', error);
-    return res.status(500).json({ message: 'Failed to delete item' });
-  }
-};
 EOF
 
-  # Create a readme file
-  cat > README.md << EOF
-# $project_name
+  # Create a sample model with TypeScript
+  cat > src/models/sample.model.ts << EOF
+import mongoose, { Schema, Document } from 'mongoose';
 
-A Node.js backend application built with Express.
+// Define the interface for the document
+export interface ISample extends Document {
+  name: string;
+  description?: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-## Features
+// Create the schema
+const SampleSchema: Schema = new Schema({
+  name: { type: String, required: true },
+  description: { type: String },
+  isActive: { type: Boolean, default: true },
+}, { timestamps: true });
 
-- RESTful API architecture
-- Express.js web framework
-- MongoDB integration with Mongoose
-- Environment configuration with dotenv
-- Security middleware with Helmet
-- CORS support
-- Structured project layout
-- Error handling middleware
-
-## Installation
-
-\`\`\`bash
-# Clone the repository
-git clone <repository-url>
-cd $project_name
-
-# Install dependencies
-npm install
-
-# Create .env file (example provided in .env.example)
-cp .env.example .env
-
-# Start the development server
-npm run dev
-\`\`\`
-
-## Project Structure
-
-\`\`\`
-src/
-├── config/        # Configuration files
-├── controllers/   # Route controllers
-├── middleware/    # Custom middleware
-├── models/        # Database models
-├── routes/        # API routes
-├── utils/         # Utility functions
-├── tests/         # Test files
-└── index.js       # Application entry point
-\`\`\`
-
-## Available Scripts
-
-- \`npm start\`: Start the production server
-- \`npm run dev\`: Start the development server with hot reloading
-- \`npm test\`: Run tests
-- \`npm run lint\`: Run linting
-
-## API Endpoints
-
-- \`GET /health\`: Health check endpoint
-- \`GET /api\`: Welcome message
-
-## License
-
-[MIT](LICENSE)
+// Create and export the model
+export default mongoose.model<ISample>('Sample', SampleSchema);
 EOF
 
-  # Create a .eslintrc.js file
-  cat > .eslintrc.js << EOF
+  # Create a type definition file
+  cat > src/types/index.ts << EOF
+export interface APIResponse<T = any> {
+  success: boolean;
+  data?: T;
+  message?: string;
+  error?: string;
+}
+
+export interface PaginatedResponse<T = any> extends APIResponse<T[]> {
+  total: number;
+  page: number;
+  limit: number;
+  pages: number;
+}
+
+export interface UserContext {
+  id: string;
+  email: string;
+  roles: string[];
+}
+EOF
+
+  # Create environment variables type file
+  cat > src/types/environment.d.ts << EOF
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      NODE_ENV: 'development' | 'production' | 'test';
+      PORT: string;
+      MONGODB_URI: string;
+      // Add more environment variables as needed
+    }
+  }
+}
+
+// This file needs to be a module
+export {};
+EOF
+
+  # Create jest config
+  cat > jest.config.js << EOF
 module.exports = {
-  env: {
-    node: true,
-    commonjs: true,
-    es2021: true,
-    jest: true,
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  roots: ['<rootDir>/src'],
+  transform: {
+    '^.+\\.tsx?$': 'ts-jest',
   },
-  extends: 'airbnb-base',
-  parserOptions: {
-    ecmaVersion: 12,
-  },
-  rules: {
-    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
-  },
+  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$',
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  coverageDirectory: 'coverage',
 };
 EOF
 
-  # If GitHub CLI exists, create a repo
-  if command_exists gh; then
-    echo "🔍 Checking if GitHub repository already exists..."
-    if ! gh repo view "$project_name" &>/dev/null; then
-      echo "🔨 Creating GitHub repository: $project_name"
-      gh repo create "$project_name" --private --source=. --remote=origin
-      git add .
-      git commit -m "Initial commit: Node.js backend project structure"
-      git push -u origin main || git push -u origin master
-      echo "✅ Created and pushed to GitHub repository: $project_name"
-    else
-      echo "⚠️ GitHub repository already exists: $project_name"
-    fi
-  fi
+  # Create a sample test
+  mkdir -p src/tests
+  cat > src/tests/sample.test.ts << EOF
+describe('Sample Test', () => {
+  it('should pass', () => {
+    expect(2 + 2).toBe(4);
+  });
+});
+EOF
 
-  echo "✅ Node.js backend project '$project_name' created successfully!"
+  echo "✅ TypeScript Node.js backend created: $project_name"
   echo ""
   echo "📋 Next steps:"
   echo "  1. cd $project_name"
   echo "  2. npm install"
   echo "  3. npm run dev"
   echo ""
-  echo "Happy coding! ��"
-  
-  return 0
 } 

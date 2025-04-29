@@ -3,7 +3,7 @@
 # ================================================================
 # CraftingBench - A utility for creating standardized project templates
 # ================================================================
-# Version: 1.0.0
+# Version: 0.2.0
 # MIT License - Copyright (c) 2025 CraftingBench Contributors
 
 # DESCRIPTION:
