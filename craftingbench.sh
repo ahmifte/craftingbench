@@ -28,6 +28,7 @@ CRAFTINGBENCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Export this variable so template scripts can use it
 export CRAFTINGBENCH_DIR
+export CRAFTINGBENCH_PATH="$CRAFTINGBENCH_DIR"
 
 # Detect shell type
 if [ -n "$ZSH_VERSION" ]; then

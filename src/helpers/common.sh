@@ -9,56 +9,28 @@ command_exists() {
   command -v "$1" >/dev/null 2>&1
 }
 
-# Check if dependencies are installed for a specific project type
+# Check if dependencies are installed
 check_dependencies() {
-  local project_type="$1"
+  local deps="$1"
   local missing_deps=()
   
-  # Common dependencies
-  if ! command_exists git; then
-    missing_deps+=("git")
-  fi
-  
-  # Project-specific dependencies
-  case "$project_type" in
-    python)
-      if ! command_exists python || ! command_exists python3; then
-        missing_deps+=("python (3.8+ recommended)")
-      fi
-      ;;
-    go)
-      if ! command_exists go; then
-        missing_deps+=("go (1.18+ recommended)")
-      fi
-      ;;
-    nodejs)
-      if ! command_exists node; then
-        missing_deps+=("node.js (16+ recommended)")
-      fi
-      if ! command_exists pnpm; then
-        missing_deps+=("pnpm")
-      fi
-      ;;
-    nextjs)
-      if ! command_exists node; then
-        missing_deps+=("node.js (16+ recommended)")
-      fi
-      if ! command_exists pnpm; then
-        missing_deps+=("pnpm")
-      fi
-      ;;
-  esac
+  # Check each dependency in the space-separated list
+  for dep in $deps; do
+    if ! command_exists "$dep"; then
+      missing_deps+=("$dep")
+    fi
+  done
   
   # Check GitHub CLI (optional)
   if ! command_exists gh; then
-    echo "⚠️  Note: GitHub CLI (gh) is not installed. GitHub repository creation will be skipped."
-    echo "   To enable this feature, install gh: https://cli.github.com/"
+    echo "⚠️  Note: GitHub CLI (gh) is not installed. GitHub repository creation will be limited."
+    echo "   To enable all GitHub features, install gh: https://cli.github.com/"
     echo ""
   fi
   
   # Report missing dependencies
   if [ ${#missing_deps[@]} -gt 0 ]; then
-    echo "❌ Error: The following dependencies are missing for $project_type projects:"
+    echo "❌ Error: The following dependencies are missing:"
     for dep in "${missing_deps[@]}"; do
       echo "   - $dep"
     done
