@@ -14,11 +14,23 @@
 
 # USAGE:
 #   source ./craftingbench.sh
-#   setup_python_project <project_name>
-#   setup_go_project <project_name>
+#
+#   Python:
+#   setup_python_project <project_name> [--type=library|backend]
+#   setup_python_library <project_name>
+#   setup_python_backend <project_name>
+#
+#   Go:
+#   setup_go_project <project_name> [--type=library|backend]
+#   setup_go_library <project_name>
+#   setup_go_backend <project_name>
+#
+#   JavaScript/TypeScript:
 #   setup_nodejs_backend <project_name>
 #   setup_react_frontend <project_name>
-#   setup_fullstack_project <project_name> (Next.js fullstack app with state management)
+#
+#   Fullstack:
+#   setup_fullstack_project <project_name> [--backend=nextjs|flask|golang]
 
 # For more information, visit: https://github.com/ahmifte/craftingbench
 # ================================================================
@@ -47,7 +59,7 @@ else
 fi
 
 # Source template modules - only source if they exist
-for template in python nodejs go react fullstack; do
+for template in python go nodejs react fullstack; do
   template_path="$CRAFTINGBENCH_DIR/src/templates/${template}.sh"
   if [ -f "$template_path" ]; then
     source "$template_path"
