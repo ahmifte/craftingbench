@@ -11,17 +11,20 @@ This directory contains tests to validate that CraftingBench templates are worki
 ## Running Tests Locally
 
 1. Install dependencies:
+
    ```bash
    npm install
    npm install -g bats-core
    ```
 
 2. Run all tests:
+
    ```bash
    ./run-tests.sh
    ```
 
 3. Run only shell tests:
+
    ```bash
    bats ./shell-tests/*.bats
    ```
@@ -43,8 +46,9 @@ The test suite validates:
 ## GitHub Actions Integration
 
 These tests run automatically in GitHub Actions whenever:
+
 - Code is pushed to the main branch
 - A pull request is opened or updated
 - The workflow is manually triggered
 
-The workflow file can be found at `.github/workflows/test.yml`. 
+The workflow file can be found at `.github/workflows/test.yml`.

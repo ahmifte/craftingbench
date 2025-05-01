@@ -16,13 +16,13 @@ src/templates/
 
 ## Available Templates
 
-| Template | Description | Key Features |
-|----------|-------------|--------------|
-| **nodejs** | TypeScript Node.js backend | Express, MongoDB, structured architecture |
-| **react** | TypeScript React frontend | Material UI, responsive layouts |
-| **go** | Go backend service | Clean architecture, testing setup |
-| **python** | Python application | Package structure, virtual environments |
-| **fullstack** | Full-stack applications | Multiple backend options with TypeScript frontend |
+| Template      | Description                | Key Features                                      |
+| ------------- | -------------------------- | ------------------------------------------------- |
+| **nodejs**    | TypeScript Node.js backend | Express, MongoDB, structured architecture         |
+| **react**     | TypeScript React frontend  | Material UI, responsive layouts                   |
+| **go**        | Go backend service         | Clean architecture, testing setup                 |
+| **python**    | Python application         | Package structure, virtual environments           |
+| **fullstack** | Full-stack applications    | Multiple backend options with TypeScript frontend |
 
 ## Fullstack
 
@@ -45,6 +45,7 @@ To create a new template:
 
 1. Create a new script in `src/templates/` named `your_template.sh`
 2. Implement the required functions:
+
    - `setup_your_template_project()`
    - `create_your_template_files()`
    - Any helper functions needed
@@ -65,14 +66,14 @@ source "$(dirname "$0")/../helpers/common.sh"
 setup_your_template_project() {
     local project_name=$1
     local project_dir=$2
-    
+
     # Template implementation
 }
 
 # Create project files
 create_your_template_files() {
     local project_dir=$1
-    
+
     # Create files and directories
 }
 
@@ -85,25 +86,29 @@ setup_your_template_project "$@"
 All frontend templates now use Material UI instead of Tailwind CSS. To ensure consistent Material UI implementation:
 
 1. Include the core Material UI packages:
+
    ```bash
    pnpm add @mui/material @mui/icons-material @emotion/react @emotion/styled
    ```
 
 2. Set up a theme with light/dark mode support:
+
    ```typescript
    // theme.ts
    import { createTheme, responsiveFontSizes } from '@mui/material/styles';
-   
-   export const theme = responsiveFontSizes(createTheme({
-     palette: {
-       primary: {
-         main: '#1976d2',
+
+   export const theme = responsiveFontSizes(
+     createTheme({
+       palette: {
+         primary: {
+           main: '#1976d2',
+         },
+         secondary: {
+           main: '#dc004e',
+         },
        },
-       secondary: {
-         main: '#dc004e',
-       },
-     },
-   }));
+     })
+   );
    ```
 
 3. Create reusable layout components that use Material UI
@@ -113,6 +118,7 @@ All frontend templates now use Material UI instead of Tailwind CSS. To ensure co
 Ensure all JavaScript templates use TypeScript by default:
 
 1. Include TypeScript and necessary dependencies:
+
    ```bash
    pnpm add -D typescript @types/node @types/react @types/express
    ```

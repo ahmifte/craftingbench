@@ -7,6 +7,7 @@
 CraftingBench is currently in active development and has not reached a stable 1.0.0 release. While the maintainers make best-effort attempts to ensure the security and reliability of the codebase, beta versions may contain bugs or security issues that have not yet been identified or addressed.
 
 Users should be aware that:
+
 - APIs and interfaces may change between releases without notice
 - Breaking changes may be introduced without major version increments
 - Security features are still being developed and improved
@@ -36,6 +37,7 @@ curl -fsSL https://raw.githubusercontent.com/ahmifte/craftingbench/v0.2.0/instal
 ```
 
 **⚠️ IMPORTANT SECURITY NOTICE:**
+
 - You should **ALWAYS** review any script before piping it directly to bash
 - The maintainers are NOT responsible for any damage caused by executing scripts without review
 - Users are advised to manually download and inspect all files before execution
@@ -98,4 +100,4 @@ CraftingBench v0.2.0 is currently in BETA. This means:
 
 **THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.**
 
-By downloading, installing, or using CraftingBench, you acknowledge that you have read and understood this disclaimer, and you agree to use the software entirely at your own risk. The maintainers and contributors of CraftingBench assume no liability for any damages or issues arising from the use of this software. 
+By downloading, installing, or using CraftingBench, you acknowledge that you have read and understood this disclaimer, and you agree to use the software entirely at your own risk. The maintainers and contributors of CraftingBench assume no liability for any damages or issues arising from the use of this software.

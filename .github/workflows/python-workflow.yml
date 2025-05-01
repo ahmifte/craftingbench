@@ -1,0 +1,143 @@
+name: Python CI Workflow
+
+on:
+  workflow_call:
+    inputs:
+      python_version:
+        description: 'Python version to use'
+        required: false
+        type: string
+        default: '3.11'
+      python_versions:
+        description: 'JSON array of Python versions to test'
+        required: false
+        type: string
+        default: '["3.9", "3.10", "3.11"]'
+      working_directory:
+        description: 'Working directory for the job'
+        required: false
+        type: string
+        default: '.'
+      requirements_file:
+        description: 'Path to requirements.txt file'
+        required: false
+        type: string
+        default: 'requirements.txt'
+      test_command:
+        description: 'Test command to run'
+        required: false
+        type: string
+        default: 'pytest'
+      lint_command:
+        description: 'Lint command to run'
+        required: false
+        type: string
+        default: 'ruff check'
+      type_check_command:
+        description: 'Type checking command to run'
+        required: false
+        type: string
+        default: 'mypy'
+      environment:
+        description: 'Environment to use (e.g., production, staging)'
+        required: false
+        type: string
+    secrets:
+      pypi_token:
+        description: 'PyPI token for private packages'
+        required: false
+
+jobs:
+  python-ci:
+    uses: ./.github/workflows/base-ci.yml
+    with:
+      working_directory: ${{ inputs.working_directory }}
+      cache_dependencies: true
+      enable_coverage: true
+      matrix_config: |
+        {
+          "include": [
+            {
+              "python-version": ${{ inputs.python_versions }}
+            }
+          ]
+        }
+      environment: ${{ inputs.environment }}
+
+  setup-python:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ${{ fromJson(inputs.python_versions) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+          cache-dependency-path: ${{ inputs.requirements_file }}
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install build twine
+
+      - name: Install dependencies
+        run: |
+          if command -v poetry &> /dev/null; then
+            poetry install --no-interaction
+          elif [ -f pyproject.toml ] && command -v pdm &> /dev/null; then
+            pdm install
+          else
+            python -m pip install -r ${{ inputs.requirements_file }}
+          fi
+        env:
+          POETRY_VIRTUALENVS_CREATE: false
+          PDM_USE_VENV: false
+          PIP_INDEX_URL: ${{ secrets.pypi_token && format('https://pypi.org/simple') || '' }}
+
+  lint:
+    needs: setup-python
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    steps:
+      - name: Run linter
+        run: ${{ inputs.lint_command }}
+
+      - name: Run type checker
+        run: ${{ inputs.type_check_command }}
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ${{ fromJson(inputs.python_versions) }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    steps:
+      - name: Run tests with coverage
+        run: |
+          ${{ inputs.test_command }} --cov=. --cov-report=xml --cov-report=html
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-py${{ matrix.python-version }}
+          path: |
+            coverage.xml
+            htmlcov
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          flags: python-${{ matrix.python-version }}
+          fail_ci_if_error: false

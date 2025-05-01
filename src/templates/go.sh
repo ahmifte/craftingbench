@@ -2,31 +2,50 @@
 
 # Source common helper functions
 source "$(dirname "${BASH_SOURCE[0]}")/../helpers/common.sh" 2>/dev/null || source "${CRAFTINGBENCH_DIR}/src/helpers/common.sh"
+# Import template utilities
+source "$(dirname "${BASH_SOURCE[0]}")/../helpers/template-utils.sh" 2>/dev/null || source "${CRAFTINGBENCH_DIR}/src/helpers/template-utils.sh"
 
 setup_go_project() {
-  local project_name="$1"
-  
   # Check for required arguments
-  if [ -z "$project_name" ]; then
+  if [ -z "$1" ]; then
     echo "Error: Project name is required"
     echo "Usage: setup_go_project <project_name>"
     return 1
   fi
-  
+
+  local project_name="$1"
+
+  # Initialize project variables
+  local module_name="${project_name}"
+
+  # Check if module name contains domain (e.g., github.com/username/project)
+  if [[ ! "$module_name" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+    # If it has a domain, use it as is
+    echo "Using fully qualified module name: $module_name"
+  else
+    # Otherwise, add GitHub username if git is configured
+    local github_username
+    github_username=$(git config user.name | tr -d ' ' | tr '[:upper:]' '[:lower:]')
+
+    if [ -n "$github_username" ]; then
+      module_name="github.com/$github_username/$project_name"
+      echo "Using module name: $module_name"
+    fi
+  fi
+
   # Check for dependencies
   if ! check_dependencies "go git"; then
     return 1
   fi
 
-  # Create project directory and navigate to it
+  # Create project directory
   mkdir -p "$project_name"
   cd "$project_name" || return 1
-  
+
   # Initialize Git repository
   git init
 
   # Check if GitHub repository exists
-  local github_username=$(git config user.name | tr -d ' ' | tr '[:upper:]' '[:lower:]')
   if command -v gh &> /dev/null; then
     echo "Checking if GitHub repository exists: $github_username/$project_name"
     if gh repo view "$github_username/$project_name" &> /dev/null; then
@@ -47,8 +66,8 @@ setup_go_project() {
   mkdir -p .github/workflows
 
   # Copy workflow template or create default workflow
-  if [ -f "$CRAFTINGBENCH_PATH/src/templates/github-workflows/go-workflow.yml" ]; then
-    cp "$CRAFTINGBENCH_PATH/src/templates/github-workflows/go-workflow.yml" .github/workflows/go-ci.yml
+  if [ -f "$CRAFT_TEMPLATE_DIR/github-workflows/go-workflow.yml" ]; then
+    cp "$CRAFT_TEMPLATE_DIR/github-workflows/go-workflow.yml" .github/workflows/go-ci.yml
     # Replace placeholder with actual project name in workflow
     sed -i.bak "s/Go CI/$project_name CI/g" .github/workflows/go-ci.yml
     rm -f .github/workflows/go-ci.yml.bak
@@ -66,38 +85,38 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         go-version: ['1.19', '1.20', '1.21']
-    
+
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
         go-version: \${{ matrix.go-version }}
         cache: true
-    
+
     - name: Install dependencies
       run: go mod download
-    
+
     - name: Verify dependencies
       run: go mod verify
-    
+
     - name: Install golangci-lint
       run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-    
+
     - name: Lint
       run: golangci-lint run ./...
-    
+
     - name: Build
       run: go build -v ./...
-    
+
     - name: Test with coverage
       run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
-    
+
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
@@ -109,7 +128,7 @@ EOF
   fi
 
   # Initialize Go module
-  go mod init "github.com/$github_username/$project_name"
+  go mod init "$module_name"
 
   # Create basic project structure
   mkdir -p cmd/$project_name
@@ -172,7 +191,7 @@ func main() {
 		logger.Info(fmt.Sprintf("Server listening on port %d", cfg.Server.Port))
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logger.Fatal(fmt.Sprintf("Server error: %v", err))
-		}
+	}
 	}()
 
 	// Wait for interrupt signal to gracefully shut down the server
@@ -395,8 +414,8 @@ func RecoveryMiddleware(logger logger.Logger) func(http.Handler) http.Handler {
 						"stack", string(debug.Stack()),
 					)
 					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-				}
-			}()
+		}
+	}()
 			next.ServeHTTP(w, r)
 		})
 	}
@@ -455,7 +474,7 @@ func New(level string) Logger {
 // Debug logs a debug level message
 func (l *SlogLogger) Debug(msg string, args ...interface{}) {
 	l.logger.Debug(msg, args...)
-}
+	}
 
 // Info logs an info level message
 func (l *SlogLogger) Info(msg string, args ...interface{}) {
@@ -553,239 +572,11 @@ EXPOSE 8080
 CMD ["./$(echo $project_name | tr '[:upper:]' '[:lower:]')"]
 EOF
 
-  # Create .gitignore
-  cat > .gitignore << EOF
-# Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-$(echo $project_name | tr '[:upper:]' '[:lower:]')
+  # Set up pre-commit configuration
+  setup_pre_commit "." "go"
 
-# Test binary, built with 'go test -c'
-*.test
-
-# Output of the go coverage tool
-*.out
-coverage.txt
-
-# Dependency directories
-vendor/
-
-# Go workspace file
-go.work
-
-# IDE files
-.idea/
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
-# Environment variables
-.env
-
-# OS specific files
-.DS_Store
-*.swp
-*.swo
-
-# Log files
-*.log
-EOF
-
-  # Create README.md
-  cat > README.md << EOF
-# $project_name
-
-[![CI Status](https://github.com/$github_username/$project_name/workflows/$project_name%20CI/badge.svg)](https://github.com/$github_username/$project_name/actions)
-
-A Go backend application built with modern practices.
-
-## Features
-
-- Modern Go application structure
-- Configuration using environment variables
-- Structured logging
-- Graceful shutdown
-- Middleware support
-- Docker support
-- GitHub Actions CI pipeline
-
-## Development
-
-### Prerequisites
-
-- Go 1.18 or newer
-- Docker (optional)
-
-### Setup
-
-1. Clone the repository:
-   \`\`\`bash
-   git clone https://github.com/$github_username/$project_name.git
-   cd $project_name
-   \`\`\`
-
-2. Install dependencies:
-   \`\`\`bash
-   go mod download
-   \`\`\`
-
-3. Configure environment variables:
-   \`\`\`bash
-   cp .env.example .env
-   # Edit .env with your desired configuration
-   \`\`\`
-
-4. Run the application:
-   \`\`\`bash
-   go run cmd/$project_name/main.go
-   \`\`\`
-
-### Running with Docker
-
-1. Build the Docker image:
-   \`\`\`bash
-   docker build -t $project_name .
-   \`\`\`
-
-2. Run the container:
-   \`\`\`bash
-   docker run -p 8080:8080 -e ENVIRONMENT=development $project_name
-   \`\`\`
-
-## Environment Variables
-
-The application can be configured using environment variables:
-
-| Variable       | Description            | Default       |
-|----------------|------------------------|---------------|
-| ENVIRONMENT    | Runtime environment    | development   |
-| LOG_LEVEL      | Logging level          | info          |
-| PORT           | Server port            | 8080          |
-| HOST           | Server host            | 0.0.0.0       |
-| DB_HOST        | Database host          | localhost     |
-| DB_PORT        | Database port          | 5432          |
-| DB_USER        | Database user          | postgres      |
-| DB_PASSWORD    | Database password      |               |
-| DB_NAME        | Database name          | $project_name |
-| DB_SSLMODE     | Database SSL mode      | disable       |
-
-## API Endpoints
-
-- GET /health - Health check endpoint
-- GET /api/... - API endpoints (add more as needed)
-
-## Project Structure
-
-\`\`\`
-$project_name/
-├── api/                    # API route definitions
-├── cmd/                    # Application entry points
-│   └── $project_name/      # Main application
-├── docs/                   # Documentation
-├── internal/               # Private application code
-│   ├── app/                # Application core
-│   │   ├── api/            # API handlers and router
-│   │   ├── config/         # Configuration
-│   │   ├── middleware/     # HTTP middleware
-│   │   ├── models/         # Data models
-│   │   └── services/       # Business logic
-│   └── pkg/                # Private libraries
-│       ├── database/       # Database utilities
-│       └── logger/         # Logger implementation
-├── pkg/                    # Public libraries
-├── scripts/                # Scripts for development
-├── .env.example            # Example environment variables
-├── Dockerfile              # Docker build instructions
-├── go.mod                  # Go module definition
-└── README.md               # This file
-\`\`\`
-
-## Makefile commands
-
-Run \`make help\` to see available commands:
-
-\`\`\`bash
-make build      # Build the application
-make run        # Run the application
-make test       # Run tests
-make lint       # Run linter
-make docker     # Build Docker image
-\`\`\`
-
-## License
-
-MIT
-EOF
-
-  # Create Makefile
-  cat > Makefile << EOF
-.PHONY: build run test lint clean docker help
-
-# Application name
-APP_NAME = $(echo $project_name | tr '[:upper:]' '[:lower:]')
-
-# Directory containing main package
-MAIN_DIR = cmd/$project_name
-
-# Build the application
-build:
-	@echo "Building application..."
-	@go build -o \$(APP_NAME) \$(MAIN_DIR)
-
-# Run the application
-run:
-	@echo "Running application..."
-	@go run \$(MAIN_DIR)/main.go
-
-# Run tests with coverage
-test:
-	@echo "Running tests with coverage..."
-	@go test -race -coverprofile=coverage.txt -covermode=atomic ./...
-	@go tool cover -func=coverage.txt
-
-# Run linter
-lint:
-	@echo "Running linter..."
-	@if command -v golangci-lint &> /dev/null; then \
-		golangci-lint run ./...; \
-	else \
-		echo "golangci-lint not installed. Installing..."; \
-		go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; \
-		golangci-lint run ./...; \
-	fi
-
-# Clean build artifacts
-clean:
-	@echo "Cleaning build artifacts..."
-	@rm -f \$(APP_NAME)
-	@rm -f coverage.txt
-
-# Build Docker image
-docker:
-	@echo "Building Docker image..."
-	@docker build -t \$(APP_NAME) .
-
-# Show help
-help:
-	@echo "Available commands:"
-	@echo "  make build      - Build the application"
-	@echo "  make run        - Run the application"
-	@echo "  make test       - Run tests with coverage"
-	@echo "  make lint       - Run linter"
-	@echo "  make clean      - Clean build artifacts"
-	@echo "  make docker     - Build Docker image"
-	@echo "  make help       - Show this help message"
-EOF
-
-  # Initialize go.mod file with required dependencies
-  go get github.com/gorilla/mux
-  go get github.com/joho/godotenv
-  go mod tidy
+  # Create standardized .gitignore file
+  create_gitignore "." "go"
 
   # Commit changes
   git add .
@@ -800,4 +591,4 @@ EOF
   echo "  go mod download"
   echo "  go run cmd/$project_name/main.go"
   echo ""
-} 
+}

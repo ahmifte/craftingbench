@@ -13,21 +13,21 @@ command_exists() {
 check_dependencies() {
   local deps="$1"
   local missing_deps=()
-  
+
   # Check each dependency in the space-separated list
   for dep in $deps; do
     if ! command_exists "$dep"; then
       missing_deps+=("$dep")
-    fi
+      fi
   done
-  
+
   # Check GitHub CLI (optional)
   if ! command_exists gh; then
     echo "⚠️  Note: GitHub CLI (gh) is not installed. GitHub repository creation will be limited."
     echo "   To enable all GitHub features, install gh: https://cli.github.com/"
     echo ""
   fi
-  
+
   # Report missing dependencies
   if [ ${#missing_deps[@]} -gt 0 ]; then
     echo "❌ Error: The following dependencies are missing:"
@@ -38,6 +38,6 @@ check_dependencies() {
     echo "Please install these dependencies and try again."
     return 1
   fi
-  
+
   return 0
-} 
+}

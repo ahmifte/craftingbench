@@ -2,7 +2,7 @@ name: Dependabot PNPM Support
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 permissions:
   contents: write
@@ -35,7 +35,7 @@ jobs:
       - name: Commit updated lockfile
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: update pnpm lockfile"
-          file_pattern: "pnpm-lock.yaml"
-          commit_user_name: "dependabot[bot]"
-          commit_user_email: "49699333+dependabot[bot]@users.noreply.github.com" 
+          commit_message: 'chore: update pnpm lockfile'
+          file_pattern: 'pnpm-lock.yaml'
+          commit_user_name: 'dependabot[bot]'
+          commit_user_email: '49699333+dependabot[bot]@users.noreply.github.com'

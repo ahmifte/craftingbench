@@ -30,4 +30,4 @@ cd "$SCRIPT_DIR"
 echo "Running Jest tests..."
 npm test
 
-echo "=== All tests completed successfully! ===" 
+echo "=== All tests completed successfully! ==="

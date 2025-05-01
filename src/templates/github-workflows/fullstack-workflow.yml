@@ -1,0 +1,183 @@
+name: Fullstack CI/CD
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: 'Deploy to environment'
+        required: false
+        type: choice
+        options:
+          - none
+          - staging
+          - production
+        default: 'none'
+
+jobs:
+  # Backend tests and build
+  backend:
+    uses: ./.github/workflows/python-workflow.yml
+    with:
+      working_directory: backend
+      python_versions: '["3.9", "3.10", "3.11"]'
+      requirements_file: requirements.txt
+      test_command: pytest --cov=./ --cov-report=xml
+      lint_command: ruff check
+      type_check_command: mypy .
+
+  # Frontend tests and build
+  frontend:
+    uses: ./.github/workflows/node-workflow.yml
+    with:
+      working_directory: frontend
+      package_manager: pnpm
+      node_versions: '["18.x", "20.x"]'
+      build_command: build
+      test_command: test
+      lint_command: lint
+
+  # E2E testing with both services running
+  integration:
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download frontend build
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: frontend/dist
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: '8'
+
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          pnpm install
+
+      - name: Start backend (background)
+        run: |
+          cd backend
+          python -m uvicorn main:app --host 0.0.0.0 --port 8000 &
+          sleep 5  # Give it time to start
+
+      - name: Run E2E tests
+        run: |
+          cd frontend
+          pnpm run e2e-tests
+
+  # Containerization
+  docker:
+    needs: [integration]
+    if: github.event_name == 'push' || github.event.inputs.deploy != 'none'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to DockerHub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and export backend
+        uses: docker/build-push-action@v4
+        with:
+          context: ./backend
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and export frontend
+        uses: docker/build-push-action@v4
+        with:
+          context: ./frontend
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Deployment job
+  deploy:
+    needs: [docker]
+    if: github.event.inputs.deploy != 'none'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.deploy }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Terraform Init
+        run: |
+          cd terraform/${{ github.event.inputs.deploy }}
+          terraform init
+
+      - name: Terraform Plan
+        run: |
+          cd terraform/${{ github.event.inputs.deploy }}
+          terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        if: github.event.inputs.deploy != 'none'
+        run: |
+          cd terraform/${{ github.event.inputs.deploy }}
+          terraform apply -auto-approve tfplan
+
+  # Notifications
+  notify:
+    needs: [deploy]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: env.SLACK_WEBHOOK_URL != ''

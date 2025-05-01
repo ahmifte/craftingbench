@@ -31,41 +31,41 @@ jobs:
           release_name: Release ${{ github.ref_name }}
           body: |
             # CraftingBench ${{ github.ref_name }}
-            
+
             A powerful CLI utility for quickly scaffolding TypeScript and other project types with standardized, production-ready structures.
-            
+
             > **⚠️ NOTE:** CraftingBench is currently in BETA. Please review our [Security Policy](https://github.com/ahmifte/craftingbench/blob/main/SECURITY.md) for important information about this release.
-            
+
             ## Changes
-            
+
             ${{ steps.changelog.outputs.changelog }}
-            
+
             ## Installation
-            
+
             ### Using curl (recommended)
-            
+
             ```bash
             # Download the install script
             curl -fsSL https://raw.githubusercontent.com/ahmifte/craftingbench/${{ github.ref_name }}/install.sh | bash
-            
+
             # Then add to your shell configuration file (.bashrc or .zshrc)
             echo 'source $HOME/.craftingbench/craftingbench.sh' >> ~/.zshrc  # Or ~/.bashrc
             ```
-            
+
             ### Manual Installation
-            
+
             ```bash
             # Clone the repository
             git clone https://github.com/ahmifte/craftingbench.git
             cd craftingbench
-            
+
             # Add to your shell configuration
             echo "source $(pwd)/craftingbench.sh" >> ~/.zshrc  # Or ~/.bashrc
             ```
-            
+
           draft: false
           prerelease: false
-          
+
       - name: Create tarball
         run: |
           tar -czf craftingbench-${{ github.ref_name }}.tar.gz \
@@ -79,7 +79,7 @@ jobs:
             CHANGELOG.md \
             eslint.config.mjs \
             tsconfig.json
-            
+
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
@@ -88,4 +88,4 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./craftingbench-${{ github.ref_name }}.tar.gz
           asset_name: craftingbench-${{ github.ref_name }}.tar.gz
-          asset_content_type: application/gzip 
+          asset_content_type: application/gzip

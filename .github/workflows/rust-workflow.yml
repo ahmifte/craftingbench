@@ -1,0 +1,220 @@
+name: Rust CI Workflow
+
+on:
+  workflow_call:
+    inputs:
+      rust_version:
+        description: 'Rust toolchain version to use'
+        required: false
+        type: string
+        default: 'stable'
+      rust_versions:
+        description: 'JSON array of Rust versions to test'
+        required: false
+        type: string
+        default: '["stable", "beta", "nightly"]'
+      working_directory:
+        description: 'Working directory for the job'
+        required: false
+        type: string
+        default: '.'
+      cargo_command:
+        description: 'Cargo command to run for tests'
+        required: false
+        type: string
+        default: 'test'
+      cargo_args:
+        description: 'Additional arguments for cargo test'
+        required: false
+        type: string
+        default: '--all-features'
+      environment:
+        description: 'Environment to use (e.g., production, staging)'
+        required: false
+        type: string
+      coverage:
+        description: 'Whether to collect code coverage'
+        required: false
+        type: boolean
+        default: true
+      has_crates_token:
+        description: 'Whether a crates.io token is provided'
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      crates_token:
+        description: 'Crates.io token for private dependencies'
+        required: false
+
+jobs:
+  rust-ci:
+    uses: ./.github/workflows/base-ci.yml
+    with:
+      working_directory: ${{ inputs.working_directory }}
+      cache_dependencies: true
+      enable_coverage: ${{ inputs.coverage }}
+      matrix_config: |
+        {
+          "include": [
+            {
+              "rust-version": ${{ inputs.rust_versions }}
+            }
+          ]
+        }
+      environment: ${{ inputs.environment }}
+
+  setup-rust:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust-version: ${{ fromJson(inputs.rust_versions) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust-version }}
+          components: rustfmt, clippy
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: '${{ inputs.working_directory }}'
+
+      - name: Setup Cargo credentials
+        if: inputs.has_crates_token
+        run: |
+          mkdir -p ~/.cargo
+          echo "[registry]" > ~/.cargo/credentials
+          echo "token = \"${{ secrets.crates_token }}\"" >> ~/.cargo/credentials
+          chmod 0600 ~/.cargo/credentials
+
+  lint:
+    needs: setup-rust
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust-version: ['stable']
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust-version }}
+          components: rustfmt, clippy
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: '${{ inputs.working_directory }}'
+
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust-version: ${{ fromJson(inputs.rust_versions) }}
+        os: [ubuntu-latest]
+        include:
+          - os: macos-latest
+            rust-version: stable
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust-version }}
+          components: llvm-tools-preview
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: '${{ inputs.working_directory }}'
+
+      - name: Install cargo-llvm-cov
+        if: inputs.coverage == true
+        uses: taiki-e/install-action@cargo-llvm-cov
+
+      - name: Run tests with coverage
+        if: inputs.coverage == true
+        run: |
+          cargo llvm-cov ${{ inputs.cargo_command }} ${{ inputs.cargo_args }} --lcov --output-path lcov.info
+
+      - name: Run tests without coverage
+        if: inputs.coverage != true
+        run: |
+          cargo ${{ inputs.cargo_command }} ${{ inputs.cargo_args }}
+
+      - name: Upload coverage report
+        if: inputs.coverage == true
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-rust-${{ matrix.rust-version }}-${{ matrix.os }}
+          path: lcov.info
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Upload coverage to Codecov
+        if: inputs.coverage == true
+        uses: codecov/codecov-action@v3
+        with:
+          file: lcov.info
+          flags: rust-${{ matrix.rust-version }}-${{ matrix.os }}
+          fail_ci_if_error: false
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust-version: ['stable']
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust-version }}
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: '${{ inputs.working_directory }}'
+
+      - name: Build release
+        run: cargo build --release ${{ inputs.cargo_args }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rust-build-${{ runner.os }}
+          path: |
+            ${{ inputs.working_directory }}/target/release/*
+            !${{ inputs.working_directory }}/target/release/deps/
+            !${{ inputs.working_directory }}/target/release/build/
+            !${{ inputs.working_directory }}/target/release/.fingerprint/
+          retention-days: 7
+          if-no-files-found: warn

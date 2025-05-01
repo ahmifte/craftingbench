@@ -1,97 +1,36 @@
-name: Flask + React CI
+name: Flask-React CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   backend:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.9', '3.10', '3.11']
-    
-    defaults:
-      run:
-        working-directory: backend
-        
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: 'pip'
-        cache-dependency-path: 'backend/requirements.txt'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install pytest pytest-cov flake8
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    
-    - name: Lint with flake8
-      run: |
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    
-    - name: Test with pytest
-      run: |
-        pytest --cov=./ --cov-report=xml
-    
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: backend/coverage.xml
-        flags: backend
-        fail_ci_if_error: false
+    uses: ./.github/workflows/python-workflow.yml
+    with:
+      working_directory: ./backend
+      requirements_file: requirements.txt
+      test_command: pytest
+      lint_command: flake8
 
   frontend:
+    uses: ./.github/workflows/node-workflow.yml
+    with:
+      working_directory: ./frontend
+      package_manager: pnpm
+      build_command: build
+      test_command: test
+      lint_command: lint
+
+  integration:
+    needs: [backend, frontend]
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16.x, 18.x, 20.x]
-        
-    defaults:
-      run:
-        working-directory: frontend
-        
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Install pnpm
-      uses: pnpm/action-setup@v4
-      with:
-        version: 8
-    
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'pnpm'
-        cache-dependency-path: 'frontend/pnpm-lock.yaml'
-    
-    - name: Install dependencies
-      run: pnpm install
-    
-    - name: Lint
-      run: pnpm lint
-    
-    - name: Type check
-      run: pnpm typecheck
-    
-    - name: Test
-      run: pnpm test
-    
-    - name: Build
-      run: pnpm build
-      
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: frontend-build
-        path: frontend/dist/
-        if-no-files-found: error 
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build and test integration
+        run: |
+          echo "Add integration tests here"

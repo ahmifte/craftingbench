@@ -1,6 +1,6 @@
 # 🏗️ Architecture
 
-[![Version](https://img.shields.io/badge/Version-0.2.0%20(Beta)-orange.svg)](../CHANGELOG.md)
+[![Version](<https://img.shields.io/badge/Version-0.2.0%20(Beta)-orange.svg>)](../CHANGELOG.md)
 
 This document outlines the architectural design of CraftingBench v0.2.0.
 
@@ -30,7 +30,7 @@ craftingbench/
 └── README.md                # Main documentation
 ```
 
-______________________________________________________________________
+---
 
 ## 🧩 Component Overview
 
@@ -55,12 +55,12 @@ ______________________________________________________________________
 
 **Each template is contained in its own file for better separation of concerns.**
 
-| File | Description |
-|------|-------------|
-| `python.sh` | 🐍 Python project setup |
-| `nodejs.sh` | 🚀 TypeScript Node.js backend setup |
-| `go.sh` | 🔷 Go project setup |
-| `react.sh` | ⚛️ TypeScript React frontend with Material UI |
+| File           | Description                                                       |
+| -------------- | ----------------------------------------------------------------- |
+| `python.sh`    | 🐍 Python project setup                                           |
+| `nodejs.sh`    | 🚀 TypeScript Node.js backend setup                               |
+| `go.sh`        | 🔷 Go project setup                                               |
+| `react.sh`     | ⚛️ TypeScript React frontend with Material UI                     |
 | `fullstack.sh` | 🌐 TypeScript fullstack setup with Material UI (Next.js/Flask/Go) |
 
 ### 🔄 Shell Completions (`src/completions/`)

@@ -13,4 +13,4 @@ Documentation validation tests use Jest and TypeScript to verify that:
 - Generated projects match the structure described in documentation
 - README.md accurately describes the available templates and options
 - Version information is consistent across documentation and code
-- Package dependencies match what's described in the documentation 
+- Package dependencies match what's described in the documentation

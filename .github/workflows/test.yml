@@ -2,56 +2,56 @@ name: Test Templates
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
           cache: 'npm'
           cache-dependency-path: 'src/tests/package-lock.json'
-          
+
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
           go-version: '1.21'
-          
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-          
+
       - name: Install BATS
         run: |
           npm install -g bats-core
           bats --version
-          
+
       - name: Install test dependencies
         working-directory: ./src/tests
         run: |
           npm ci
-          
+
       - name: Verify shell scripts
         run: |
           chmod +x ./craftingbench.sh
           chmod +x ./src/tests/run-tests.sh
           bash -n ./craftingbench.sh
           bash -n ./src/tests/run-tests.sh
-          
+
       - name: Run tests
         run: ./src/tests/run-tests.sh
-        
+
       - name: Upload test artifacts
         if: always()
         uses: actions/upload-artifact@v3

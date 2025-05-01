@@ -4,17 +4,18 @@
 
 **Guide for maintaining and releasing CraftingBench**
 
-[![Version](https://img.shields.io/badge/Version-0.2.0%20(Beta)-orange.svg)](../CHANGELOG.md)
+[![Version](<https://img.shields.io/badge/Version-0.2.0%20(Beta)-orange.svg>)](../CHANGELOG.md)
 
 </div>
 
-______________________________________________________________________
+---
 
 ## 📋 Release Checklist
 
 Before creating a new release, ensure the following steps are completed:
 
 1. ✅ **Update version information in:**
+
    - `package.json`
    - `USER_GUIDE.md`
    - `architecture.md`
@@ -23,17 +24,20 @@ Before creating a new release, ensure the following steps are completed:
    - Version badge in all markdown files
 
 2. ✅ **Update the CHANGELOG.md** with:
+
    - New features
    - Bug fixes
    - Breaking changes
    - Deprecated functionality
 
 3. ✅ **Audit the TypeScript codebase:**
+
    - Run linting checks: `pnpm lint`
    - Fix any identified issues
    - Ensure type safety across all components
 
 4. ✅ **Test all templates:**
+
    - Generate test projects for each template
    - Verify that all dependencies are correctly installed
    - Validate that TypeScript compilation works
@@ -49,12 +53,14 @@ Before creating a new release, ensure the following steps are completed:
 CraftingBench uses GitHub Releases for distribution:
 
 1. **Create a tag** for the new version:
+
    ```bash
    git tag v0.X.Y
    git push origin v0.X.Y
    ```
 
 2. **Create a new release** on GitHub:
+
    - Navigate to the Releases page
    - Create a new release using the tag
    - Copy the changelog entry for this version into the release notes
@@ -91,4 +97,4 @@ To test a release before publishing:
 2. Update version numbers
 3. Run through the entire release checklist
 4. Create a local installation for testing
-5. Verify all templates and functionality work as expected 
+5. Verify all templates and functionality work as expected

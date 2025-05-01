@@ -3,19 +3,23 @@
 setup() {
   # Load CraftingBench
   source "$(pwd)/craftingbench.sh"
-  
+
   # Create a temp directory for tests
-  export TEST_TEMP_DIR="$(mktemp -d)"
-  
+  local temp_dir
+  temp_dir=$(mktemp -d)
+  export TEST_TEMP_DIR="$temp_dir"
+
   # Original directory
-  export ORIGINAL_DIR="$(pwd)"
+  local orig_dir
+  orig_dir=$(pwd)
+  export ORIGINAL_DIR="$orig_dir"
 }
 
 teardown() {
   # Remove the temp directory
   rm -rf "$TEST_TEMP_DIR"
   # Return to original directory
-  cd "$ORIGINAL_DIR"
+  cd "$ORIGINAL_DIR" || exit 1
 }
 
 # Test that the main script can be sourced
@@ -27,10 +31,10 @@ teardown() {
 
 # Test Python project template
 @test "setup_python_project creates valid Python project structure" {
-  cd "$TEST_TEMP_DIR"
+  cd "$TEST_TEMP_DIR" || exit 1
   run setup_python_project "test-python-project"
   [ "$status" -eq 0 ]
-  
+
   # Check for key files
   [ -d "test-python-project" ]
   [ -f "test-python-project/pyproject.toml" ]
@@ -44,7 +48,7 @@ teardown() {
   cd "$TEST_TEMP_DIR"
   run setup_nodejs_backend "test-nodejs-project"
   [ "$status" -eq 0 ]
-  
+
   # Check for key files
   [ -d "test-nodejs-project" ]
   [ -f "test-nodejs-project/package.json" ]
@@ -59,7 +63,7 @@ teardown() {
   cd "$TEST_TEMP_DIR"
   run setup_go_project "test-go-project"
   [ "$status" -eq 0 ]
-  
+
   # Check for key files
   [ -d "test-go-project" ]
   [ -f "test-go-project/go.mod" ]
@@ -74,7 +78,7 @@ teardown() {
   cd "$TEST_TEMP_DIR"
   run setup_react_frontend "test-react-project"
   [ "$status" -eq 0 ]
-  
+
   # Check for key files
   [ -d "test-react-project" ]
   [ -f "test-react-project/package.json" ]
@@ -89,7 +93,7 @@ teardown() {
   cd "$TEST_TEMP_DIR"
   run setup_fullstack_project "test-fullstack-nextjs" --backend=nextjs
   [ "$status" -eq 0 ]
-  
+
   # Check for key files
   [ -d "test-fullstack-nextjs" ]
   [ -f "test-fullstack-nextjs/package.json" ]
@@ -104,17 +108,17 @@ teardown() {
   cd "$TEST_TEMP_DIR"
   run setup_fullstack_project "test-fullstack-flask" --backend=flask
   [ "$status" -eq 0 ]
-  
+
   # Check for key files in frontend
   [ -d "test-fullstack-flask/frontend" ]
   [ -f "test-fullstack-flask/frontend/package.json" ]
   [ -f "test-fullstack-flask/frontend/tsconfig.json" ]
-  
+
   # Check for key files in backend
   [ -d "test-fullstack-flask/backend" ]
   [ -f "test-fullstack-flask/backend/pyproject.toml" ]
   [ -f "test-fullstack-flask/backend/requirements.txt" ]
-  
+
   # Check root files
   [ -f "test-fullstack-flask/README.md" ]
 }
@@ -124,16 +128,16 @@ teardown() {
   cd "$TEST_TEMP_DIR"
   run setup_fullstack_project "test-fullstack-go" --backend=golang
   [ "$status" -eq 0 ]
-  
+
   # Check for key files in frontend
   [ -d "test-fullstack-go/frontend" ]
   [ -f "test-fullstack-go/frontend/package.json" ]
   [ -f "test-fullstack-go/frontend/tsconfig.json" ]
-  
+
   # Check for key files in backend
   [ -d "test-fullstack-go/backend" ]
   [ -f "test-fullstack-go/backend/go.mod" ]
-  
+
   # Check root files
   [ -f "test-fullstack-go/README.md" ]
-} 
+}
