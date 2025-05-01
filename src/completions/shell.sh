@@ -6,11 +6,15 @@ setup_zsh_completions() {
     # Register command completions
     function _craftingbench_completions() {
       local commands=(
-        "setup_python_project:Create a Python project"
-        "setup_nodejs_backend:Create a TypeScript Node.js backend"
-        "setup_react_frontend:Create a TypeScript React frontend"
-        "setup_go_project:Create a Golang project"
-        "setup_fullstack_project:Create a TypeScript fullstack app with various backend options"
+        "setup_python_project:Create a Python project (library or backend)"
+        "setup_python_library:Create a Python library"
+        "setup_python_backend:Create a Flask API backend"
+        "setup_nodejs_backend:Create a Node.js backend"
+        "setup_react_frontend:Create a React frontend"
+        "setup_go_project:Create a Golang project (library or backend)"
+        "setup_go_library:Create a Golang library/module"
+        "setup_go_backend:Create a Golang REST API backend"
+        "setup_fullstack_project:Create a fullstack application with various backends"
       )
       
       # Add options for fullstack_project
@@ -36,7 +40,7 @@ setup_zsh_completions() {
       _describe 'Project tools' tools
     }
     
-    compdef _craftingbench_completions setup_python_project setup_nodejs_backend setup_react_frontend setup_go_project setup_fullstack_project
+    compdef _craftingbench_completions setup_python_project setup_python_library setup_python_backend setup_nodejs_backend setup_react_frontend setup_go_project setup_go_library setup_go_backend setup_fullstack_project
     compdef _craftingbench_project_tools lint format typecheck
   fi
 }
@@ -45,15 +49,23 @@ setup_zsh_completions() {
 show_banner() {
   echo "🛠️  CraftingBench loaded!"
   echo "Available commands:"
-  echo "  - setup_python_project <name>       : Create a Python project"
-  echo "  - setup_nodejs_backend <name>       : Create a TypeScript Node.js backend"
-  echo "  - setup_react_frontend <name>       : Create a TypeScript React frontend with Material UI"
-  echo "  - setup_go_project <name>           : Create a Golang project"
-  echo "  - setup_fullstack_project <name>    : Create a TypeScript fullstack app"
-  echo "    Options:"
-  echo "      --backend=nextjs                : Use Next.js (default)"
-  echo "      --backend=flask                 : Use Flask backend + TypeScript React frontend"
-  echo "      --backend=golang                : Use Go backend + TypeScript React frontend"
+  echo ""
+  echo "Python:"
+  echo "  - setup_python_project <n> [--type=library|backend] : Create a Python project"
+  echo "  - setup_python_library <n>                          : Create a Python library"
+  echo "  - setup_python_backend <n>                          : Create a Flask API backend"
+  echo ""
+  echo "JavaScript/TypeScript:"
+  echo "  - setup_nodejs_backend <n>                          : Create a Node.js backend"
+  echo "  - setup_react_frontend <n>                          : Create a React frontend"
+  echo ""
+  echo "Go:"
+  echo "  - setup_go_project <n> [--type=library|backend]     : Create a Golang project"
+  echo "  - setup_go_library <n>                              : Create a Golang library/module"
+  echo "  - setup_go_backend <n>                              : Create a Golang REST API backend"
+  echo ""
+  echo "Fullstack:"
+  echo "  - setup_fullstack_project <n> [--backend=nextjs|flask|golang] : Create a fullstack application"
   echo ""
   echo "Development tools:"
   echo "  - lint                              : Run ESLint on TypeScript code"
