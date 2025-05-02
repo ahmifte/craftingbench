@@ -796,12 +796,12 @@ jobs:
         working-directory: backend
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
-    - name: Set up Python \${{ matrix.python-version }}
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
-        python-version: \${{ matrix.python-version }}
+        python-version: ${{ matrix.python-version }}
         cache: 'pip'
         cache-dependency-path: 'backend/requirements.txt'
 
@@ -838,17 +838,17 @@ jobs:
         working-directory: frontend
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Install pnpm
       uses: pnpm/action-setup@v4
       with:
         version: 8
 
-    - name: Use Node.js \${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
       with:
-        node-version: \${{ matrix.node-version }}
+        node-version: ${{ matrix.node-version }}
         cache: 'pnpm'
         cache-dependency-path: 'frontend/pnpm-lock.yaml'
 

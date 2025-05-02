@@ -6,7 +6,7 @@
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Shell Script](https://img.shields.io/badge/Shell_Script-Bash-4EAA25.svg?logo=gnu-bash&logoColor=white)](craftingbench.sh)
-[![Version](<https://img.shields.io/badge/Version-0.2.0%20(Beta)-orange.svg>)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-0.2.0%20(Beta)-orange.svg)](CHANGELOG.md)
 [![Dependabot](https://img.shields.io/badge/Dependabot-Active-brightgreen.svg)](https://github.com/features/security)
 [![Made with Love](https://img.shields.io/badge/Made%20with-Love-ff69b4.svg)](https://github.com/ahmifte/craftingbench)
 
@@ -14,7 +14,7 @@
 
 > **⚠️ BETA STATUS:** CraftingBench v0.2.0 is currently in beta. APIs and usage may change before the stable 1.0.0 release. Please review our [Security Policy](SECURITY.md) for important information.
 
----
+______________________________________________________________________
 
 <div align="center">
 <h3>Craft your projects with precision and speed</h3>
@@ -22,35 +22,35 @@
 _A powerful CLI utility for quickly scaffolding various project types with standardized, production-ready structures._
 
 <pre align="center">
-
-      #@@++++++++++++++++++++++++++++++++++++++++++++++++++++==-+*@@@
-    :@@*+++++++++++++++++++++++++++++++++++++++++++++++++++++++===*#@@#
-   @@#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++==-+*#@@
- @@*-:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::.-=*@@
- @@@@@@@@%%@@@%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%@@@%%%@@@@@@
- @@@@@@@@*@@#@%@#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%@*@@*@@@@@@@
-        %.@  -#@                                            =@@  @:#
-       =@-@  @@@                                            +@@  @=@=
-       %%:@  @@#                                            .@@  @+@*
-       @*-@  @@.                                             @@  @*#%
-       @++@  @@                                              @@. @%*@
-       @+%@ .@@                                              @@= #@+@
-       @=@% *@@                                              @@# -@=@
-       @-@: @@@                                              @@@  @-@
-       @=@  @@@                                              @@@  @-@
-      -@=@  @@@                                              %@@  @=@:
-      +@=@  @@=                                               @@  @=@#
-      #%+@                                                        @*#@
-      @##@                                                        @%+@
-      @+@@                                                        @@=@
-      @=@*                                                        %@-@
-      @-@:                                                        =@-@
-
+                                                                           
+      #@@++++++++++++++++++++++++++++++++++++++++++++++++++++==-+*@@@      
+    :@@*+++++++++++++++++++++++++++++++++++++++++++++++++++++++===*#@@#    
+   @@#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++==-+*#@@   
+ @@*-:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::.-=*@@ 
+ @@@@@@@@%%@@@%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%@@@%%%@@@@@@ 
+ @@@@@@@@*@@#@%@#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%@*@@*@@@@@@@ 
+        %.@  -#@                                            =@@  @:#       
+       =@-@  @@@                                            +@@  @=@=      
+       %%:@  @@#                                            .@@  @+@*      
+       @*-@  @@.                                             @@  @*#%      
+       @++@  @@                                              @@. @%*@      
+       @+%@ .@@                                              @@= #@+@      
+       @=@% *@@                                              @@# -@=@      
+       @-@: @@@                                              @@@  @-@      
+       @=@  @@@                                              @@@  @-@      
+      -@=@  @@@                                              %@@  @=@:     
+      +@=@  @@=                                               @@  @=@#     
+      #%+@                                                        @*#@     
+      @##@                                                        @%+@     
+      @+@@                                                        @@=@     
+      @=@*                                                        %@-@     
+      @-@:                                                        =@-@     
+                                                                           
 </pre>
 
 </div>
 
----
+______________________________________________________________________
 
 <br />
 
@@ -61,7 +61,7 @@ _A powerful CLI utility for quickly scaffolding various project types with stand
 - [Installation](#-installation)
 - [Usage](#-usage)
   - [Python Project](#-python-project)
-  - [Node.js Backend](#-nodejs-backend)
+  - [Node.js Backend](#-nodejs-backend) 
   - [Golang API](#-golang-api)
   - [React Frontend](#-react-frontend)
   - [Next.js Projects](#-nextjs-projects)
@@ -77,7 +77,6 @@ _A powerful CLI utility for quickly scaffolding various project types with stand
 - [Contributing](#-contributing)
 - [Resources](#-resources)
 - [License](#-license)
-- [🛠️ Utility Functions](#-utility-functions)
 
 ## ✨ Features
 
@@ -85,13 +84,13 @@ _A powerful CLI utility for quickly scaffolding various project types with stand
 
 <div align="center">
 
-| Icon | Template            | Description                                                          |
-| :--: | ------------------- | -------------------------------------------------------------------- |
-|  🐍  | **Python Projects** | Modern Python package with testing, linting, and CI/CD setup         |
-|  🚀  | **Node.js Backend** | Express-based API with TypeScript and testing framework              |
-|  🔷  | **Golang API**      | Go-based REST API with standard project layout                       |
-|  ⚛️  | **React Frontend**  | TypeScript + React application with Material UI components           |
-|  🌐  | **Full-Stack Web**  | Fullstack applications with multiple backend options and Material UI |
+| Icon | Template | Description |
+|:----:|----------|-------------|
+| 🐍 | **Python Projects** | Modern Python package with testing, linting, and CI/CD setup |
+| 🚀 | **Node.js Backend** | Express-based API with TypeScript and testing framework |
+| 🔷 | **Golang API** | Go-based REST API with standard project layout |
+| ⚛️ | **React Frontend** | TypeScript + React application with Material UI components |
+| 🌐 | **Full-Stack Web** | Fullstack applications with multiple backend options and Material UI |
 
 </div>
 
@@ -122,10 +121,11 @@ curl -fsSL https://raw.githubusercontent.com/ahmifte/craftingbench/v0.2.0/instal
 ```
 
 This script will:
-
 - Download CraftingBench v0.2.0
 - Install it to ~/.craftingbench
 - Configure your shell by adding the necessary source line to your .bashrc or .zshrc
+- Create command line tools: `craftingbench` and `cb` (shorthand alias)
+- Set up command autocompletion
 
 ### Option 2: Manual Installation
 
@@ -146,17 +146,17 @@ chmod +x /path/to/craftingbench/craftingbench.sh
 **For Bash users** (`.bashrc`):
 
 ```bash
-source /path/to/craftingbench/craftingbench.sh
+source /path/to/craftingbench/craftingbench.sh	
 ```
 
 **For Zsh users** (`.zshrc`):
 
 ```zsh
-# Load CraftingBench
-source /path/to/craftingbench/craftingbench.sh
+# Load CraftingBench	
+source /path/to/craftingbench/craftingbench.sh	
 
-# Optional: Enable Zsh completion for CraftingBench commands
-compdef _gnu_generic setup_python_project setup_nodejs_backend setup_react_frontend setup_go_project setup_fullstack_project
+# Optional: Enable Zsh completion for CraftingBench commands	
+compdef _gnu_generic setup_python_project setup_nodejs_backend setup_react_frontend setup_go_project setup_fullstack_project	
 ```
 
 4. Reload your shell configuration:
@@ -164,15 +164,15 @@ compdef _gnu_generic setup_python_project setup_nodejs_backend setup_react_front
 **For Bash users**:
 
 ```bash
-source ~/.bashrc
+source ~/.bashrc	
 ```
 
 **For Zsh users**:
 
 ```zsh
-source ~/.zshrc
-# Or use the shorthand
-. ~/.zshrc
+source ~/.zshrc	
+# Or use the shorthand	
+. ~/.zshrc	
 ```
 
 ### Shell Integration
@@ -202,25 +202,49 @@ Development tools:
 
 <strong>Each project template is created with a single command:</strong>
 
+### Command-Line Interface
+
+CraftingBench provides three ways to use its functionality:
+
+1. **Using the `craftingbench` command**:
+   ```bash
+   craftingbench setup_python_project my_awesome_package
+   ```
+
+2. **Using the shorthand alias `cb`**:
+   ```bash
+   cb setup_nodejs_backend my_api_service
+   ```
+
+3. **Sourcing the script and calling functions directly**:
+   ```bash
+   source ~/.craftingbench/craftingbench.sh
+   setup_react_frontend my_frontend_app
+   ```
+
 ### Command Completion
 
-CraftingBench provides command completion for Zsh shells. When you type a partial command and press Tab, it will show available options.
+CraftingBench provides command completion for both Bash and Zsh shells. When you type a partial command and press Tab, it will show available options.
 
 For example:
-
 ```bash
-setup_fullstack_project myapp --backend=[TAB]
+craftingbench setup_fullstack_project myapp --backend=[TAB]
+# Will show: nextjs flask golang
+```
+
+This also works with the shorthand alias:
+```bash
+cb setup_fullstack_project myapp --backend=[TAB]
 # Will show: nextjs flask golang
 ```
 
 ### 🐍 Python Project
 
 ```bash
-setup_python_project my_awesome_package
+setup_python_project my_awesome_package	
 ```
 
 This creates a Python project with:
-
 - Modern pyproject.toml configuration
 - Testing setup with pytest
 - Linting with flake8
@@ -230,27 +254,26 @@ This creates a Python project with:
 Generated structure:
 
 ```
-my_awesome_package/
-├── .gitignore
-├── .python-version
-├── Makefile
-├── README.md
-├── main.py
-├── my_awesome_package/
-│   └── __init__.py
-├── pyproject.toml
-└── tests/
-    └── test_main.py
+my_awesome_package/	
+├── .gitignore	
+├── .python-version	
+├── Makefile	
+├── README.md	
+├── main.py	
+├── my_awesome_package/	
+│   └── __init__.py	
+├── pyproject.toml	
+└── tests/	
+    └── test_main.py	
 ```
 
 ### 🚀 Node.js Backend
 
 ```bash
-setup_nodejs_backend my_api_service
+setup_nodejs_backend my_api_service	
 ```
 
 This creates a complete Express API with:
-
 - TypeScript configuration
 - Project structure with controllers, routes, models, and middleware
 - Testing setup with Jest
@@ -260,28 +283,27 @@ This creates a complete Express API with:
 Generated structure:
 
 ```
-my_api_service/
-├── .eslintrc.js
-├── .gitignore
-├── README.md
-├── package.json
-├── src/
-│   ├── index.js
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   └── middleware/
-└── tests/
+my_api_service/	
+├── .eslintrc.js	
+├── .gitignore	
+├── README.md	
+├── package.json	
+├── src/	
+│   ├── index.js	
+│   ├── controllers/	
+│   ├── models/	
+│   ├── routes/	
+│   └── middleware/	
+└── tests/	
 ```
 
 ### 🔷 Golang API
 
 ```bash
-setup_go_project my_go_service
+setup_go_project my_go_service	
 ```
 
 This creates a Go project with:
-
 - Standard Go project layout
 - Basic HTTP server setup
 - Configuration management
@@ -290,19 +312,19 @@ This creates a Go project with:
 Generated structure:
 
 ```
-my_go_service/
-├── .gitignore
-├── Makefile
-├── README.md
-├── cmd/
-│   └── my_go_service/
-│       └── main.go
-├── go.mod
-├── internal/
-│   ├── app/
-│   └── pkg/
-├── pkg/
-└── test/
+my_go_service/	
+├── .gitignore	
+├── Makefile	
+├── README.md	
+├── cmd/	
+│   └── my_go_service/	
+│       └── main.go	
+├── go.mod	
+├── internal/	
+│   ├── app/	
+│   └── pkg/	
+├── pkg/	
+└── test/	
 ```
 
 ### ⚛️ React Frontend
@@ -312,7 +334,6 @@ setup_react_frontend my_react_app
 ```
 
 This creates a React application with:
-
 - TypeScript support
 - Material UI components
 - Project structure for components, hooks, and pages
@@ -406,13 +427,13 @@ Material UI provides a solid foundation for building professional user interface
 
 ## 💻 Technology Stack
 
-| Category             | Technologies                            |
-| -------------------- | --------------------------------------- |
-| **Frontend**         | React, TypeScript, Material UI, Emotion |
-| **Backend**          | Next.js, Flask, Go, Express             |
-| **State Management** | React Query, Zustand                    |
-| **API Integration**  | Axios, Fetch API                        |
-| **Tooling**          | ESLint, Prettier, Jest                  |
+| Category | Technologies |
+|----------|--------------|
+| **Frontend** | React, TypeScript, Material UI, Emotion |
+| **Backend** | Next.js, Flask, Go, Express |
+| **State Management** | React Query, Zustand |
+| **API Integration** | Axios, Fetch API |
+| **Tooling** | ESLint, Prettier, Jest |
 
 ## 🧪 Testing and Quality Assurance
 
@@ -421,27 +442,27 @@ Material UI provides a solid foundation for building professional user interface
 ### 🐍 Python Projects
 
 ```bash
-cd my_python_project
-make test      # Runs pytest
-make lint      # Runs flake8
-make format    # Runs black and isort
+cd my_python_project	
+make test      # Runs pytest	
+make lint      # Runs flake8	
+make format    # Runs black and isort	
 ```
 
 ### 🚀 Node.js Projects
 
 ```bash
-cd my_node_project
-pnpm test      # Runs tests
-pnpm lint      # Runs ESLint
+cd my_node_project	
+pnpm test      # Runs tests	
+pnpm lint      # Runs ESLint	
 ```
 
 ### 🔷 Go Projects
 
 ```bash
-cd my_go_project
-make test      # Runs go test
-make vet       # Runs go vet
-make fmt       # Runs go fmt
+cd my_go_project	
+make test      # Runs go test	
+make vet       # Runs go vet	
+make fmt       # Runs go fmt	
 ```
 
 ### ⚛️ React Projects
@@ -502,83 +523,61 @@ pnpm add package-name  # Add a new dependency
 pnpm add -D package-name  # Add a dev dependency
 ```
 
-## 🔍 Development Tools
+## 🛠️ Development Tools
 
-CraftingBench includes several development tools to maintain code quality and consistency:
+CraftingBench includes a comprehensive set of development tools for both frontend and backend templates:
 
-### Pre-commit Hooks
+### ESLint Configuration
 
-CraftingBench provides a pre-configured setup for [pre-commit](https://pre-commit.com/), a framework for managing git pre-commit hooks. These hooks automatically check your code for common issues before committing.
-
-To use pre-commit hooks:
-
-1. Install pre-commit:
+All TypeScript templates are preconfigured with ESLint using the modern flat config format:
 
 ```bash
-pip install pre-commit
+# Run linting on the project
+pnpm lint
 ```
 
-2. Set up the hooks:
+Features include:
+- TypeScript integration with strict type checking
+- React and React Hooks rules
+- Import order enforcement
+- Proper compatibility with Prettier
+
+### Prettier Integration
+
+Consistent code formatting across all templates:
 
 ```bash
-pre-commit install
+# Format all files
+pnpm format
 ```
 
-3. The following checks will run automatically on every commit:
-   - Trailing whitespace removal
-   - End-of-file fixer
-   - YAML, JSON syntax checking
-   - Shell script linting with ShellCheck
-   - JavaScript/TypeScript linting with ESLint
-   - Python code formatting with Black and isort
-   - Code formatting with Prettier
+### TypeScript Support
 
-You can manually run the hooks on all files:
+TypeScript configuration that works for both frontend and backend:
 
+- Modern ES2022 target
+- Path aliases for cleaner imports (`@/components/Button` instead of `../../components/Button`)
+- Strict type checking enabled by default
+- JSX support for React projects
+
+### Template-specific Development Tools
+
+Each project template includes these development tools out of the box:
+
+#### TypeScript Frontend (React):
 ```bash
-pre-commit run --all-files
+pnpm lint         # Run ESLint
+pnpm format       # Run Prettier
+pnpm typecheck    # TypeScript type checking
 ```
 
-### GitHub Actions
-
-All project templates include GitHub Actions workflows for CI/CD. These workflows:
-
-- Run on push to main branch and pull requests
-- Test across multiple language versions
-- Run linting and type checking
-- Generate and upload test coverage
-- Build the project artifacts
-
-### Package Managers
-
-CraftingBench uses modern package managers for different languages:
-
-- **Python**: Uses [uv](https://github.com/astral-sh/uv) (if available) or pip
-- **Node.js**: Uses [pnpm](https://pnpm.io/) for faster, disk-space efficient dependency management
-- **Go**: Uses standard Go modules
-
-## 📚 Template Customization
-
-All templates can be customized by editing the template files in the `src/templates/` directory:
-
-- `python.sh`: Python project templates
-- `nodejs.sh`: Node.js backend templates
-- `react.sh`: React frontend templates
-- `go.sh`: Go project templates
-- `fullstack.sh`: Full-stack application templates
-
-### GitHub Workflow Templates
-
-GitHub Actions workflow templates are stored in `src/templates/github-workflows/`:
-
-- `python-workflow.yml`: CI workflow for Python projects
-- `nodejs-workflow.yml`: CI workflow for Node.js backends
-- `react-workflow.yml`: CI workflow for React frontends
-- `go-workflow.yml`: CI workflow for Go projects
-- `flask-react-workflow.yml`: CI workflow for Flask+React projects
-- `go-react-workflow.yml`: CI workflow for Go+React projects
-
-You can customize these workflows by editing the corresponding YAML files.
+#### TypeScript Backend (Node.js):
+```bash
+pnpm lint         # Run ESLint
+pnpm format       # Run Prettier
+pnpm typecheck    # TypeScript type checking
+pnpm dev          # Run with hot reloading
+```
 
 ## Customizing Templates
 
@@ -631,85 +630,16 @@ To add a new template, see our [Template Documentation](docs/templates/README.md
 
 ## 📚 Resources
 
-| Resource                                                                           | Description                                 |
-| ---------------------------------------------------------------------------------- | ------------------------------------------- |
-| [GitHub CLI Documentation](https://cli.github.com/manual/)                         | Documentation for the GitHub CLI            |
+| Resource | Description |
+|----------|-------------|
+| [GitHub CLI Documentation](https://cli.github.com/manual/) | Documentation for the GitHub CLI |
 | [Python Project Structure Guide](https://docs.python-guide.org/writing/structure/) | Best practices for Python project structure |
-| [Node.js Best Practices](https://github.com/goldbergyoni/nodebestpractices)        | Comprehensive guide for Node.js projects    |
-| [Go Project Layout](https://github.com/golang-standards/project-layout)            | Standard Go project structure               |
-| [Zsh Documentation](https://zsh.sourceforge.io/Doc/)                               | Documentation for Zsh shell                 |
-| [Material UI Documentation](https://mui.com/material-ui/)                          | Complete guide to Material UI components    |
-| [pnpm Documentation](https://pnpm.io/)                                             | Official pnpm documentation                 |
+| [Node.js Best Practices](https://github.com/goldbergyoni/nodebestpractices) | Comprehensive guide for Node.js projects |
+| [Go Project Layout](https://github.com/golang-standards/project-layout) | Standard Go project structure |
+| [Zsh Documentation](https://zsh.sourceforge.io/Doc/) | Documentation for Zsh shell |
+| [Material UI Documentation](https://mui.com/material-ui/) | Complete guide to Material UI components |
+| [pnpm Documentation](https://pnpm.io/) | Official pnpm documentation |
 
 ## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🛠️ Utility Functions
-
-CraftingBench provides several utility functions that can be used independently:
-
-## Common Utilities
-
-The following utilities are available in `src/helpers/utils.sh`:
-
-| Function                        | Description                                                             |
-| ------------------------------- | ----------------------------------------------------------------------- |
-| `setup_git_repository`          | Initialize and set up a Git repository with optional GitHub integration |
-| `setup_github_workflow`         | Add GitHub workflow templates to a project                              |
-| `setup_pre_commit`              | Configure pre-commit hooks for a project                                |
-| `create_gitignore`              | Generate a .gitignore file specific to a project type                   |
-| `detect_node_package_manager`   | Auto-detect the available Node.js package manager                       |
-| `detect_python_package_manager` | Auto-detect the available Python package manager                        |
-| `run_package_manager_command`   | Run commands with the appropriate package manager                       |
-
-## Pre-commit Integration
-
-You can easily add pre-commit hooks to any project using the template:
-
-```bash
-./src/templates/pre-commit.sh /path/to/your/project [python,js,go]
-```
-
-The pre-commit configuration:
-
-- Automatically detects the languages used in your project
-- Sets up appropriate linters and formatters
-- Adds necessary configuration to your README.md
-
-## GitHub Workflows
-
-Standard GitHub workflow templates for CI/CD are available in `src/templates/github-workflows/`:
-
-- `python-workflow.yml` - For Python projects
-- `nodejs-workflow.yml` - For Node.js projects
-- `go-workflow.yml` - For Go projects
-- `react-workflow.yml` - For React projects
-- `pre-commit-workflow.yml` - For running pre-commit checks in CI
-
-To add a workflow to your project:
-
-```bash
-# Source the utility functions
-source /path/to/craftingbench/src/helpers/utils.sh
-
-# Setup a workflow
-setup_github_workflow /path/to/your/project python my-project-name your-github-username
-```
-
-## Using Utilities in Your Own Scripts
-
-You can source the utility functions in your own scripts to reuse CraftingBench's functionality:
-
-```bash
-#!/usr/bin/env bash
-
-# Source the utility functions
-source /path/to/craftingbench/src/helpers/utils.sh
-
-# Use the functions
-setup_pre_commit "." "python,js"
-setup_github_workflow "." "python" "my-project" "my-github-username"
-```
-
-These utilities help maintain consistent project setups across your development environment.

@@ -26,6 +26,18 @@ on:
         required: false
         type: string
         default: 'echo "No lint command specified"'
+      node_required:
+        description: 'Whether Node.js is required'
+        required: false
+        type: boolean
+      node_version:
+        description: 'Node.js version'
+        required: false
+        type: string
+      node_cache:
+        description: 'Node.js cache'
+        required: false
+        type: string
 
 jobs:
   ci:
@@ -36,15 +48,15 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Setup Node.js (if needed)
-        if: contains(inputs.project_type, 'node') || contains(inputs.project_type, 'react')
-        uses: actions/setup-node@v3
+        if: ${{ inputs.node_required }}
+        uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
-          cache: 'pnpm'
+          node-version: ${{ inputs.node_version || '18.x' }}
+          cache: ${{ inputs.node_cache || 'npm' }}
 
       - name: Setup Python (if needed)
         if: contains(inputs.project_type, 'python') || contains(inputs.project_type, 'flask')
@@ -97,9 +109,9 @@ jobs:
           flags: ${{ inputs.project_type }}
           fail_ci_if_error: false
 
-      - name: Upload build artifacts (if build directory exists)
-        if: contains(inputs.build_command, 'build') && contains(inputs.project_type, 'react')
-        uses: actions/upload-artifact@v3
+      - name: Upload artifacts
+        if: ${{ inputs.artifact_path }}
+        uses: actions/upload-artifact@v4
         with:
           name: build
-          path: ${{ inputs.working_directory }}/dist
+          path: ${{ inputs.artifact_path }}
