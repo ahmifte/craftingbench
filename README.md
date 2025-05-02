@@ -208,19 +208,16 @@ Development tools:
 CraftingBench provides three ways to use its functionality:
 
 1. **Using the `craftingbench` command**:
-
    ```bash
    craftingbench setup_python_project my_awesome_package
    ```
 
-1. **Using the shorthand alias `cb`**:
-
+2. **Using the shorthand alias `cb`**:
    ```bash
    cb setup_nodejs_backend my_api_service
    ```
 
-1. **Sourcing the script and calling functions directly**:
-
+3. **Sourcing the script and calling functions directly**:
    ```bash
    source ~/.craftingbench/craftingbench.sh
    setup_react_frontend my_frontend_app
@@ -238,7 +235,6 @@ craftingbench setup_fullstack_project myapp --backend=[TAB]
 ```
 
 This also works with the shorthand alias:
-
 ```bash
 cb setup_fullstack_project myapp --backend=[TAB]
 # Will show: nextjs flask golang

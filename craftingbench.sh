@@ -14,11 +14,23 @@
 
 # USAGE:
 #   source ./craftingbench.sh
-#   setup_python_project <project_name>
-#   setup_go_project <project_name>
+#
+#   Python:
+#   setup_python_project <project_name> [--type=library|backend]
+#   setup_python_library <project_name>
+#   setup_python_backend <project_name>
+#
+#   Go:
+#   setup_go_project <project_name> [--type=library|backend]
+#   setup_go_library <project_name>
+#   setup_go_backend <project_name>
+#
+#   JavaScript/TypeScript:
 #   setup_nodejs_backend <project_name>
 #   setup_react_frontend <project_name>
-#   setup_fullstack_project <project_name> (Next.js fullstack app with state management)
+#
+#   Fullstack:
+#   setup_fullstack_project <project_name> [--backend=nextjs|flask|golang]
 
 # For more information, visit: https://github.com/ahmifte/craftingbench
 # ================================================================
