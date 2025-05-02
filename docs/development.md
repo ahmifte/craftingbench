@@ -45,8 +45,8 @@ curl -fsSL https://raw.githubusercontent.com/ahmifte/craftingbench/v0.2.0/instal
 This script will:
 
 1. Download CraftingBench v0.2.0
-2. Install it to `~/.craftingbench`
-3. Configure your shell by adding the necessary source line to your `.bashrc` or `.zshrc`
+1. Install it to `~/.craftingbench`
+1. Configure your shell by adding the necessary source line to your `.bashrc` or `.zshrc`
 
 #### Manual Installation
 
@@ -56,13 +56,13 @@ This script will:
    git clone https://github.com/ahmifte/craftingbench.git
    ```
 
-2. Make the script executable:
+1. Make the script executable:
 
    ```bash
    chmod +x /path/to/craftingbench/craftingbench.sh
    ```
 
-3. Add to your shell configuration file:
+1. Add to your shell configuration file:
 
    ```bash
    # For Bash (.bashrc)
@@ -490,8 +490,8 @@ pnpm dev          # Run with hot reloading
 CraftingBench templates are designed as starting points. To customize:
 
 1. Generate a project using the appropriate template
-2. Modify the generated files to fit your needs
-3. Consider creating a fork of CraftingBench with your customizations if you need reusable templates
+1. Modify the generated files to fit your needs
+1. Consider creating a fork of CraftingBench with your customizations if you need reusable templates
 
 Advanced users can modify the template scripts directly at `src/templates/`.
 
@@ -513,8 +513,8 @@ Advanced users can modify the template scripts directly at `src/templates/`.
 If you encounter issues:
 
 1. Check the [GitHub Issues](https://github.com/ahmifte/craftingbench/issues) for similar problems
-2. Read the documentation in `docs/` directory
-3. Create a new issue if you can't find a solution
+1. Read the documentation in `docs/` directory
+1. Create a new issue if you can't find a solution
 
 ## Resources
 
@@ -530,6 +530,6 @@ Here are some useful resources for working with the technologies used in Craftin
 | [Material UI Documentation](https://mui.com/material-ui/)                          | Complete guide to Material UI components    |
 | [pnpm Documentation](https://pnpm.io/)                                             | Official pnpm documentation                 |
 
----
+______________________________________________________________________
 
 For more information, see the [architecture documentation](architecture.md) and [template documentation](templates/README.md).

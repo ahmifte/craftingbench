@@ -6,7 +6,7 @@
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Shell Script](https://img.shields.io/badge/Shell_Script-Bash-4EAA25.svg?logo=gnu-bash&logoColor=white)](craftingbench.sh)
-[![Version](https://img.shields.io/badge/Version-0.2.0%20(Beta)-orange.svg)](CHANGELOG.md)
+[![Version](<https://img.shields.io/badge/Version-0.2.0%20(Beta)-orange.svg>)](CHANGELOG.md)
 [![Dependabot](https://img.shields.io/badge/Dependabot-Active-brightgreen.svg)](https://github.com/features/security)
 [![Made with Love](https://img.shields.io/badge/Made%20with-Love-ff69b4.svg)](https://github.com/ahmifte/craftingbench)
 
@@ -61,7 +61,7 @@ ______________________________________________________________________
 - [Installation](#-installation)
 - [Usage](#-usage)
   - [Python Project](#-python-project)
-  - [Node.js Backend](#-nodejs-backend) 
+  - [Node.js Backend](#-nodejs-backend)
   - [Golang API](#-golang-api)
   - [React Frontend](#-react-frontend)
   - [Next.js Projects](#-nextjs-projects)
@@ -84,13 +84,13 @@ ______________________________________________________________________
 
 <div align="center">
 
-| Icon | Template | Description |
-|:----:|----------|-------------|
-| 🐍 | **Python Projects** | Modern Python package with testing, linting, and CI/CD setup |
-| 🚀 | **Node.js Backend** | Express-based API with TypeScript and testing framework |
-| 🔷 | **Golang API** | Go-based REST API with standard project layout |
-| ⚛️ | **React Frontend** | TypeScript + React application with Material UI components |
-| 🌐 | **Full-Stack Web** | Fullstack applications with multiple backend options and Material UI |
+| Icon | Template            | Description                                                          |
+| :--: | ------------------- | -------------------------------------------------------------------- |
+|  🐍  | **Python Projects** | Modern Python package with testing, linting, and CI/CD setup         |
+|  🚀  | **Node.js Backend** | Express-based API with TypeScript and testing framework              |
+|  🔷  | **Golang API**      | Go-based REST API with standard project layout                       |
+|  ⚛️  | **React Frontend**  | TypeScript + React application with Material UI components           |
+|  🌐  | **Full-Stack Web**  | Fullstack applications with multiple backend options and Material UI |
 
 </div>
 
@@ -121,6 +121,7 @@ curl -fsSL https://raw.githubusercontent.com/ahmifte/craftingbench/v0.2.0/instal
 ```
 
 This script will:
+
 - Download CraftingBench v0.2.0
 - Install it to ~/.craftingbench
 - Configure your shell by adding the necessary source line to your .bashrc or .zshrc
@@ -207,16 +208,19 @@ Development tools:
 CraftingBench provides three ways to use its functionality:
 
 1. **Using the `craftingbench` command**:
+
    ```bash
    craftingbench setup_python_project my_awesome_package
    ```
 
-2. **Using the shorthand alias `cb`**:
+1. **Using the shorthand alias `cb`**:
+
    ```bash
    cb setup_nodejs_backend my_api_service
    ```
 
-3. **Sourcing the script and calling functions directly**:
+1. **Sourcing the script and calling functions directly**:
+
    ```bash
    source ~/.craftingbench/craftingbench.sh
    setup_react_frontend my_frontend_app
@@ -227,12 +231,14 @@ CraftingBench provides three ways to use its functionality:
 CraftingBench provides command completion for both Bash and Zsh shells. When you type a partial command and press Tab, it will show available options.
 
 For example:
+
 ```bash
 craftingbench setup_fullstack_project myapp --backend=[TAB]
 # Will show: nextjs flask golang
 ```
 
 This also works with the shorthand alias:
+
 ```bash
 cb setup_fullstack_project myapp --backend=[TAB]
 # Will show: nextjs flask golang
@@ -245,6 +251,7 @@ setup_python_project my_awesome_package
 ```
 
 This creates a Python project with:
+
 - Modern pyproject.toml configuration
 - Testing setup with pytest
 - Linting with flake8
@@ -274,6 +281,7 @@ setup_nodejs_backend my_api_service
 ```
 
 This creates a complete Express API with:
+
 - TypeScript configuration
 - Project structure with controllers, routes, models, and middleware
 - Testing setup with Jest
@@ -304,6 +312,7 @@ setup_go_project my_go_service
 ```
 
 This creates a Go project with:
+
 - Standard Go project layout
 - Basic HTTP server setup
 - Configuration management
@@ -334,6 +343,7 @@ setup_react_frontend my_react_app
 ```
 
 This creates a React application with:
+
 - TypeScript support
 - Material UI components
 - Project structure for components, hooks, and pages
@@ -427,13 +437,13 @@ Material UI provides a solid foundation for building professional user interface
 
 ## 💻 Technology Stack
 
-| Category | Technologies |
-|----------|--------------|
-| **Frontend** | React, TypeScript, Material UI, Emotion |
-| **Backend** | Next.js, Flask, Go, Express |
-| **State Management** | React Query, Zustand |
-| **API Integration** | Axios, Fetch API |
-| **Tooling** | ESLint, Prettier, Jest |
+| Category             | Technologies                            |
+| -------------------- | --------------------------------------- |
+| **Frontend**         | React, TypeScript, Material UI, Emotion |
+| **Backend**          | Next.js, Flask, Go, Express             |
+| **State Management** | React Query, Zustand                    |
+| **API Integration**  | Axios, Fetch API                        |
+| **Tooling**          | ESLint, Prettier, Jest                  |
 
 ## 🧪 Testing and Quality Assurance
 
@@ -537,6 +547,7 @@ pnpm lint
 ```
 
 Features include:
+
 - TypeScript integration with strict type checking
 - React and React Hooks rules
 - Import order enforcement
@@ -565,6 +576,7 @@ TypeScript configuration that works for both frontend and backend:
 Each project template includes these development tools out of the box:
 
 #### TypeScript Frontend (React):
+
 ```bash
 pnpm lint         # Run ESLint
 pnpm format       # Run Prettier
@@ -572,6 +584,7 @@ pnpm typecheck    # TypeScript type checking
 ```
 
 #### TypeScript Backend (Node.js):
+
 ```bash
 pnpm lint         # Run ESLint
 pnpm format       # Run Prettier
@@ -584,8 +597,8 @@ pnpm dev          # Run with hot reloading
 CraftingBench templates are designed as starting points. To customize:
 
 1. Generate a project using the appropriate template
-2. Modify the generated files to fit your needs
-3. Consider creating a fork of CraftingBench with your customizations if you need reusable templates
+1. Modify the generated files to fit your needs
+1. Consider creating a fork of CraftingBench with your customizations if you need reusable templates
 
 Advanced users can modify the template scripts directly at `src/templates/`.
 
@@ -607,8 +620,8 @@ Advanced users can modify the template scripts directly at `src/templates/`.
 If you encounter issues:
 
 1. Check the [GitHub Issues](https://github.com/ahmifte/craftingbench/issues) for similar problems
-2. Read the documentation in `docs/` directory
-3. Create a new issue if you can't find a solution
+1. Read the documentation in `docs/` directory
+1. Create a new issue if you can't find a solution
 
 ## 🤝 Contributing
 
@@ -630,15 +643,15 @@ To add a new template, see our [Template Documentation](docs/templates/README.md
 
 ## 📚 Resources
 
-| Resource | Description |
-|----------|-------------|
-| [GitHub CLI Documentation](https://cli.github.com/manual/) | Documentation for the GitHub CLI |
+| Resource                                                                           | Description                                 |
+| ---------------------------------------------------------------------------------- | ------------------------------------------- |
+| [GitHub CLI Documentation](https://cli.github.com/manual/)                         | Documentation for the GitHub CLI            |
 | [Python Project Structure Guide](https://docs.python-guide.org/writing/structure/) | Best practices for Python project structure |
-| [Node.js Best Practices](https://github.com/goldbergyoni/nodebestpractices) | Comprehensive guide for Node.js projects |
-| [Go Project Layout](https://github.com/golang-standards/project-layout) | Standard Go project structure |
-| [Zsh Documentation](https://zsh.sourceforge.io/Doc/) | Documentation for Zsh shell |
-| [Material UI Documentation](https://mui.com/material-ui/) | Complete guide to Material UI components |
-| [pnpm Documentation](https://pnpm.io/) | Official pnpm documentation |
+| [Node.js Best Practices](https://github.com/goldbergyoni/nodebestpractices)        | Comprehensive guide for Node.js projects    |
+| [Go Project Layout](https://github.com/golang-standards/project-layout)            | Standard Go project structure               |
+| [Zsh Documentation](https://zsh.sourceforge.io/Doc/)                               | Documentation for Zsh shell                 |
+| [Material UI Documentation](https://mui.com/material-ui/)                          | Complete guide to Material UI components    |
+| [pnpm Documentation](https://pnpm.io/)                                             | Official pnpm documentation                 |
 
 ## 📜 License
 

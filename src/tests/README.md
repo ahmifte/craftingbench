@@ -17,19 +17,20 @@ This directory contains tests to validate that CraftingBench templates are worki
    npm install -g bats-core
    ```
 
-2. Run all tests:
+1. Run all tests:
 
    ```bash
    ./run-tests.sh
    ```
 
-3. Run only shell tests:
+1. Run only shell tests:
 
    ```bash
    bats ./shell-tests/*.bats
    ```
 
-4. Run only documentation validation tests:
+1. Run only documentation validation tests:
+
    ```bash
    npm test
    ```
@@ -39,9 +40,9 @@ This directory contains tests to validate that CraftingBench templates are worki
 The test suite validates:
 
 1. Basic functionality of each template script
-2. Consistency between actual template output and documentation
-3. Project structure validation for each template type
-4. Expected files and configuration in generated projects
+1. Consistency between actual template output and documentation
+1. Project structure validation for each template type
+1. Expected files and configuration in generated projects
 
 ## GitHub Actions Integration
 

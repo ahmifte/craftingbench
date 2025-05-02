@@ -29,8 +29,8 @@ src/templates/
 The fullstack template supports three backend options:
 
 1. **Next.js** - Full TypeScript stack with API routes
-2. **Flask** - Python backend with TypeScript React frontend
-3. **Go** - Go backend with TypeScript React frontend
+1. **Flask** - Python backend with TypeScript React frontend
+1. **Go** - Go backend with TypeScript React frontend
 
 All fullstack templates include:
 
@@ -44,15 +44,18 @@ All fullstack templates include:
 To create a new template:
 
 1. Create a new script in `src/templates/` named `your_template.sh`
-2. Implement the required functions:
+
+1. Implement the required functions:
 
    - `setup_your_template_project()`
    - `create_your_template_files()`
    - Any helper functions needed
 
-3. Add template-specific assets to `src/templates/assets/your_template/`
-4. Update `src/helpers/common.sh` to include your template
-5. Add documentation for your template
+1. Add template-specific assets to `src/templates/assets/your_template/`
+
+1. Update `src/helpers/common.sh` to include your template
+
+1. Add documentation for your template
 
 ### Template Script Structure
 
@@ -91,7 +94,7 @@ All frontend templates now use Material UI instead of Tailwind CSS. To ensure co
    pnpm add @mui/material @mui/icons-material @emotion/react @emotion/styled
    ```
 
-2. Set up a theme with light/dark mode support:
+1. Set up a theme with light/dark mode support:
 
    ```typescript
    // theme.ts
@@ -111,7 +114,7 @@ All frontend templates now use Material UI instead of Tailwind CSS. To ensure co
    );
    ```
 
-3. Create reusable layout components that use Material UI
+1. Create reusable layout components that use Material UI
 
 ## TypeScript Configuration
 
@@ -123,8 +126,9 @@ Ensure all JavaScript templates use TypeScript by default:
    pnpm add -D typescript @types/node @types/react @types/express
    ```
 
-2. Create proper `tsconfig.json` with recommended settings
-3. Set up proper type definitions for all components and functions
+1. Create proper `tsconfig.json` with recommended settings
+
+1. Set up proper type definitions for all components and functions
 
 ## Testing Your Template
 

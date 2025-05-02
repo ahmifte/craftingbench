@@ -30,7 +30,7 @@ craftingbench/
 └── README.md                # Main documentation
 ```
 
----
+______________________________________________________________________
 
 ## 🧩 Component Overview
 
@@ -75,8 +75,8 @@ craftingbench/
 CraftingBench uses GitHub Releases for distribution:
 
 1. Versioned releases are tagged with `v*` format (e.g., `v0.2.0`)
-2. GitHub Actions automatically build release assets
-3. The `install.sh` script downloads the appropriate release
+1. GitHub Actions automatically build release assets
+1. The `install.sh` script downloads the appropriate release
 
 For detailed information on the release process, see [RELEASING.md](RELEASING.md).
 

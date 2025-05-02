@@ -8,7 +8,7 @@
 
 </div>
 
----
+______________________________________________________________________
 
 ## 📋 Release Checklist
 
@@ -23,27 +23,28 @@ Before creating a new release, ensure the following steps are completed:
    - Template documentation
    - Version badge in all markdown files
 
-2. ✅ **Update the CHANGELOG.md** with:
+1. ✅ **Update the CHANGELOG.md** with:
 
    - New features
    - Bug fixes
    - Breaking changes
    - Deprecated functionality
 
-3. ✅ **Audit the TypeScript codebase:**
+1. ✅ **Audit the TypeScript codebase:**
 
    - Run linting checks: `pnpm lint`
    - Fix any identified issues
    - Ensure type safety across all components
 
-4. ✅ **Test all templates:**
+1. ✅ **Test all templates:**
 
    - Generate test projects for each template
    - Verify that all dependencies are correctly installed
    - Validate that TypeScript compilation works
    - Ensure each template runs as expected
 
-5. ✅ **Update documentation:**
+1. ✅ **Update documentation:**
+
    - Ensure all template documentation is current
    - Update the architecture document if necessary
    - Review and update the user guide
@@ -59,14 +60,15 @@ CraftingBench uses GitHub Releases for distribution:
    git push origin v0.X.Y
    ```
 
-2. **Create a new release** on GitHub:
+1. **Create a new release** on GitHub:
 
    - Navigate to the Releases page
    - Create a new release using the tag
    - Copy the changelog entry for this version into the release notes
    - Mark as pre-release if not a stable version
 
-3. **Verify the GitHub Actions workflow** completes successfully:
+1. **Verify the GitHub Actions workflow** completes successfully:
+
    - The workflow will automatically:
      - Build the release artifacts
      - Attach them to the GitHub release
@@ -77,7 +79,7 @@ CraftingBench uses GitHub Releases for distribution:
 Once the release is created and verified:
 
 1. **Update the installation instructions** if necessary
-2. **Notify users** through appropriate channels
+1. **Notify users** through appropriate channels
 
 ## 🔖 Version Numbering
 
@@ -94,7 +96,7 @@ CraftingBench follows [Semantic Versioning](https://semver.org/):
 To test a release before publishing:
 
 1. Create a temporary branch
-2. Update version numbers
-3. Run through the entire release checklist
-4. Create a local installation for testing
-5. Verify all templates and functionality work as expected
+1. Update version numbers
+1. Run through the entire release checklist
+1. Create a local installation for testing
+1. Verify all templates and functionality work as expected

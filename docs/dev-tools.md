@@ -61,8 +61,8 @@ pre-commit run <hook-id>
 The pre-commit configuration is stored in `.pre-commit-config.yaml` in the root directory. You can customize it by:
 
 1. Adding new hooks
-2. Changing hook options
-3. Updating hook versions
+1. Changing hook options
+1. Updating hook versions
 
 ## GitHub Actions
 
@@ -82,7 +82,7 @@ All project templates in CraftingBench include GitHub Actions workflows for cont
 You can customize the GitHub Actions workflows for your projects:
 
 1. Edit the workflow templates in `src/templates/github-workflows/`
-2. Run the update-templates script to apply changes: `./src/templates/update-templates.sh`
+1. Run the update-templates script to apply changes: `./src/templates/update-templates.sh`
 
 ## Package Management
 
@@ -168,5 +168,5 @@ CraftingBench projects include configuration for popular editors:
 To add custom development tools:
 
 1. Edit the template scripts in `src/templates/`
-2. Add your custom tools and configurations
-3. Update this documentation to reflect the changes
+1. Add your custom tools and configurations
+1. Update this documentation to reflect the changes
