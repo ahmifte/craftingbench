@@ -1,0 +1,219 @@
+name: Go CI Workflow
+
+on:
+  workflow_call:
+    inputs:
+      go_version:
+        description: 'Go version to use'
+        required: false
+        type: string
+        default: '1.21'
+      go_versions:
+        description: 'JSON array of Go versions to test'
+        required: false
+        type: string
+        default: '["1.19", "1.20", "1.21"]'
+      working_directory:
+        description: 'Working directory for the job'
+        required: false
+        type: string
+        default: '.'
+      test_flags:
+        description: 'Flags to pass to go test'
+        required: false
+        type: string
+        default: '-v -race'
+      lint_command:
+        description: 'Lint command to run'
+        required: false
+        type: string
+        default: 'golangci-lint run'
+      environment:
+        description: 'Environment to use (e.g., production, staging)'
+        required: false
+        type: string
+      build_args:
+        description: 'Additional build arguments'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  go-ci:
+    uses: ./.github/workflows/base-ci.yml
+    with:
+      working_directory: ${{ inputs.working_directory }}
+      cache_dependencies: true
+      enable_coverage: true
+      matrix_config: |
+        {
+          "include": [
+            {
+              "go-version": ${{ inputs.go_versions }}
+            }
+          ]
+        }
+      environment: ${{ inputs.environment }}
+
+  setup-go:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ${{ fromJson(inputs.go_versions) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: true
+
+      - name: Install golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          args: --version
+          skip-pkg-cache: false
+          skip-build-cache: false
+
+      - name: Install dependencies
+        run: |
+          go mod download
+          go install github.com/axw/gocov/gocov@latest
+          go install github.com/AlekSi/gocov-xml@latest
+          go install golang.org/x/tools/cmd/goimports@latest
+          go install github.com/goreleaser/goreleaser@latest
+
+  lint:
+    needs: setup-go
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ${{ fromJson(inputs.go_versions) }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: true
+
+      - name: Run linter
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          working-directory: ${{ inputs.working_directory }}
+          args: ${{ inputs.lint_command == 'golangci-lint run' && 'run' || inputs.lint_command }}
+
+      - name: Check formatting
+        run: |
+          goimports -d . | tee goimports.out
+          [ ! -s goimports.out ] || (echo "❌ Code is not formatted with goimports. Run 'goimports -w .'" && exit 1)
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ${{ fromJson(inputs.go_versions) }}
+        os: [ubuntu-latest]
+        include:
+          - os: macos-latest
+            go-version: ${{ fromJson(inputs.go_versions)[0] }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: true
+
+      - name: Run tests with coverage
+        run: |
+          go test ${{ inputs.test_flags }} -coverprofile=coverage.out ./...
+          if command -v gocov &> /dev/null; then
+            gocov convert coverage.out | gocov-xml > coverage.xml
+            go tool cover -html=coverage.out -o coverage.html
+          fi
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-go${{ matrix.go-version }}-${{ matrix.os }}
+          path: |
+            coverage.out
+            coverage.xml
+            coverage.html
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          flags: go-${{ matrix.go-version }}-${{ matrix.os }}
+          fail_ci_if_error: false
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version:
+          - ${{ fromJson(inputs.go_versions)[0] }}
+        include:
+          - os: ubuntu-latest
+            target: linux
+          - os: macos-latest
+            target: darwin
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: true
+
+      - name: Build
+        run: |
+          GOOS=${{ matrix.target }} go build -v ${{ inputs.build_args }} ./...
+
+      - name: Check if goreleaser.yml exists
+        id: check_goreleaser
+        run: |
+          if [ -f .goreleaser.yml ] || [ -f .goreleaser.yaml ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run GoReleaser (dry-run)
+        if: steps.check_goreleaser.outputs.exists == 'true'
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --snapshot --skip-publish --clean
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

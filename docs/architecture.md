@@ -1,6 +1,6 @@
 # 🏗️ Architecture
 
-[![Version](https://img.shields.io/badge/Version-0.2.0%20(Beta)-orange.svg)](../CHANGELOG.md)
+[![Version](<https://img.shields.io/badge/Version-0.2.0%20(Beta)-orange.svg>)](../CHANGELOG.md)
 
 This document outlines the architectural design of CraftingBench v0.2.0.
 
@@ -55,12 +55,12 @@ ______________________________________________________________________
 
 **Each template is contained in its own file for better separation of concerns.**
 
-| File | Description |
-|------|-------------|
-| `python.sh` | 🐍 Python project setup |
-| `nodejs.sh` | 🚀 TypeScript Node.js backend setup |
-| `go.sh` | 🔷 Go project setup |
-| `react.sh` | ⚛️ TypeScript React frontend with Material UI |
+| File           | Description                                                       |
+| -------------- | ----------------------------------------------------------------- |
+| `python.sh`    | 🐍 Python project setup                                           |
+| `nodejs.sh`    | 🚀 TypeScript Node.js backend setup                               |
+| `go.sh`        | 🔷 Go project setup                                               |
+| `react.sh`     | ⚛️ TypeScript React frontend with Material UI                     |
 | `fullstack.sh` | 🌐 TypeScript fullstack setup with Material UI (Next.js/Flask/Go) |
 
 ### 🔄 Shell Completions (`src/completions/`)
@@ -75,8 +75,8 @@ ______________________________________________________________________
 CraftingBench uses GitHub Releases for distribution:
 
 1. Versioned releases are tagged with `v*` format (e.g., `v0.2.0`)
-2. GitHub Actions automatically build release assets
-3. The `install.sh` script downloads the appropriate release
+1. GitHub Actions automatically build release assets
+1. The `install.sh` script downloads the appropriate release
 
 For detailed information on the release process, see [RELEASING.md](RELEASING.md).
 

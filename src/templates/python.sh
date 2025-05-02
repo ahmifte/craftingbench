@@ -2,6 +2,8 @@
 
 # Source common helper functions
 source "$(dirname "${BASH_SOURCE[0]}")/../helpers/common.sh" 2>/dev/null || source "${CRAFTINGBENCH_DIR}/src/helpers/common.sh"
+# Import template utilities
+source "$(dirname "${BASH_SOURCE[0]}")/../helpers/template-utils.sh" 2>/dev/null || source "${CRAFTINGBENCH_DIR}/src/helpers/template-utils.sh"
 
 # Direct command aliases for specialized project types
 setup_python_library() {
@@ -388,10 +390,10 @@ _setup_python_backend() {
   # Create project directory if it doesn't exist
   mkdir -p "$project_name"
   cd "$project_name" || return 1
-  
+
   # Initialize git repository
   git init
-  
+
   # Check if the repository already exists, and if so, clone it instead
   if command_exists gh && gh repo view "$github_username/$project_name" &>/dev/null; then
     echo "Repository already exists. Cloning existing repository..."
@@ -403,17 +405,17 @@ _setup_python_backend() {
     # Create a new GitHub repository if gh CLI is available
     echo "Creating new GitHub repository '$project_name'..."
     gh repo create "$project_name" --private
-    
+
     # Add remote
     git remote add origin "https://github.com/$github_username/$project_name.git"
-    
+
     # Create a simple README.md for the initial commit
     echo "# $project_name" > README.md
-    
+
     # Add README.md and make the initial commit
     git add README.md
     git commit -m "Initial commit: Add project README"
-    
+
     # Push the initial commit to the main branch
     git push -u origin main
   else
@@ -423,7 +425,7 @@ _setup_python_backend() {
     git add README.md
     git commit -m "Initial commit: Add project README"
   fi
-  
+
   # Create and checkout a new branch for the project setup
   if [[ -n $(git branch --list main) ]]; then
     git checkout main
@@ -436,7 +438,7 @@ _setup_python_backend() {
   else
     git checkout -b initial-setup
   fi
-  
+
   # Expand README.md with more content
   cat > README.md << EOF
 # $project_name
@@ -674,7 +676,6 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-
 class Config:
     """Base config."""
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-key-please-change-in-production")
@@ -744,7 +745,7 @@ PORT=5000
 # Database settings (uncomment if using a database)
 # DATABASE_URL=postgresql://user:password@localhost/dbname
 EOF
-  
+
   # Create Dockerfile
   cat > Dockerfile << EOF
 FROM python:3.10-slim
@@ -897,7 +898,7 @@ build-docs:
 serve-docs:
 	cd docs/_build/html && python -m http.server 8000
 EOF
-  
+
   # Initialize git with all the files we've created
   git add .
   git commit -m "feat: Initial Flask API backend setup"
@@ -911,4 +912,4 @@ EOF
   echo "  4. Run the development server: make run"
   echo "  5. Visit http://localhost:5000/api/health to verify it's working"
   echo ""
-} 
+}

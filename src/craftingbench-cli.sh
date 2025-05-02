@@ -42,4 +42,4 @@ else
     echo "Error: Unknown command '$command'"
     echo "Run 'craftingbench' without arguments to see available commands."
     exit 1
-fi 
+fi

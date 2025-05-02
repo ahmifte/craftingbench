@@ -2,16 +2,18 @@
 
 # Source common helper functions
 source "$(dirname "${BASH_SOURCE[0]}")/../helpers/common.sh" 2>/dev/null || source "${CRAFTINGBENCH_DIR}/src/helpers/common.sh"
+# Import template utilities
+source "$(dirname "${BASH_SOURCE[0]}")/../helpers/template-utils.sh" 2>/dev/null || source "${CRAFTINGBENCH_DIR}/src/helpers/template-utils.sh"
 
 setup_nodejs_backend() {
-  local project_name="$1"
-  
   # Check for required arguments
-  if [ -z "$project_name" ]; then
+  if [ -z "$1" ]; then
     echo "Error: Project name is required"
     echo "Usage: setup_nodejs_backend <project_name>"
     return 1
   fi
+
+  local project_name="$1"
 
   # Check for dependencies
   if ! check_dependencies "node git"; then
@@ -19,23 +21,22 @@ setup_nodejs_backend() {
   fi
 
   # Detect package manager (prefer pnpm)
-  if command -v pnpm &> /dev/null; then
-    echo "Using pnpm package manager for faster dependency management"
-    NODE_PACKAGE_MANAGER="pnpm"
-  else
-    echo "Using npm as package manager (consider installing pnpm for faster dependency management)"
-    NODE_PACKAGE_MANAGER="npm"
-  fi
+  local package_manager
+  package_manager=$(detect_node_package_manager)
+  echo "Using package manager: $package_manager"
 
-  # Create project directory and navigate to it
+  # Prepare GitHub variables
+  local github_username
+  github_username=$(git config user.name | tr -d ' ' | tr '[:upper:]' '[:lower:]')
+
+  # Create project directory
   mkdir -p "$project_name"
   cd "$project_name" || return 1
-  
+
   # Initialize Git repository
   git init
 
   # Check if GitHub repository exists
-  local github_username=$(git config user.name | tr -d ' ' | tr '[:upper:]' '[:lower:]')
   if command -v gh &> /dev/null; then
     echo "Checking if GitHub repository exists: $github_username/$project_name"
     if gh repo view "$github_username/$project_name" &> /dev/null; then
@@ -75,35 +76,35 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         node-version: [16.x, 18.x, 20.x]
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
+    - uses: actions/checkout@v4
+
     - name: Use Node.js \${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: \${{ matrix.node-version }}
         cache: 'pnpm'
-    
+
     - name: Install pnpm
-      uses: pnpm/action-setup@v2
+      uses: pnpm/action-setup@v4
       with:
-        version: latest
+        version: 8
         run_install: false
-    
+
     - name: Install dependencies
       run: pnpm install
-    
+
     - name: Lint
       run: pnpm lint
-    
+
     - name: Test
       run: pnpm test
-    
+
     - name: Build
       run: pnpm build
 EOF
@@ -167,45 +168,6 @@ EOF
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.test.ts"]
 }
-EOF
-
-  # Create .gitignore
-  cat > .gitignore << EOF
-# Dependencies
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Environment
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Build output
-dist/
-
-# Testing
-coverage/
-
-# IDE
-.idea/
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-
-# Logs
-logs
-*.log
-
-# System Files
-.DS_Store
-Thumbs.db
 EOF
 
   # Create README.md with CI badge
@@ -398,7 +360,7 @@ module.exports = {
 EOF
 
   # Initialize a new Node.js project
-  if [ "$NODE_PACKAGE_MANAGER" = "pnpm" ]; then
+  if [ "$package_manager" = "pnpm" ]; then
     pnpm install
   else
     npm install
@@ -414,10 +376,16 @@ EOF
   echo "To start development, navigate to the project directory and run the development server:"
   echo ""
   echo "  cd $project_name"
-  if [ "$NODE_PACKAGE_MANAGER" = "pnpm" ]; then
+  if [ "$package_manager" = "pnpm" ]; then
     echo "  pnpm dev"
   else
     echo "  npm run dev"
   fi
   echo ""
-} 
+
+  # Set up pre-commit configuration
+  setup_pre_commit "." "js"
+
+  # Create standardized .gitignore file
+  create_gitignore "." "node"
+}

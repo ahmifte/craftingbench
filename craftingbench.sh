@@ -59,10 +59,18 @@ else
   return 1
 fi
 
+# Source utility functions
+if [ -f "$CRAFTINGBENCH_DIR/src/helpers/utils.sh" ]; then
+  source "$CRAFTINGBENCH_DIR/src/helpers/utils.sh"
+else
+  echo "Warning: Utility file not found at $CRAFTINGBENCH_DIR/src/helpers/utils.sh"
+fi
+
 # Source template modules - only source if they exist
-for template in python go nodejs react fullstack; do
+for template in python nodejs go react fullstack pre-commit; do
   template_path="$CRAFTINGBENCH_DIR/src/templates/${template}.sh"
   if [ -f "$template_path" ]; then
+    # shellcheck disable=SC1090
     source "$template_path"
   else
     echo "Warning: Template file not found: $template_path"
@@ -71,6 +79,7 @@ done
 
 # Source shell completions
 if [ -f "$CRAFTINGBENCH_DIR/src/completions/shell.sh" ]; then
+  # shellcheck disable=SC1090
   source "$CRAFTINGBENCH_DIR/src/completions/shell.sh"
 else
   echo "Warning: Shell completions file not found"

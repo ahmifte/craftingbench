@@ -1,0 +1,134 @@
+name: Base CI Workflow
+
+on:
+  workflow_call:
+    inputs:
+      working_directory:
+        description: 'Working directory for the job'
+        required: false
+        type: string
+        default: '.'
+      cache_dependencies:
+        description: 'Whether to cache dependencies'
+        required: false
+        type: boolean
+        default: true
+      enable_coverage:
+        description: 'Whether to upload coverage reports'
+        required: false
+        type: boolean
+        default: true
+      artifact_path:
+        description: 'Path to artifacts to upload'
+        required: false
+        type: string
+      matrix_config:
+        description: 'JSON string for matrix configuration'
+        required: false
+        type: string
+        default: '{}'
+      environment:
+        description: 'Environment to use (e.g., production, staging)'
+        required: false
+        type: string
+    outputs:
+      cache_hit:
+        description: 'Whether there was a cache hit'
+        value: ${{ jobs.setup.outputs.cache_hit }}
+      test_success:
+        description: 'Whether tests passed'
+        value: ${{ jobs.test.outputs.success }}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      cache_hit: ${{ steps.cache-deps.outputs.cache-hit }}
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up matrix
+        id: set-matrix
+        run: |
+          if [ "${{ inputs.matrix_config }}" != "{}" ]; then
+            echo "matrix=${{ inputs.matrix_config }}" >> $GITHUB_OUTPUT
+          else
+            echo "matrix={\"include\":[{}]}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Cache dependencies
+        if: inputs.cache_dependencies
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.pnpm-store
+            ~/go/pkg/mod
+            node_modules
+            */node_modules
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json', '**/pnpm-lock.yaml', '**/requirements.txt', '**/go.sum', '**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+      fail-fast: false
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    outputs:
+      success: ${{ steps.test-status.outputs.success }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run tests
+        id: run-tests
+        continue-on-error: true
+        run: echo "Implement test steps in the calling workflow"
+
+      - name: Set test status
+        id: test-status
+        run: |
+          if [ "${{ steps.run-tests.outcome }}" = "success" ]; then
+            echo "success=true" >> $GITHUB_OUTPUT
+          else
+            echo "success=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+  build:
+    needs: [setup, test]
+    if: needs.test.outputs.success == 'true'
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build
+        id: build
+        run: echo "Implement build steps in the calling workflow"
+
+      - name: Upload artifacts
+        if: inputs.artifact_path
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: ${{ inputs.artifact_path }}
+          retention-days: 7
+          if-no-files-found: error

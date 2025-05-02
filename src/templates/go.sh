@@ -2,6 +2,8 @@
 
 # Source common helper functions
 source "$(dirname "${BASH_SOURCE[0]}")/../helpers/common.sh" 2>/dev/null || source "${CRAFTINGBENCH_DIR}/src/helpers/common.sh"
+# Import template utilities
+source "$(dirname "${BASH_SOURCE[0]}")/../helpers/template-utils.sh" 2>/dev/null || source "${CRAFTINGBENCH_DIR}/src/helpers/template-utils.sh"
 
 # Direct command aliases for specialized project types
 setup_go_library() {
@@ -121,7 +123,7 @@ _setup_go_library() {
   # Create project directory
   mkdir -p "$project_name"
   cd "$project_name" || return 1
-  
+
   # Initialize Git repository
   git init
 
@@ -146,8 +148,8 @@ _setup_go_library() {
   mkdir -p .github/workflows
 
   # Copy workflow template or create default workflow
-  if [ -f "$CRAFTINGBENCH_PATH/src/templates/github-workflows/go-workflow.yml" ]; then
-    cp "$CRAFTINGBENCH_PATH/src/templates/github-workflows/go-workflow.yml" .github/workflows/go-ci.yml
+  if [ -f "$CRAFT_TEMPLATE_DIR/github-workflows/go-workflow.yml" ]; then
+    cp "$CRAFT_TEMPLATE_DIR/github-workflows/go-workflow.yml" .github/workflows/go-ci.yml
     # Replace placeholder with actual project name in workflow
     sed -i.bak "s/Go CI/$project_name CI/g" .github/workflows/go-ci.yml
     rm -f .github/workflows/go-ci.yml.bak
@@ -165,27 +167,39 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         go-version: ['1.19', '1.20', '1.21']
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
+    - uses: actions/checkout@v4
+
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
         go-version: \${{ matrix.go-version }}
         cache: true
-    
+
     - name: Install dependencies
       run: go mod download
-    
-    - name: Run tests
-      run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
-    
-    - name: Upload coverage
+
+    - name: Verify dependencies
+      run: go mod verify
+
+    - name: Install golangci-lint
+      run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+    - name: Lint
+      run: golangci-lint run ./...
+
+    - name: Build
+      run: go build -v ./...
+
+    - name: Test with coverage
+      run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+
+    - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
         file: ./coverage.txt
@@ -196,7 +210,7 @@ EOF
   fi
 
   # Initialize Go module
-  go mod init "github.com/$github_username/$project_name"
+  go mod init "$project_name"
 
   # Create library package
   mkdir -p pkg
@@ -840,4 +854,4 @@ EOF
   echo "  2. Build and run the application: make run"
   echo "  3. Visit http://localhost:8080/api/health to verify it's working"
   echo ""
-} 
+}

@@ -1,0 +1,117 @@
+name: Reusable CI Workflow
+
+on:
+  workflow_call:
+    inputs:
+      project_type:
+        description: 'Type of project (python, node, go, etc.)'
+        required: true
+        type: string
+      working_directory:
+        description: 'Working directory for the job'
+        required: true
+        type: string
+      test_command:
+        description: 'Command to run tests'
+        required: false
+        type: string
+        default: 'echo "No test command specified"'
+      build_command:
+        description: 'Command to run build'
+        required: false
+        type: string
+        default: 'echo "No build command specified"'
+      lint_command:
+        description: 'Command to run linter'
+        required: false
+        type: string
+        default: 'echo "No lint command specified"'
+      node_required:
+        description: 'Whether Node.js is required'
+        required: false
+        type: boolean
+      node_version:
+        description: 'Node.js version'
+        required: false
+        type: string
+      node_cache:
+        description: 'Node.js cache'
+        required: false
+        type: string
+
+jobs:
+  ci:
+    name: CI (${{ inputs.project_type }})
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (if needed)
+        if: ${{ inputs.node_required }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version || '18.x' }}
+          cache: ${{ inputs.node_cache || 'npm' }}
+
+      - name: Setup Python (if needed)
+        if: contains(inputs.project_type, 'python') || contains(inputs.project_type, 'flask')
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Setup Go (if needed)
+        if: contains(inputs.project_type, 'go')
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          cache: true
+
+      - name: Install pnpm (if needed)
+        if: contains(inputs.project_type, 'node') || contains(inputs.project_type, 'react')
+        uses: pnpm/action-setup@v4
+        with:
+          version: '8'
+
+      - name: Install dependencies
+        run: |
+          case "${{ inputs.project_type }}" in
+            python|flask)
+              pip install -r requirements.txt
+              ;;
+            node|react)
+              pnpm install
+              ;;
+            go)
+              go mod download
+              ;;
+          esac
+
+      - name: Run linter
+        run: ${{ inputs.lint_command }}
+
+      - name: Run tests
+        run: ${{ inputs.test_command }}
+
+      - name: Run build
+        run: ${{ inputs.build_command }}
+
+      - name: Upload coverage (if coverage file exists)
+        if: contains(inputs.test_command, 'coverage') && contains(inputs.project_type, 'python')
+        uses: codecov/codecov-action@v3
+        with:
+          file: ${{ inputs.working_directory }}/coverage.xml
+          flags: ${{ inputs.project_type }}
+          fail_ci_if_error: false
+
+      - name: Upload artifacts
+        if: ${{ inputs.artifact_path }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: ${{ inputs.artifact_path }}

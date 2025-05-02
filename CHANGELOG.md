@@ -1,33 +1,57 @@
 # Changelog
 
-All notable changes to the CraftingBench project will be documented in this file.
+All notable changes to CraftingBench will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [0.2.0] - 2025-04-15
+## [Unreleased]
 
 ### Added
-- Automated installation script (`install.sh`)
-- GitHub release workflow for distributing releases
-- Improved TypeScript support throughout all templates
-- Material UI integration in all frontend templates
+
+- New `utils.sh` file with common utility functions extracted from templates
+- New `pre-commit.sh` template for generating pre-commit configurations
+- Pre-commit GitHub workflow template for running hooks in CI
+- Added section to README and USER_GUIDE about utility functions
+- Improved package manager detection with support for yarn
+- Common functions for repository and GitHub workflow setup
+- Better .gitignore generation with language-specific templates
 
 ### Changed
-- Updated all templates to use TypeScript exclusively instead of JavaScript
-- Enhanced Node.js backend template with better TypeScript type definitions
-- Improved fullstack template with TypeScript and Material UI
-- Updated shell completion scripts to reflect TypeScript usage
-- Updated documentation to clarify TypeScript-focused development
+
+- Refactored duplicated code from templates into dedicated utility functions
+- Updated `template-utils.sh` to use new utility functions while maintaining backward compatibility
+- Enhanced pre-commit configuration with better language detection
+- Improved documentation for standalone utility usage
+
+## [0.2.0] - 2023-07-01
+
+### Added
+
+- Full-stack application templates with Next.js, Flask, and Go backends
+- Next.js project template with TypeScript and API routes
+- Material UI integration for all frontend templates
+- Improved error handling in all templates
+- Support for environment variables and configuration
+- Structured database connections
+- Basic authentication setup in backend templates
+
+### Changed
+
+- Better TypeScript configuration
+- Updated ESLint rules
+- Improved project structure for better organization
+- Enhanced GitHub workflow templates
+- More comprehensive README files for each project type
 
 ### Fixed
-- Various shell script improvements for better cross-platform compatibility
-- ESLint configuration adjusted for TypeScript usage
+
+- Package manager detection on different platforms
+- GitHub repository creation when user is not authenticated
+- Path handling in template scripts
 
 ## [0.1.0] - 2025-01-01
 
 ### Added
+
 - Initial release with basic project templates
 - Support for Python, Node.js, Go, React, and fullstack projects
 - Shell completions for Zsh
-- Documentation and examples 
+- Documentation and examples

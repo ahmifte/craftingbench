@@ -2,17 +2,16 @@
 
 # Source common helper functions
 source "$(dirname "${BASH_SOURCE[0]}")/../helpers/common.sh" 2>/dev/null || source "${CRAFTINGBENCH_DIR}/src/helpers/common.sh"
+# Import template utilities
+source "$(dirname "${BASH_SOURCE[0]}")/../helpers/template-utils.sh" 2>/dev/null || source "${CRAFTINGBENCH_DIR}/src/helpers/template-utils.sh"
+
+# Default values
+DEFAULT_BACKEND="nextjs"
 
 setup_fullstack_project() {
-  if [[ -z "$1" ]]; then
-    echo "Error: Please provide a project name"
-    echo "Usage: setup_fullstack_project <project_name> [--backend=nextjs|flask|golang]"
-    return 1
-  fi
-
   local project_name="$1"
   local github_username=$(git config user.name | tr -d ' ' | tr '[:upper:]' '[:lower:]')
-  local backend="nextjs" # Default backend
+  local backend="$DEFAULT_BACKEND" # Default backend
   
   # Parse options
   shift 1
@@ -24,14 +23,22 @@ setup_fullstack_project() {
     shift
   done
   
+  # Output the configuration
+  echo "Creating fullstack project with configuration:"
+  echo "- Project name: $project_name"
+  echo "- Backend type: $backend"
+  
   case $backend in
     nextjs)
+      echo "Setting up Next.js fullstack project..."
       setup_nextjs_fullstack "$project_name"
       ;;
     flask)
+      echo "Setting up Flask + React fullstack project..."
       setup_flask_fullstack "$project_name"
       ;;
-    golang)
+    golang|go)
+      echo "Setting up Go + React fullstack project..."
       setup_golang_fullstack "$project_name"
       ;;
     *)

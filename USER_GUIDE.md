@@ -4,7 +4,7 @@
 
 **A modern scaffolding tool for TypeScript developers**
 
-[![Version](https://img.shields.io/badge/Version-0.2.0%20(Beta)-orange.svg)](./CHANGELOG.md)
+[![Version](<https://img.shields.io/badge/Version-0.2.0%20(Beta)-orange.svg>)](./CHANGELOG.md)
 
 </div>
 
@@ -59,13 +59,13 @@ craftingbench create api-service nodejs
 
 CraftingBench offers several project templates with TypeScript integration:
 
-| Template | Description | Command |
-|----------|-------------|---------|
-| **nodejs** | TypeScript Node.js backend with Express | `craftingbench create my-api nodejs` |
-| **react** | TypeScript React app with Material UI | `craftingbench create my-ui react` |
-| **go** | Go service with modern project structure | `craftingbench create my-service go` |
-| **python** | Python application with package structure | `craftingbench create my-app python` |
-| **fullstack** | TypeScript fullstack application | `craftingbench create my-project fullstack` |
+| Template      | Description                               | Command                                     |
+| ------------- | ----------------------------------------- | ------------------------------------------- |
+| **nodejs**    | TypeScript Node.js backend with Express   | `craftingbench create my-api nodejs`        |
+| **react**     | TypeScript React app with Material UI     | `craftingbench create my-ui react`          |
+| **go**        | Go service with modern project structure  | `craftingbench create my-service go`        |
+| **python**    | Python application with package structure | `craftingbench create my-app python`        |
+| **fullstack** | TypeScript fullstack application          | `craftingbench create my-project fullstack` |
 
 ## ⚙️ Template Options
 
@@ -76,6 +76,7 @@ craftingbench create my-api nodejs
 ```
 
 Features:
+
 - TypeScript configuration
 - Express.js setup
 - Environment management
@@ -90,6 +91,7 @@ craftingbench create my-ui react
 ```
 
 Features:
+
 - TypeScript React setup
 - Material UI integration
 - Responsive layout components
@@ -104,6 +106,7 @@ craftingbench create my-project fullstack --backend [nextjs|flask|go]
 ```
 
 Features:
+
 - TypeScript frontend with Material UI
 - Integrated API client
 - Backend options:
@@ -122,6 +125,7 @@ craftingbench create my-app fullstack --backend nextjs
 ```
 
 Structure:
+
 - TypeScript throughout
 - App Router architecture
 - Server-side API routes
@@ -135,6 +139,7 @@ craftingbench create my-app fullstack --backend flask
 ```
 
 Structure:
+
 - Python Flask backend with structured API
 - TypeScript React frontend
 - Material UI components
@@ -148,6 +153,7 @@ craftingbench create my-app fullstack --backend go
 ```
 
 Structure:
+
 - Go backend with clean architecture
 - TypeScript React frontend
 - Material UI integration
@@ -202,7 +208,91 @@ craftingbench lint
 craftingbench run
 ```
 
-## ⚙️ Configuration
+## 🧰 Utility Functions
+
+CraftingBench provides several utility functions that can be used independently in your own projects and scripts.
+
+### Pre-commit Configuration
+
+You can easily add pre-commit hooks to any existing project:
+
+```bash
+# Add pre-commit configuration to the current project
+./src/templates/pre-commit.sh .
+
+# Add pre-commit for a specific project with explicit language types
+./src/templates/pre-commit.sh /path/to/project python,js,go
+```
+
+The pre-commit script will:
+
+- Detect languages used in your project
+- Configure appropriate linters and formatters
+- Update README.md with usage instructions
+
+Available language configurations:
+
+- `python`: Includes black, isort, ruff
+- `js`: Includes eslint, prettier
+- `go`: Includes go-fmt, go-vet, go-imports
+
+### GitHub Workflow Setup
+
+You can add GitHub Actions workflows to your project using the utility functions:
+
+```bash
+# Source the utility functions
+source /path/to/craftingbench/src/helpers/utils.sh
+
+# Setup a workflow
+setup_github_workflow . python my-project-name your-github-username
+```
+
+Available workflow templates:
+
+- `python-workflow.yml`
+- `nodejs-workflow.yml`
+- `go-workflow.yml`
+- `react-workflow.yml`
+- `pre-commit-workflow.yml`
+- `nextjs-workflow.yml`
+- `flask-react-workflow.yml`
+- `go-react-workflow.yml`
+
+### Git Repository Setup
+
+Initialize a git repository with standard configurations:
+
+```bash
+# Source the utility functions
+source /path/to/craftingbench/src/helpers/utils.sh
+
+# Basic repository setup
+setup_git_repository . my-project-name
+
+# With GitHub integration
+setup_git_repository . my-project-name your-github-username true
+```
+
+### Common .gitignore Templates
+
+Generate project-specific .gitignore files:
+
+```bash
+# Source the utility functions
+source /path/to/craftingbench/src/helpers/utils.sh
+
+# Create .gitignore for a Python project
+create_gitignore . python
+
+# Create .gitignore for a Node.js project
+create_gitignore . node
+
+# Create .gitignore for a Go project
+create_gitignore . go
+```
+
+## 🔧 Configuration
 
 CraftingBench can be configured through:
 
@@ -211,6 +301,7 @@ craftingbench config set key value
 ```
 
 Common configuration options:
+
 - `default_template`: Set your preferred template
 - `author_name`: Your name for project metadata
 - `author_email`: Your email for project metadata
@@ -219,21 +310,25 @@ Common configuration options:
 ## ❓ Troubleshooting
 
 **Template generation fails:**
+
 - Ensure you have the required dependencies installed
 - Check your network connection
 - Verify you have the latest version of CraftingBench
 
 **Package installation issues:**
+
 - Ensure npm/yarn/go/pip is installed and in your PATH
 - Check for conflicting versions in existing dependencies
 
 **Command not found:**
+
 - Make sure CraftingBench is properly installed
 - Check that the installation directory is in your PATH
 
 For more help, run:
+
 ```bash
 craftingbench help
 ```
 
-Or report issues at [GitHub Issues](https://github.com/ahmifte/craftingbench/issues) 
+Or report issues at [GitHub Issues](https://github.com/ahmifte/craftingbench/issues)

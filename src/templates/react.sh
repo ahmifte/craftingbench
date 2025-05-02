@@ -2,16 +2,18 @@
 
 # Source common helper functions
 source "$(dirname "${BASH_SOURCE[0]}")/../helpers/common.sh" 2>/dev/null || source "${CRAFTINGBENCH_DIR}/src/helpers/common.sh"
+# Import template utilities
+source "$(dirname "${BASH_SOURCE[0]}")/../helpers/template-utils.sh" 2>/dev/null || source "${CRAFTINGBENCH_DIR}/src/helpers/template-utils.sh"
 
 setup_react_frontend() {
-  local project_name="$1"
-  
   # Check for required arguments
-  if [ -z "$project_name" ]; then
+  if [ -z "$1" ]; then
     echo "Error: Project name is required"
     echo "Usage: setup_react_frontend <project_name>"
     return 1
   fi
+
+  local project_name="$1"
 
   # Check for dependencies
   if ! check_dependencies "node git"; then
@@ -19,23 +21,22 @@ setup_react_frontend() {
   fi
 
   # Detect package manager (prefer pnpm)
-  if command -v pnpm &> /dev/null; then
-    echo "Using pnpm package manager for faster dependency management"
-    NODE_PACKAGE_MANAGER="pnpm"
-  else
-    echo "Using npm as package manager (consider installing pnpm for faster dependency management)"
-    NODE_PACKAGE_MANAGER="npm"
-  fi
+  local package_manager
+  package_manager=$(detect_node_package_manager)
+  echo "Using package manager: $package_manager"
 
-  # Create project directory and navigate to it
+  # Prepare GitHub variables
+  local github_username
+  github_username=$(git config user.name | tr -d ' ' | tr '[:upper:]' '[:lower:]')
+
+  # Create project directory
   mkdir -p "$project_name"
   cd "$project_name" || return 1
-  
+
   # Initialize Git repository
   git init
 
   # Check if GitHub repository exists
-  local github_username=$(git config user.name | tr -d ' ' | tr '[:upper:]' '[:lower:]')
   if command -v gh &> /dev/null; then
     echo "Checking if GitHub repository exists: $github_username/$project_name"
     if gh repo view "$github_username/$project_name" &> /dev/null; then
@@ -75,43 +76,43 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         node-version: [16.x, 18.x, 20.x]
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
+    - uses: actions/checkout@v4
+
     - name: Use Node.js \${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: \${{ matrix.node-version }}
         cache: 'pnpm'
-    
+
     - name: Install pnpm
-      uses: pnpm/action-setup@v2
+      uses: pnpm/action-setup@v4
       with:
-        version: latest
+        version: 8
         run_install: false
-    
+
     - name: Install dependencies
       run: pnpm install
-    
+
     - name: Lint
       run: pnpm lint
-    
+
     - name: Type Check
       run: pnpm type-check
-    
+
     - name: Test
       run: pnpm test
-    
+
     - name: Build
       run: pnpm build
-    
+
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: build
         path: dist/
@@ -120,7 +121,7 @@ EOF
 
   # Create project using Vite with React, TypeScript, and Material UI
   echo "Creating React project with Vite template..."
-  if [ "$NODE_PACKAGE_MANAGER" = "pnpm" ]; then
+  if [ "$package_manager" = "pnpm" ]; then
     pnpm create vite . --template react-ts
     pnpm add @mui/material @mui/icons-material @emotion/react @emotion/styled
     pnpm add -D vitest jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event
@@ -198,45 +199,6 @@ EOF
   # Create setupTests.ts
   cat > src/setupTests.ts << EOF
 import '@testing-library/jest-dom'
-EOF
-
-  # Create .gitignore file
-  cat > .gitignore << EOF
-# Dependencies
-node_modules
-.pnp
-.pnp.js
-
-# Testing
-coverage
-.nyc_output
-
-# Production
-dist
-build
-
-# Misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
 EOF
 
   # Create README.md with CI badge
@@ -332,16 +294,16 @@ interface CustomButtonProps extends ButtonProps {
   color?: 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
 }
 
-const Button: React.FC<CustomButtonProps> = ({ 
-  children, 
-  variant = 'contained', 
+const Button: React.FC<CustomButtonProps> = ({
+  children,
+  variant = 'contained',
   color = 'primary',
-  ...props 
+  ...props
 }) => {
   return (
-    <MuiButton 
-      variant={variant} 
-      color={color} 
+    <MuiButton
+      variant={variant}
+      color={color}
       data-testid="custom-button"
       {...props}
     >
@@ -363,7 +325,7 @@ import Button from './Button';
 describe('Button component', () => {
   it('renders correctly with default props', () => {
     render(<Button>Click me</Button>);
-    
+
     const button = screen.getByTestId('custom-button');
     expect(button).toBeInTheDocument();
     expect(button).toHaveTextContent('Click me');
@@ -372,16 +334,16 @@ describe('Button component', () => {
   it('handles click events', async () => {
     const handleClick = vi.fn();
     render(<Button onClick={handleClick}>Click me</Button>);
-    
+
     const button = screen.getByTestId('custom-button');
     await userEvent.click(button);
-    
+
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
   it('applies variant and color correctly', () => {
     render(<Button variant="outlined" color="secondary">Styled Button</Button>);
-    
+
     const button = screen.getByTestId('custom-button');
     expect(button).toHaveClass('MuiButton-outlined');
     expect(button).toHaveClass('MuiButton-outlinedSecondary');
@@ -397,14 +359,14 @@ EOF
   # Create an improved App.tsx with Material UI
   cat > src/App.tsx << EOF
 import { useState } from 'react';
-import { 
-  CssBaseline, 
-  ThemeProvider, 
-  createTheme, 
-  Container, 
-  Typography, 
-  Box, 
-  useMediaQuery 
+import {
+  CssBaseline,
+  ThemeProvider,
+  createTheme,
+  Container,
+  Typography,
+  Box,
+  useMediaQuery
 } from '@mui/material';
 import Button from './components/Button';
 
@@ -432,35 +394,35 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Container maxWidth="md">
-        <Box 
-          sx={{ 
-            my: 4, 
-            display: 'flex', 
-            flexDirection: 'column', 
-            alignItems: 'center' 
+        <Box
+          sx={{
+            my: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
           }}
         >
           <Typography variant="h3" component="h1" gutterBottom>
             Welcome to $project_name
           </Typography>
-          
+
           <Typography variant="h5" component="h2" gutterBottom>
             A React application with Material UI
           </Typography>
-          
+
           <Box sx={{ mt: 4 }}>
-            <Button 
-              onClick={toggleTheme} 
-              variant="contained" 
+            <Button
+              onClick={toggleTheme}
+              variant="contained"
               color="primary"
               sx={{ mr: 2 }}
             >
               {darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             </Button>
-            
-            <Button 
-              variant="outlined" 
-              color="secondary" 
+
+            <Button
+              variant="outlined"
+              color="secondary"
               href="https://mui.com/material-ui/getting-started/overview/"
               target="_blank"
               rel="noopener"
@@ -478,7 +440,7 @@ export default App;
 EOF
 
   # Install dependencies
-  if [ "$NODE_PACKAGE_MANAGER" = "pnpm" ]; then
+  if [ "$package_manager" = "pnpm" ]; then
     pnpm install
   else
     npm install
@@ -494,10 +456,16 @@ EOF
   echo "To start development, navigate to the project directory and run the development server:"
   echo ""
   echo "  cd $project_name"
-  if [ "$NODE_PACKAGE_MANAGER" = "pnpm" ]; then
+  if [ "$package_manager" = "pnpm" ]; then
     echo "  pnpm dev"
   else
     echo "  npm run dev"
   fi
   echo ""
-} 
+
+  # Set up pre-commit configuration
+  setup_pre_commit "." "js"
+
+  # Create standardized .gitignore file
+  create_gitignore "." "react"
+}
