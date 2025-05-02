@@ -210,7 +210,7 @@ jobs:
 
       - name: Run GoReleaser (dry-run)
         if: steps.check_goreleaser.outputs.exists == 'true'
-        uses: goreleaser/goreleaser-action@v5
+        uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
           version: latest
