@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# CraftingBench alias - forwards all calls to the craftingbench command
+"$HOME/.craftingbench/src/bin/craftingbench" "$@" 

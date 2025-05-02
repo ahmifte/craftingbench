@@ -124,6 +124,8 @@ This script will:
 - Download CraftingBench v0.2.0
 - Install it to ~/.craftingbench
 - Configure your shell by adding the necessary source line to your .bashrc or .zshrc
+- Create command line tools: `craftingbench` and `cb` (shorthand alias)
+- Set up command autocompletion
 
 ### Option 2: Manual Installation
 
@@ -200,13 +202,39 @@ Development tools:
 
 <strong>Each project template is created with a single command:</strong>
 
+### Command-Line Interface
+
+CraftingBench provides three ways to use its functionality:
+
+1. **Using the `craftingbench` command**:
+   ```bash
+   craftingbench setup_python_project my_awesome_package
+   ```
+
+2. **Using the shorthand alias `cb`**:
+   ```bash
+   cb setup_nodejs_backend my_api_service
+   ```
+
+3. **Sourcing the script and calling functions directly**:
+   ```bash
+   source ~/.craftingbench/craftingbench.sh
+   setup_react_frontend my_frontend_app
+   ```
+
 ### Command Completion
 
-CraftingBench provides command completion for Zsh shells. When you type a partial command and press Tab, it will show available options.
+CraftingBench provides command completion for both Bash and Zsh shells. When you type a partial command and press Tab, it will show available options.
 
 For example:
 ```bash
-setup_fullstack_project myapp --backend=[TAB]
+craftingbench setup_fullstack_project myapp --backend=[TAB]
+# Will show: nextjs flask golang
+```
+
+This also works with the shorthand alias:
+```bash
+cb setup_fullstack_project myapp --backend=[TAB]
 # Will show: nextjs flask golang
 ```
 

@@ -93,9 +93,64 @@ download_craftingbench() {
   
   if [ $? -eq 0 ]; then
     echo -e "${GREEN}✓ Successfully downloaded CraftingBench${CLEAR}"
+    
+    # Setup CLI tools
+    setup_cli_tools
   else
     echo -e "${RED}Error: Failed to download CraftingBench.${CLEAR}"
     exit 1
+  fi
+}
+
+# Setup CLI tools and aliases
+setup_cli_tools() {
+  echo -e "${BLUE}Setting up CLI tools...${CLEAR}"
+  
+  # Create bin directory if needed
+  if [ -d "$HOME/bin" ]; then
+    BIN_DIR="$HOME/bin"
+  elif [ -d "$HOME/.local/bin" ]; then
+    BIN_DIR="$HOME/.local/bin"
+  else
+    # Create a bin directory if it doesn't exist
+    mkdir -p "$HOME/.local/bin"
+    BIN_DIR="$HOME/.local/bin"
+    
+    # Add to PATH if not already there
+    if ! echo "$PATH" | grep -q "$BIN_DIR"; then
+      echo -e "${YELLOW}Note: Adding $BIN_DIR to your PATH in $SHELL_CONFIG${CLEAR}"
+      echo "" >> "$SHELL_CONFIG"
+      echo "# Add local bin directory to PATH" >> "$SHELL_CONFIG"
+      echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> "$SHELL_CONFIG"
+    fi
+  fi
+  
+  # Make CLI scripts executable
+  chmod +x "$INSTALL_DIR/src/bin/craftingbench"
+  chmod +x "$INSTALL_DIR/src/bin/cb"
+  
+  # Create symlinks to the CLI wrapper in user's bin directory
+  ln -sf "$INSTALL_DIR/src/bin/craftingbench" "$BIN_DIR/craftingbench"
+  ln -sf "$INSTALL_DIR/src/bin/cb" "$BIN_DIR/cb"
+  echo -e "${GREEN}✓ Created 'craftingbench' and 'cb' commands in $BIN_DIR${CLEAR}"
+  
+  # Setup completions based on shell
+  if [ "$SHELL_NAME" = "Bash" ]; then
+    if ! grep -q "craftingbench.bash" "$SHELL_CONFIG"; then
+      echo "" >> "$SHELL_CONFIG"
+      echo "# CraftingBench command completion" >> "$SHELL_CONFIG"
+      echo "[ -f \"$INSTALL_DIR/src/completions/craftingbench.bash\" ] && source \"$INSTALL_DIR/src/completions/craftingbench.bash\"" >> "$SHELL_CONFIG"
+      echo -e "${GREEN}✓ Added command completion to $SHELL_CONFIG${CLEAR}"
+    fi
+  elif [ "$SHELL_NAME" = "Zsh" ]; then
+    if ! grep -q "craftingbench.bash" "$SHELL_CONFIG"; then
+      echo "" >> "$SHELL_CONFIG"
+      echo "# CraftingBench command completion" >> "$SHELL_CONFIG"
+      echo "autoload -U +X compinit && compinit" >> "$SHELL_CONFIG"
+      echo "autoload -U +X bashcompinit && bashcompinit" >> "$SHELL_CONFIG"
+      echo "[ -f \"$INSTALL_DIR/src/completions/craftingbench.bash\" ] && source \"$INSTALL_DIR/src/completions/craftingbench.bash\"" >> "$SHELL_CONFIG"
+      echo -e "${GREEN}✓ Added command completion to $SHELL_CONFIG${CLEAR}"
+    fi
   fi
 }
 
@@ -134,7 +189,11 @@ install_craftingbench() {
   echo ""
   echo -e "${BLUE}Next steps:${CLEAR}"
   echo -e "1. Restart your terminal or run: ${CYAN}source $SHELL_CONFIG${CLEAR}"
-  echo -e "2. Start using CraftingBench commands, like: ${CYAN}setup_nodejs_backend my_project${CLEAR}"
+  echo -e "2. Use CraftingBench in two ways:"
+  echo -e "   a. With commands: ${CYAN}craftingbench setup_nodejs_backend my_project${CLEAR}"
+  echo -e "   b. Or shorter: ${CYAN}cb setup_nodejs_backend my_project${CLEAR}"
+  echo -e "   c. Or source it first: ${CYAN}source $INSTALL_DIR/craftingbench.sh${CLEAR}"
+  echo -e "      Then run functions directly: ${CYAN}setup_nodejs_backend my_project${CLEAR}"
   echo ""
   echo -e "For more information, visit: ${CYAN}${REPO_URL}${CLEAR}"
 }
