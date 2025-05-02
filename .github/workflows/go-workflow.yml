@@ -162,7 +162,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           file: ./coverage.xml
           flags: go-${{ matrix.go-version }}-${{ matrix.os }}
