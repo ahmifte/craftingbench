@@ -476,6 +476,10 @@ make run
 MIT
 EOF
   
+  # Add CI badge to README
+  sed -i.bak "1 s|# $project_name|# $project_name\n\n[![$project_name CI](https://github.com/$github_username/$project_name/actions/workflows/$project_name-ci.yml/badge.svg)](https://github.com/$github_username/$project_name/actions/workflows/$project_name-ci.yml)|" README.md
+  rm -f README.md.bak
+  
   # Create .gitignore for Python
   cat > .gitignore << EOF
 # Python
@@ -851,53 +855,47 @@ EOF
   
   # Create Makefile
   cat > Makefile << EOF
-.PHONY: install run test lint clean docker-build docker-run docker-stop
+.PHONY: install dev-install lint test clean build-docs serve-docs help
 
-# Detect if uv is available, otherwise use pip
-PYTHON_PKG_MGR := \$(shell command -v uv 2>/dev/null && echo "uv" || echo "pip")
+# Auto-detect package manager (prefer uv, fallback to pip)
+PACKAGE_MANAGER := \$(shell command -v uv 2>/dev/null && echo "uv" || echo "pip")
+
+help:
+	@echo "Available commands:"
+	@echo "  make install      - Install dependencies"
+	@echo "  make dev-install  - Install development dependencies"
+	@echo "  make lint         - Run linters (flake8, mypy)"
+	@echo "  make test         - Run tests with pytest"
+	@echo "  make clean        - Remove build artifacts"
+	@echo "  make build-docs   - Build documentation"
+	@echo "  make serve-docs   - Serve documentation locally"
 
 install:
-	@echo "Installing dependencies with \$(PYTHON_PKG_MGR)..."
-ifeq (\$(PYTHON_PKG_MGR), uv)
-	uv venv
-	uv pip install -r requirements.txt
-else
-	python -m venv venv
-	. venv/bin/activate && pip install -r requirements.txt
-endif
+	\$(PACKAGE_MANAGER) install -e .
 
-run:
-	@echo "Starting development server..."
-	FLASK_APP=wsgi.py FLASK_ENV=development python -m flask run
+dev-install:
+	\$(PACKAGE_MANAGER) install -e ".[dev,test]"
 
 lint:
-	@echo "Linting code..."
-	flake8 app tests
+	flake8 .
+	mypy .
 
 test:
-	@echo "Running tests..."
-	python -m pytest -v
+	pytest --cov=./ --cov-report=term
 
 clean:
-	@echo "Cleaning up..."
 	rm -rf build/
 	rm -rf dist/
-	rm -rf *.egg-info/
-	rm -rf .pytest_cache/
+	rm -rf *.egg-info
+	rm -rf .pytest_cache
 	find . -type d -name __pycache__ -exec rm -rf {} +
 	find . -type f -name "*.pyc" -delete
 
-docker-build:
-	@echo "Building Docker image..."
-	docker-compose build
+build-docs:
+	cd docs && make html
 
-docker-run:
-	@echo "Starting services with Docker..."
-	docker-compose up
-
-docker-stop:
-	@echo "Stopping Docker services..."
-	docker-compose down
+serve-docs:
+	cd docs/_build/html && python -m http.server 8000
 EOF
   
   # Initialize git with all the files we've created

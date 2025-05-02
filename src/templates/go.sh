@@ -111,8 +111,8 @@ _setup_go_library() {
   local project_name="$1"
   local github_username=$(git config user.name | tr -d ' ' | tr '[:upper:]' '[:lower:]')
   
-  # Check dependencies
-  if ! check_dependencies "go"; then
+  # Check for dependencies
+  if ! check_dependencies "go git"; then
     return 1
   fi
   
@@ -122,141 +122,82 @@ _setup_go_library() {
   mkdir -p "$project_name"
   cd "$project_name" || return 1
   
-  # Initialize git repository
+  # Initialize Git repository
   git init
-  
-  # Check if the repository already exists, and if so, clone it instead
-  if command_exists gh && gh repo view "$github_username/$project_name" &>/dev/null; then
-    echo "Repository already exists. Cloning existing repository..."
-    cd ..
-    rm -rf "$project_name"
-    git clone "https://github.com/$github_username/$project_name.git"
-    cd "$project_name" || return 1
-  elif command_exists gh; then
-    # Create a new GitHub repository if gh CLI is available
-    echo "Creating new GitHub repository '$project_name'..."
-    gh repo create "$project_name" --private
-    
-    # Add remote
-    git remote add origin "https://github.com/$github_username/$project_name.git"
-    
-    # Create a simple README.md for the initial commit
-    echo "# $project_name" > README.md
-    
-    # Add README.md and make the initial commit
-    git add README.md
-    git commit -m "Initial commit: Add project README"
-    
-    # Push the initial commit to the main branch
-    git push -u origin main
+
+  # Check if GitHub repository exists
+  if command -v gh &> /dev/null; then
+    echo "Checking if GitHub repository exists: $github_username/$project_name"
+    if gh repo view "$github_username/$project_name" &> /dev/null; then
+      echo "GitHub repository exists. Cloning and setting up..."
+      rm -rf .git
+      gh repo clone "$github_username/$project_name" .
+      git checkout -b main || git checkout main
+    else
+      echo "Creating new GitHub repository: $github_username/$project_name"
+      gh repo create "$github_username/$project_name" --public --source=. --remote=origin
+    fi
   else
-    # Without GitHub CLI, just set up the local repository
-    echo "GitHub CLI not found. Setting up local repository only."
-    echo "# $project_name" > README.md
-    git add README.md
-    git commit -m "Initial commit: Add project README"
+    echo "GitHub CLI (gh) not found. Skipping GitHub repository setup."
+    echo "Install GitHub CLI from https://cli.github.com/ for GitHub integration."
   fi
-  
-  # Create and checkout a new branch for the project setup
-  if [[ -n $(git branch --list main) ]]; then
-    git checkout main
-    git pull origin main 2>/dev/null || true
-    git checkout -b initial-setup
-  elif [[ -n $(git branch --list master) ]]; then
-    git checkout master
-    git pull origin master 2>/dev/null || true
-    git checkout -b initial-setup
+
+  # Create GitHub Actions workflow directory
+  mkdir -p .github/workflows
+
+  # Copy workflow template or create default workflow
+  if [ -f "$CRAFTINGBENCH_PATH/src/templates/github-workflows/go-workflow.yml" ]; then
+    cp "$CRAFTINGBENCH_PATH/src/templates/github-workflows/go-workflow.yml" .github/workflows/go-ci.yml
+    # Replace placeholder with actual project name in workflow
+    sed -i.bak "s/Go CI/$project_name CI/g" .github/workflows/go-ci.yml
+    rm -f .github/workflows/go-ci.yml.bak
   else
-    git checkout -b initial-setup
+    # Create a default workflow file
+    cat > .github/workflows/go-ci.yml << EOF
+name: $project_name CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        go-version: ['1.19', '1.20', '1.21']
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: \${{ matrix.go-version }}
+        cache: true
+    
+    - name: Install dependencies
+      run: go mod download
+    
+    - name: Run tests
+      run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+    
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.txt
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+EOF
   fi
-  
+
   # Initialize Go module
   go mod init "github.com/$github_username/$project_name"
-  
-  # Create .gitignore for Go
-  cat > .gitignore << EOF
-# Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-**/bin/
 
-# Test binary, built with 'go test -c'
-*.test
-
-# Output of the go coverage tool
-*.out
-*.prof
-coverage.html
-
-# IDE files
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# OS specific files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-Icon?
-ehthumbs.db
-Thumbs.db
-
-# Go workspace file
-go.work
-EOF
-  
-  # Create README.md with more content
-  cat > README.md << EOF
-# $project_name
-
-A Go library created with CraftingBench.
-
-## Installation
-
-\`\`\`bash
-go get github.com/$github_username/$project_name
-\`\`\`
-
-## Usage
-
-\`\`\`go
-package main
-
-import (
-	"fmt"
-
-	"github.com/$github_username/$project_name"
-)
-
-func main() {
-	// Use the library
-	message := $project_name.Hello()
-	fmt.Println(message)
-}
-\`\`\`
-
-## Development
-
-\`\`\`bash
-# Clone the repository
-git clone https://github.com/$github_username/$project_name.git
-cd $project_name
-
-# Run tests
-make test
-\`\`\`
-
-## License
-
-MIT
-EOF
-  
   # Create library package
   mkdir -p pkg
   
@@ -312,10 +253,10 @@ test:
 
 lint:
 	go vet ./...
-	@if command -v golangci-lint > /dev/null; then \
-		golangci-lint run; \
-	else \
-		echo "golangci-lint not installed, skipping"; \
+	@if command -v golangci-lint > /dev/null; then \\
+		golangci-lint run ./...; \\
+	else \\
+		echo "golangci-lint not installed, skipping"; \\
 	fi
 
 bench:
@@ -327,6 +268,52 @@ coverage:
 
 clean:
 	rm -f coverage.out coverage.html
+EOF
+
+  # Create README.md with more content
+  cat > README.md << EOF
+# $project_name
+
+A Go library created with CraftingBench.
+
+## Installation
+
+\`\`\`bash
+go get github.com/$github_username/$project_name
+\`\`\`
+
+## Usage
+
+\`\`\`go
+package main
+
+import (
+	"fmt"
+
+	"github.com/$github_username/$project_name"
+)
+
+func main() {
+	// Use the library
+	message := $project_name.Hello()
+	fmt.Println(message)
+}
+\`\`\`
+
+## Development
+
+\`\`\`bash
+# Clone the repository
+git clone https://github.com/$github_username/$project_name.git
+cd $project_name
+
+# Run tests
+make test
+\`\`\`
+
+## License
+
+MIT
 EOF
   
   # Initialize git with all the files we've created
@@ -346,11 +333,11 @@ _setup_go_backend() {
   local github_username=$(git config user.name | tr -d ' ' | tr '[:upper:]' '[:lower:]')
   
   # Check dependencies
-  if ! check_dependencies "go"; then
+  if ! check_dependencies "go git"; then
     return 1
   fi
   
-  echo "🚀 Setting up Go backend project: $project_name"
+  echo "🚀 Setting up Go REST API backend: $project_name"
   
   # Create project directory
   mkdir -p "$project_name"
@@ -359,165 +346,23 @@ _setup_go_backend() {
   # Initialize git repository
   git init
   
-  # Check if the repository already exists, and if so, clone it instead
-  if command_exists gh && gh repo view "$github_username/$project_name" &>/dev/null; then
-    echo "Repository already exists. Cloning existing repository..."
-    cd ..
-    rm -rf "$project_name"
-    git clone "https://github.com/$github_username/$project_name.git"
-    cd "$project_name" || return 1
-  elif command_exists gh; then
-    # Create a new GitHub repository if gh CLI is available
-    echo "Creating new GitHub repository '$project_name'..."
-    gh repo create "$project_name" --private
-    
-    # Add remote
-    git remote add origin "https://github.com/$github_username/$project_name.git"
-    
-    # Create a simple README.md for the initial commit
-    echo "# $project_name" > README.md
-    
-    # Add README.md and make the initial commit
-    git add README.md
-    git commit -m "Initial commit: Add project README"
-    
-    # Push the initial commit to the main branch
-    git push -u origin main
-  else
-    # Without GitHub CLI, just set up the local repository
-    echo "GitHub CLI not found. Setting up local repository only."
-    echo "# $project_name" > README.md
-    git add README.md
-    git commit -m "Initial commit: Add project README"
-  fi
-  
-  # Create and checkout a new branch for the project setup
-  if [[ -n $(git branch --list main) ]]; then
-    git checkout main
-    git pull origin main 2>/dev/null || true
-    git checkout -b initial-setup
-  elif [[ -n $(git branch --list master) ]]; then
-    git checkout master
-    git pull origin master 2>/dev/null || true
-    git checkout -b initial-setup
-  else
-    git checkout -b initial-setup
+  # Create GitHub repository if gh CLI is available
+  if command -v gh &> /dev/null; then
+    echo "Creating GitHub repository for $project_name..."
+    gh repo create "$project_name" --private --confirm || true
   fi
   
   # Initialize Go module
   go mod init "github.com/$github_username/$project_name"
   
-  # Create .gitignore for Go
-  cat > .gitignore << EOF
-# Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-bin/
-tmp/
-
-# Test binary, built with 'go test -c'
-*.test
-
-# Output of the go coverage tool
-*.out
-*.prof
-coverage.html
-
-# IDE files
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# OS specific files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-Icon?
-ehthumbs.db
-Thumbs.db
-
-# Environment variables
-.env
-.env.*
-!.env.example
-
-# Go workspace file
-go.work
-EOF
-  
-  # Create standard Go project directory structure
+  # Create project structure
   mkdir -p cmd/$project_name
   mkdir -p internal/api
   mkdir -p internal/middleware
   mkdir -p internal/models
-  mkdir -p internal/services
   mkdir -p internal/config
-  mkdir -p pkg
-  mkdir -p scripts
-  mkdir -p configs
-  
-  # Create README.md with more detailed information
-  cat > README.md << EOF
-# $project_name
-
-A Go backend API created with CraftingBench.
-
-## Features
-
-- RESTful API with standard Go HTTP package
-- Graceful shutdown
-- Structured logging
-- Configuration management
-- Middleware support (CORS, logging, recovery)
-- Docker support
-
-## Development
-
-\`\`\`bash
-# Clone the repository
-git clone https://github.com/$github_username/$project_name.git
-cd $project_name
-
-# Build and run the application
-make run
-\`\`\`
-
-## API Endpoints
-
-- GET /api/health - Health check endpoint
-- GET /api/version - API version information
-
-## Project Structure
-
-\`\`\`
-$project_name/
-├── cmd/                 # Application entrypoints
-│   └── $project_name/   # Main application
-├── internal/            # Private application code
-│   ├── api/             # API handlers
-│   ├── middleware/      # HTTP middleware
-│   ├── models/          # Data models
-│   ├── services/        # Business logic
-│   └── config/          # Configuration
-├── pkg/                 # Public libraries
-├── configs/             # Configuration files
-├── scripts/             # Build and deployment scripts
-├── Dockerfile           # Docker build instructions
-├── docker-compose.yml   # Docker compose configuration
-├── go.mod               # Go module definition
-└── Makefile             # Build commands
-\`\`\`
-
-## License
-
-MIT
-EOF
+  mkdir -p pkg/logger
+  mkdir -p pkg/database
   
   # Create main.go
   cat > cmd/$project_name/main.go << EOF
@@ -525,7 +370,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -535,108 +379,55 @@ import (
 
 	"github.com/$github_username/$project_name/internal/api"
 	"github.com/$github_username/$project_name/internal/config"
-	"github.com/$github_username/$project_name/internal/middleware"
+	"github.com/$github_username/$project_name/pkg/logger"
 )
 
 func main() {
-	// Load configuration
-	cfg := config.Load()
+	// Initialize logger
+	log := logger.New()
 	
-	// Create a new router
-	router := api.NewRouter()
-
-	// Apply middlewares
-	handler := middleware.Chain(
-		router,
-		middleware.Logging,
-		middleware.CORS,
-		middleware.Recovery,
-	)
-
-	// Create server
-	server := &http.Server{
-		Addr:         fmt.Sprintf(":%d", cfg.Port),
-		Handler:      handler,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		IdleTimeout:  120 * time.Second,
+	// Load configuration
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to load configuration")
 	}
-
-	// Run server in a goroutine
+	
+	// Create router and register routes
+	router := api.NewRouter(log)
+	
+	// Configure the server
+	server := &http.Server{
+		Addr:         cfg.Server.Address,
+		Handler:      router,
+		ReadTimeout:  cfg.Server.ReadTimeout,
+		WriteTimeout: cfg.Server.WriteTimeout,
+		IdleTimeout:  cfg.Server.IdleTimeout,
+	}
+	
+	// Start server in a goroutine
 	go func() {
-		log.Printf("Server starting on port %d", cfg.Port)
+		log.Info().Msgf("Starting server on %s", cfg.Server.Address)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Server error: %v", err)
+			log.Fatal().Err(err).Msg("Server failed")
 		}
 	}()
-
+	
 	// Wait for interrupt signal
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-
-	// Shutdown server gracefully
-	log.Println("Server shutting down...")
+	
+	// Graceful shutdown
+	log.Info().Msg("Shutting down server...")
+	
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-
+	
 	if err := server.Shutdown(ctx); err != nil {
-		log.Fatalf("Server shutdown error: %v", err)
-	}
-
-	log.Println("Server exited properly")
-}
-EOF
-  
-  # Create config
-  cat > internal/config/config.go << EOF
-package config
-
-import (
-	"log"
-	"os"
-	"strconv"
-)
-
-// Config holds application configuration
-type Config struct {
-	// Server settings
-	Port int
-	
-	// Environment
-	Env string
-	
-	// API settings
-	APIVersion string
-}
-
-// Load loads configuration from environment variables
-func Load() *Config {
-	// Default configuration
-	cfg := &Config{
-		Port:       8080,
-		Env:        "development",
-		APIVersion: "1.0.0",
+		log.Fatal().Err(err).Msg("Server forced to shutdown")
 	}
 	
-	// Override with environment variables if present
-	if port := os.Getenv("PORT"); port != "" {
-		if p, err := strconv.Atoi(port); err == nil {
-			cfg.Port = p
-		} else {
-			log.Printf("Invalid PORT value: %s", port)
-		}
-	}
-	
-	if env := os.Getenv("ENV"); env != "" {
-		cfg.Env = env
-	}
-	
-	if version := os.Getenv("API_VERSION"); version != "" {
-		cfg.APIVersion = version
-	}
-	
-	return cfg
+	log.Info().Msg("Server exited properly")
 }
 EOF
   
@@ -645,234 +436,402 @@ EOF
 package api
 
 import (
+	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/rs/zerolog"
+
+	"github.com/$github_username/$project_name/internal/api/handlers"
+)
+
+func NewRouter(log zerolog.Logger) http.Handler {
+	r := chi.NewRouter()
+
+	// Middleware
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Timeout(60 * time.Second))
+
+	// Routes
+	r.Get("/health", handlers.HealthCheck)
+	
+	// API routes
+	r.Route("/api/v1", func(r chi.Router) {
+		r.Get("/", handlers.Welcome)
+		// Add more routes here
+	})
+
+	return r
+}
+EOF
+  
+  # Create handlers.go
+  cat > internal/api/handlers/handlers.go << EOF
+package handlers
+
+import (
 	"encoding/json"
 	"net/http"
 )
 
-// Response is a generic API response
+// Response represents a standard API response
 type Response struct {
-	Success bool        \`json:"success"\`
+	Status  string      \`json:"status"\`
 	Message string      \`json:"message,omitempty"\`
 	Data    interface{} \`json:"data,omitempty"\`
 }
 
-// NewRouter creates a new HTTP router
-func NewRouter() http.Handler {
-	mux := http.NewServeMux()
-
-	// Register routes
-	mux.HandleFunc("/api/health", healthHandler)
-	mux.HandleFunc("/api/version", versionHandler)
-
-	return mux
+// HealthCheck handles the health check endpoint
+func HealthCheck(w http.ResponseWriter, r *http.Request) {
+	resp := Response{
+		Status:  "success",
+		Message: "Service is healthy",
+	}
+	
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
 }
 
-// healthHandler responds with service health
-func healthHandler(w http.ResponseWriter, r *http.Request) {
-	respond(w, http.StatusOK, Response{
-		Success: true,
-		Data: map[string]string{
-			"status": "healthy",
-		},
-	})
-}
-
-// versionHandler responds with API version info
-func versionHandler(w http.ResponseWriter, r *http.Request) {
-	respond(w, http.StatusOK, Response{
-		Success: true,
+// Welcome handles the welcome endpoint
+func Welcome(w http.ResponseWriter, r *http.Request) {
+	resp := Response{
+		Status:  "success",
+		Message: "Welcome to the API",
 		Data: map[string]string{
 			"version": "1.0.0",
 			"name":    "$project_name",
 		},
-	})
-}
-
-// respond sends a JSON response
-func respond(w http.ResponseWriter, status int, payload interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	
-	if payload != nil {
-		if err := json.NewEncoder(w).Encode(payload); err != nil {
-			http.Error(w, "Error encoding response", http.StatusInternalServerError)
-		}
 	}
+	
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
 }
 EOF
   
-  # Create middleware chain
-  cat > internal/middleware/middleware.go << EOF
-package middleware
+  # Create config.go
+  cat > internal/config/config.go << EOF
+package config
 
 import (
-	"log"
-	"net/http"
-	"runtime/debug"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
-// Middleware function type
-type Middleware func(http.Handler) http.Handler
-
-// Chain applies a list of middleware onto a http.Handler
-func Chain(h http.Handler, middleware ...Middleware) http.Handler {
-	for _, m := range middleware {
-		h = m(h)
-	}
-	return h
+type Config struct {
+	Server ServerConfig
+	Log    LogConfig
 }
 
-// CORS adds CORS headers to responses
-func CORS(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Set CORS headers
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+type ServerConfig struct {
+	Address      string        \`mapstructure:"address"\`
+	ReadTimeout  time.Duration \`mapstructure:"read_timeout"\`
+	WriteTimeout time.Duration \`mapstructure:"write_timeout"\`
+	IdleTimeout  time.Duration \`mapstructure:"idle_timeout"\`
+}
 
-		// Handle preflight requests
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
-			return
+type LogConfig struct {
+	Level string \`mapstructure:"level"\`
+}
+
+func Load() (*Config, error) {
+	viper.SetDefault("server.address", ":8080")
+	viper.SetDefault("server.read_timeout", time.Second*15)
+	viper.SetDefault("server.write_timeout", time.Second*15)
+	viper.SetDefault("server.idle_timeout", time.Second*60)
+	viper.SetDefault("log.level", "info")
+
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
+	viper.AddConfigPath("./config")
+
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return nil, err
 		}
+	}
 
-		next.ServeHTTP(w, r)
-	})
-}
+	var config Config
+	if err := viper.Unmarshal(&config); err != nil {
+		return nil, err
+	}
 
-// Logging logs each request
-func Logging(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		
-		// Call the next handler
-		next.ServeHTTP(w, r)
-		
-		// Log the request
-		log.Printf(
-			"%s %s %s %s",
-			r.Method,
-			r.RequestURI,
-			r.RemoteAddr,
-			time.Since(start),
-		)
-	})
+	return &config, nil
 }
+EOF
+  
+  # Create logger.go
+  cat > pkg/logger/logger.go << EOF
+package logger
 
-// Recovery recovers from panics
-func Recovery(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		defer func() {
-			if err := recover(); err != nil {
-				log.Printf("panic: %v\n%s", err, debug.Stack())
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			}
-		}()
-		
-		next.ServeHTTP(w, r)
-	})
+import (
+	"os"
+	"time"
+
+	"github.com/rs/zerolog"
+)
+
+func New() zerolog.Logger {
+	output := zerolog.ConsoleWriter{
+		Out:        os.Stdout,
+		TimeFormat: time.RFC3339,
+	}
+
+	return zerolog.New(output).
+		Level(zerolog.InfoLevel).
+		With().
+		Timestamp().
+		Caller().
+		Logger()
 }
+EOF
+  
+  # Create config.yaml
+  cat > config.yaml << EOF
+server:
+  address: ":8080"
+  read_timeout: 15s
+  write_timeout: 15s
+  idle_timeout: 60s
+
+log:
+  level: "info"
+EOF
+  
+  # Create .gitignore
+  cat > .gitignore << EOF
+# Binaries
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with \`go test -c\`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.html
+
+# Dependency directories
+vendor/
+
+# IDE directories
+.idea/
+.vscode/
+
+# Environment files
+.env
+*.env
+
+# Logs
+*.log
+EOF
+  
+  # Create Makefile
+  cat > Makefile << EOF
+.PHONY: build run test lint clean docker help
+
+# Application name
+APP_NAME = \$(shell basename \$(CURDIR))
+
+# Main package path
+MAIN_PKG = ./cmd/\$(APP_NAME)
+
+# Build the application
+build:
+	@echo "Building application..."
+	@go build -o bin/\$(APP_NAME) \$(MAIN_PKG)
+
+# Run the application
+run:
+	@echo "Running application..."
+	@go run \$(MAIN_PKG)
+
+# Run tests
+test:
+	@echo "Running tests..."
+	@go test -v -race -coverprofile=coverage.out ./...
+	@go tool cover -func=coverage.out
+
+# Run linter
+lint:
+	@echo "Running linter..."
+	@if command -v golangci-lint > /dev/null; then \\
+		golangci-lint run ./...; \\
+	else \\
+		echo "golangci-lint not installed. Installing..."; \\
+		go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; \\
+		golangci-lint run ./...; \\
+	fi
+
+# Clean build artifacts
+clean:
+	@echo "Cleaning build artifacts..."
+	@rm -rf bin/
+	@rm -f coverage.out coverage.html
+
+# Build Docker image
+docker-build:
+	@echo "Building Docker image..."
+	@docker build -t \$(APP_NAME) .
+
+# Run Docker container
+docker-run:
+	@echo "Running Docker container..."
+	@docker run -p 8080:8080 \$(APP_NAME)
+
+# Show help
+help:
+	@echo "Available commands:"
+	@echo "  make build        - Build the application"
+	@echo "  make run          - Run the application"
+	@echo "  make test         - Run tests"
+	@echo "  make lint         - Run linter"
+	@echo "  make clean        - Clean build artifacts"
+	@echo "  make docker-build - Build Docker image"
+	@echo "  make docker-run   - Run Docker container"
+	@echo "  make help         - Show this help message"
 EOF
   
   # Create Dockerfile
   cat > Dockerfile << EOF
-FROM golang:1.20-alpine AS builder
+# Build stage
+FROM golang:1.21-alpine AS builder
 
 WORKDIR /app
 
-# Install dependencies
-COPY go.mod .
-COPY go.sum* .
+# Copy go mod and sum files
+COPY go.mod go.sum ./
+
+# Download dependencies
 RUN go mod download
 
 # Copy source code
 COPY . .
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o $project_name ./cmd/$project_name
+RUN CGO_ENABLED=0 GOOS=linux go build -o /app/bin/server ./cmd/$project_name
 
-# Use a minimal alpine image
-FROM alpine:3.17
+# Final stage
+FROM alpine:latest
 
 WORKDIR /app
 
-# Copy the binary from the builder stage
-COPY --from=builder /app/$project_name .
+# Copy binary from builder
+COPY --from=builder /app/bin/server .
+COPY --from=builder /app/config.yaml .
 
-# Create a non-root user and switch to it
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-USER appuser
-
-# Expose the application port
+# Expose port
 EXPOSE 8080
 
-# Run the binary
-CMD ["./$(project_name)"]
+# Run the application
+CMD ["./server"]
 EOF
   
-  # Create docker-compose.yml
-  cat > docker-compose.yml << EOF
-version: '3.8'
+  # Create README.md
+  cat > README.md << EOF
+# $project_name
 
-services:
-  api:
-    build: .
-    ports:
-      - "8080:8080"
-    environment:
-      - ENV=development
-      - PORT=8080
-    restart: unless-stopped
-EOF
-  
-  # Create .env.example
-  cat > .env.example << EOF
-# Server settings
-PORT=8080
-ENV=development
+A Go REST API backend created with CraftingBench.
 
-# API settings
-API_VERSION=1.0.0
-EOF
-  
-  # Create Makefile
-  cat > Makefile << EOF
-.PHONY: build run test lint clean docker-build docker-run docker-stop
+## Features
 
-build:
-	go build -o bin/$project_name ./cmd/$project_name
+- Modern project structure
+- Chi router with middleware
+- Configuration management with Viper
+- Structured logging with Zerolog
+- Graceful shutdown
+- Docker support
+- GitHub Actions CI/CD
 
-run: build
-	./bin/$project_name
+## Getting Started
 
-test:
-	go test -v ./...
+### Prerequisites
 
-lint:
-	go vet ./...
-	@if command -v golangci-lint > /dev/null; then \
-		golangci-lint run; \
-	else \
-		echo "golangci-lint not installed, skipping"; \
-	fi
+- Go 1.19 or later
+- Make (optional, for using Makefile commands)
+- Docker (optional, for containerization)
 
-clean:
-	rm -rf bin/
+### Installation
 
-docker-build:
-	docker-compose build
+\`\`\`bash
+# Clone the repository
+git clone https://github.com/$github_username/$project_name.git
+cd $project_name
 
-docker-run:
-	docker-compose up
+# Install dependencies
+go mod download
+\`\`\`
 
-docker-stop:
-	docker-compose down
+### Development
+
+\`\`\`bash
+# Run the application
+make run
+
+# Run tests
+make test
+
+# Run linter
+make lint
+
+# Build the application
+make build
+\`\`\`
+
+### Docker
+
+\`\`\`bash
+# Build Docker image
+make docker-build
+
+# Run Docker container
+make docker-run
+\`\`\`
+
+## Project Structure
+
+\`\`\`
+$project_name/
+├── cmd/                    # Application entry points
+│   └── $project_name/     # Main application
+├── internal/              # Private application code
+│   ├── api/              # API handlers and routes
+│   ├── config/           # Configuration
+│   ├── middleware/       # HTTP middleware
+│   └── models/           # Data models
+├── pkg/                  # Public libraries
+│   ├── logger/          # Logging package
+│   └── database/        # Database utilities
+├── config.yaml          # Configuration file
+├── Dockerfile          # Docker configuration
+├── go.mod             # Go modules file
+└── Makefile          # Build commands
+\`\`\`
+
+## API Endpoints
+
+- \`GET /health\`: Health check endpoint
+- \`GET /api/v1\`: Welcome endpoint
+
+## License
+
+MIT
 EOF
   
   # Initialize git with all the files we've created
   git add .
   git commit -m "feat: Initial Go backend setup"
+  
+  # Install dependencies
+  go mod tidy
   
   echo "✅ Go backend project created: $project_name"
   echo ""

@@ -1,0 +1,91 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v0.2.0, v1.0.0
+
+jobs:
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        id: changelog
+        uses: metcalfc/changelog-generator@v4.2.0
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref_name }}
+          body: |
+            # CraftingBench ${{ github.ref_name }}
+            
+            A powerful CLI utility for quickly scaffolding TypeScript and other project types with standardized, production-ready structures.
+            
+            > **⚠️ NOTE:** CraftingBench is currently in BETA. Please review our [Security Policy](https://github.com/ahmifte/craftingbench/blob/main/SECURITY.md) for important information about this release.
+            
+            ## Changes
+            
+            ${{ steps.changelog.outputs.changelog }}
+            
+            ## Installation
+            
+            ### Using curl (recommended)
+            
+            ```bash
+            # Download the install script
+            curl -fsSL https://raw.githubusercontent.com/ahmifte/craftingbench/${{ github.ref_name }}/install.sh | bash
+            
+            # Then add to your shell configuration file (.bashrc or .zshrc)
+            echo 'source $HOME/.craftingbench/craftingbench.sh' >> ~/.zshrc  # Or ~/.bashrc
+            ```
+            
+            ### Manual Installation
+            
+            ```bash
+            # Clone the repository
+            git clone https://github.com/ahmifte/craftingbench.git
+            cd craftingbench
+            
+            # Add to your shell configuration
+            echo "source $(pwd)/craftingbench.sh" >> ~/.zshrc  # Or ~/.bashrc
+            ```
+            
+          draft: false
+          prerelease: false
+          
+      - name: Create tarball
+        run: |
+          tar -czf craftingbench-${{ github.ref_name }}.tar.gz \
+            craftingbench.sh \
+            src/ \
+            .npmrc \
+            package.json \
+            LICENSE \
+            README.md \
+            SECURITY.md \
+            CHANGELOG.md \
+            eslint.config.mjs \
+            tsconfig.json
+            
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./craftingbench-${{ github.ref_name }}.tar.gz
+          asset_name: craftingbench-${{ github.ref_name }}.tar.gz
+          asset_content_type: application/gzip 

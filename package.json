@@ -1,0 +1,47 @@
+{
+  "name": "craftingbench",
+  "version": "0.2.0",
+  "description": "A CLI utility for creating standardized project templates",
+  "main": "craftingbench.sh",
+  "packageManager": "pnpm@9.3.0",
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^7.0.2",
+    "@mui/material": "^7.0.2",
+    "@mui/material-nextjs": "^7.0.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.3.1",
+    "@typescript-eslint/parser": "^7.3.1",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5"
+  },
+  "scripts": {
+    "test": "echo \"No tests specified yet\" && exit 0",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "cli",
+    "project-templates",
+    "scaffolding",
+    "react",
+    "next.js",
+    "golang",
+    "flask",
+    "python"
+  ],
+  "author": "ahmifte",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ahmifte/craftingbench.git"
+  }
+}

@@ -1,0 +1,23 @@
+{
+    "name": "craftingbench-tests",
+    "version": "1.0.0",
+    "description": "Tests for CraftingBench templates",
+    "scripts": {
+        "test": "jest --verbose",
+        "test:bats": "bats ./shell-tests/*.bats"
+    },
+    "jest": {
+        "preset": "ts-jest",
+        "testEnvironment": "node",
+        "testMatch": [
+            "**/?(*.)+(spec|test).ts"
+        ],
+        "collectCoverage": true
+    },
+    "devDependencies": {
+        "@types/jest": "^29.5.5",
+        "jest": "^29.7.0",
+        "ts-jest": "^29.1.1",
+        "typescript": "^5.2.2"
+    }
+}

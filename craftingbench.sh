@@ -3,7 +3,7 @@
 # ================================================================
 # CraftingBench - A utility for creating standardized project templates
 # ================================================================
-# Version: 1.0.0
+# Version: 0.2.0
 # MIT License - Copyright (c) 2025 CraftingBench Contributors
 
 # DESCRIPTION:
@@ -40,6 +40,7 @@ CRAFTINGBENCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Export this variable so template scripts can use it
 export CRAFTINGBENCH_DIR
+export CRAFTINGBENCH_PATH="$CRAFTINGBENCH_DIR"
 
 # Detect shell type
 if [ -n "$ZSH_VERSION" ]; then
