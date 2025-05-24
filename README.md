@@ -85,6 +85,7 @@ ______________________________________________________________________
 - [Contributing](#-contributing)
 - [Resources](#-resources)
 - [License](#-license)
+- [AI Integration](#-ai-integration)
 
 ## ✨ Features
 
@@ -110,12 +111,15 @@ CraftingBench has been organized into a modular structure for better maintainabi
 craftingbench/
 ├── craftingbench.sh         # Main entry point script
 ├── src/                     # Source code
+│   ├── bin/                 # Binary scripts
 │   ├── helpers/             # Helper functions
+│   ├── scripts/             # Utility scripts
 │   ├── templates/           # Project templates
 │   └── completions/         # Shell completions
 ├── docs/                    # Documentation
 │   ├── RELEASING.md         # Release process documentation
 │   ├── architecture.md      # Architecture documentation
+│   ├── anthropic-integration.md # Anthropic Claude integration docs
 │   └── templates/           # Template-specific documentation
 └── README.md                # Main documentation
 ```
@@ -660,3 +664,17 @@ To add a new template, see our [Template Documentation](docs/templates/README.md
 ## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🤖 AI Integration
+
+CraftingBench provides integration with AI services like Anthropic's Claude:
+
+### Anthropic Claude Setup
+
+To set up Anthropic Claude integration:
+
+```bash
+./src/scripts/setup_anthropic_with_uv.sh
+```
+
+This will set up a Python environment with the Anthropic SDK. See the [Anthropic Integration Documentation](docs/anthropic-integration.md) for more details.
