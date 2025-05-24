@@ -38,5 +38,6 @@ if type "$command" >/dev/null 2>&1; then
     "$command" "$@"
 else
     echo "Error: Unknown command '$command'"
+    echo "Run 'craftingbench' without arguments to see available commands"
     exit 1
 fi 

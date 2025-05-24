@@ -68,30 +68,39 @@ setup_zsh_completions() {
   fi
 }
 
+# Initialize banner tracking variable
+CRAFTINGBENCH_BANNER_SHOWN=0
+
 # Print a banner with available commands
 show_banner() {
-  echo "🛠️  CraftingBench loaded!"
-  echo "Available commands:"
-  echo ""
-  echo "Python:"
-  echo "  - setup_python_project <n> [--type=library|backend] : Create a Python project"
-  echo "  - setup_python_library <n>                          : Create a Python library"
-  echo "  - setup_python_backend <n>                          : Create a Flask API backend"
-  echo ""
-  echo "JavaScript/TypeScript:"
-  echo "  - setup_nodejs_backend <n>                          : Create a Node.js backend"
-  echo "  - setup_react_frontend <n>                          : Create a React frontend"
-  echo ""
-  echo "Go:"
-  echo "  - setup_go_project <n> [--type=library|backend]     : Create a Golang project"
-  echo "  - setup_go_library <n>                              : Create a Golang library/module"
-  echo "  - setup_go_backend <n>                              : Create a Golang REST API backend"
-  echo ""
-  echo "Fullstack:"
-  echo "  - setup_fullstack_project <n> [--backend=nextjs|flask|golang] : Create a fullstack application"
-  echo ""
-  echo "Development tools:"
-  echo "  - lint                              : Run ESLint on TypeScript code"
-  echo "  - format                            : Format code with Prettier"
-  echo "  - typecheck                         : Run TypeScript type checking"
+  # Only show banner once per session
+  if [ "$CRAFTINGBENCH_BANNER_SHOWN" -eq 0 ]; then
+    echo "🛠️  CraftingBench loaded!"
+    echo "Available commands:"
+    echo ""
+    echo "Python:"
+    echo "  - setup_python_project <n> [--type=library|backend] : Create a Python project"
+    echo "  - setup_python_library <n>                          : Create a Python library"
+    echo "  - setup_python_backend <n>                          : Create a Flask API backend"
+    echo ""
+    echo "JavaScript/TypeScript:"
+    echo "  - setup_nodejs_backend <n>                          : Create a Node.js backend"
+    echo "  - setup_react_frontend <n>                          : Create a React frontend"
+    echo ""
+    echo "Go:"
+    echo "  - setup_go_project <n> [--type=library|backend]     : Create a Golang project"
+    echo "  - setup_go_library <n>                              : Create a Golang library/module"
+    echo "  - setup_go_backend <n>                              : Create a Golang REST API backend"
+    echo ""
+    echo "Fullstack:"
+    echo "  - setup_fullstack_project <n> [--backend=nextjs|flask|golang] : Create a fullstack application"
+    echo ""
+    echo "Development tools:"
+    echo "  - lint                              : Run ESLint on TypeScript code"
+    echo "  - format                            : Format code with Prettier"
+    echo "  - typecheck                         : Run TypeScript type checking"
+    
+    # Set the flag so it won't be shown again
+    CRAFTINGBENCH_BANNER_SHOWN=1
+  fi
 }

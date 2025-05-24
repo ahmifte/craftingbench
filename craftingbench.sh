@@ -90,7 +90,4 @@ if [ "$CRAFTINGBENCH_SHELL" = "zsh" ] && type setup_zsh_completions >/dev/null 2
   setup_zsh_completions
 fi
 
-# Show banner with available commands
-if type show_banner >/dev/null 2>&1; then
-  show_banner
-fi
+# The show_banner call has been removed to prevent duplication when the CLI is used
