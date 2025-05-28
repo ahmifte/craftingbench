@@ -25,19 +25,30 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
-          cache-dependency-path: |
-            package.json
-            src/tests/package.json
+          # Disable caching in setup-node to avoid "paths were not resolved" error
 
-      - name: Generate pnpm lock files
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
         run: |
-          # Generate root pnpm-lock.yaml
-          pnpm install --no-frozen-lockfile
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: |
+          # Install root dependencies
+          pnpm install
           
-          # Generate test pnpm-lock.yaml
+          # Install test dependencies
           cd src/tests
-          pnpm install --no-frozen-lockfile
+          pnpm install
 
       - name: Setup Go
         uses: actions/setup-go@v4
