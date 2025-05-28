@@ -50,20 +50,28 @@ jobs:
           cd src/tests
           pnpm install
 
+      - name: Generate Go dependencies
+        run: |
+          if [ -f "go.mod" ]; then
+            go mod tidy
+          fi
+
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
           go-version: '1.21'
 
+      - name: Install BATS
+        run: |
+          git clone https://github.com/bats-core/bats-core.git
+          cd bats-core
+          sudo ./install.sh /usr/local
+          bats --version
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-
-      - name: Install BATS
-        run: |
-          pnpm install -g bats-core
-          bats --version
 
       - name: Verify shell scripts
         run: |
