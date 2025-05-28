@@ -28,6 +28,9 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
+          cache-dependency-path: |
+            **/pnpm-lock.yaml
+            pnpm-lock.yaml
 
       - name: Update pnpm lockfile
         run: pnpm install --no-frozen-lockfile

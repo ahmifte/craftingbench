@@ -79,6 +79,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: ${{ inputs.package_manager }}
           registry-url: 'https://registry.npmjs.org'
+          cache-dependency-path: |
+            ${{ inputs.working_directory }}/package-lock.json
+            ${{ inputs.working_directory }}/pnpm-lock.yaml
+            ${{ inputs.working_directory }}/yarn.lock
 
       - name: Install pnpm
         if: inputs.package_manager == 'pnpm'

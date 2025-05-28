@@ -26,7 +26,9 @@ jobs:
         with:
           node-version: '20'
           cache: 'pnpm'
-          cache-dependency-path: 'src/tests/pnpm-lock.yaml'
+          cache-dependency-path: |
+            src/tests/pnpm-lock.yaml
+            **/pnpm-lock.yaml
 
       - name: Setup Go
         uses: actions/setup-go@v4
@@ -46,7 +48,12 @@ jobs:
       - name: Install test dependencies
         working-directory: ./src/tests
         run: |
-          pnpm install --frozen-lockfile
+          if [ ! -f "pnpm-lock.yaml" ]; then
+            echo "No pnpm-lock.yaml found, creating one..."
+            pnpm install
+          else
+            pnpm install --frozen-lockfile
+          fi
 
       - name: Verify shell scripts
         run: |
