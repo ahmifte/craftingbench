@@ -129,7 +129,7 @@ craftingbench/
 ### Option 1: Automated Install (Recommended)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ahmifte/craftingbench/v0.2.0/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ahmifte/craftingbench/v0.3.0/install.sh | bash
 ```
 
 This script will:
