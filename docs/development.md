@@ -2,9 +2,9 @@
 
 This guide provides detailed information on how to use CraftingBench effectively for your development workflow.
 
-[![Version](<https://img.shields.io/badge/Version-0.2.0%20(Beta)-orange.svg>)](../CHANGELOG.md)
+[![Version](<https://img.shields.io/badge/Version-0.3.0%20(Beta)-orange.svg>)](../CHANGELOG.md)
 
-> **⚠️ BETA NOTICE:** CraftingBench v0.2.0 is currently in beta. Features, APIs, and usage patterns may change before the stable 1.0.0 release. Please read the [Security Policy](../SECURITY.md) for important information.
+> **⚠️ BETA NOTICE:** CraftingBench v0.3.0 is currently in beta. Features, APIs, and usage patterns may change before the stable 1.0.0 release. Please read the [Security Policy](../SECURITY.md) for important information.
 
 ## Table of Contents
 
@@ -39,12 +39,12 @@ CraftingBench can be installed using the automated installer script or manually.
 #### Automated Installation (Recommended)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ahmifte/craftingbench/v0.2.0/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ahmifte/craftingbench/v0.3.0/install.sh | bash
 ```
 
 This script will:
 
-1. Download CraftingBench v0.2.0
+1. Download CraftingBench v0.3.0
 1. Install it to `~/.craftingbench`
 1. Configure your shell by adding the necessary source line to your `.bashrc` or `.zshrc`
 

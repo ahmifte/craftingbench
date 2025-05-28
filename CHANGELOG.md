@@ -6,6 +6,14 @@ All notable changes to CraftingBench will be documented in this file.
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## [0.3.0] - 2024-07-04
+
+### Added
+
 - New `utils.sh` file with common utility functions extracted from templates
 - New `pre-commit.sh` template for generating pre-commit configurations
 - Pre-commit GitHub workflow template for running hooks in CI

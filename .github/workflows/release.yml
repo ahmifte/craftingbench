@@ -3,7 +3,7 @@ name: Create Release
 on:
   push:
     tags:
-      - 'v*' # Push events to matching v*, i.e. v0.2.0, v1.0.0
+      - 'v*' # Push events to matching v*, i.e. v0.3.0, v1.0.0
 
 jobs:
   build:

@@ -1,8 +1,8 @@
 # 🏗️ Architecture
 
-[![Version](<https://img.shields.io/badge/Version-0.2.0%20(Beta)-orange.svg>)](../CHANGELOG.md)
+[![Version](<https://img.shields.io/badge/Version-0.3.0%20(Beta)-orange.svg>)](../CHANGELOG.md)
 
-This document outlines the architectural design of CraftingBench v0.2.0.
+This document outlines the architectural design of CraftingBench v0.3.0.
 
 ## 📂 Project Structure
 
@@ -74,7 +74,7 @@ ______________________________________________________________________
 
 CraftingBench uses GitHub Releases for distribution:
 
-1. Versioned releases are tagged with `v*` format (e.g., `v0.2.0`)
+1. Versioned releases are tagged with `v*` format (e.g., `v0.3.0`)
 1. GitHub Actions automatically build release assets
 1. The `install.sh` script downloads the appropriate release
 

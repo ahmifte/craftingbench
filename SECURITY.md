@@ -2,7 +2,7 @@
 
 ## Current Release Status
 
-**⚠️ CraftingBench is currently in BETA (v0.2.0)**
+**⚠️ CraftingBench is currently in BETA (v0.3.0)**
 
 CraftingBench is currently in active development and has not reached a stable 1.0.0 release. While the maintainers make best-effort attempts to ensure the security and reliability of the codebase, beta versions may contain bugs or security issues that have not yet been identified or addressed.
 
@@ -18,7 +18,7 @@ Users should be aware that:
 | Version | Supported          | Status      |
 | ------- | ------------------ | ----------- |
 | 0.2.x   | :white_check_mark: | Active Beta |
-| < 0.2.0 | :x:                | Deprecated  |
+| < 0.3.0 | :x:                | Deprecated  |
 
 We currently only support the latest release (0.2.x). We strongly recommend using the most recent release available via GitHub Releases.
 
@@ -33,7 +33,7 @@ CraftingBench releases are managed through GitHub Releases. Each release is tagg
 To install the latest release, you can use our installation script:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ahmifte/craftingbench/v0.2.0/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ahmifte/craftingbench/v0.3.0/install.sh | bash
 ```
 
 **⚠️ IMPORTANT SECURITY NOTICE:**
@@ -89,7 +89,7 @@ However, the maintainers make no guarantees about the effectiveness of these pra
 
 ## About Beta Status
 
-CraftingBench v0.2.0 is currently in BETA. This means:
+CraftingBench v0.3.0 is currently in BETA. This means:
 
 1. APIs and commands may change at any time without notice
 1. Breaking changes may be introduced without warning
