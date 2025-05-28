@@ -4,7 +4,7 @@
 
 **Guide for maintaining and releasing CraftingBench**
 
-[![Version](<https://img.shields.io/badge/Version-0.2.0%20(Beta)-orange.svg>)](../CHANGELOG.md)
+[![Version](<https://img.shields.io/badge/Version-0.3.0%20(Beta)-orange.svg>)](../CHANGELOG.md)
 
 </div>
 

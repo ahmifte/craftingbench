@@ -6,13 +6,13 @@
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Shell Script](https://img.shields.io/badge/Shell_Script-Bash-4EAA25.svg?logo=gnu-bash&logoColor=white)](craftingbench.sh)
-[![Version](<https://img.shields.io/badge/Version-0.2.0%20(Beta)-orange.svg>)](CHANGELOG.md)
+[![Version](<https://img.shields.io/badge/Version-0.3.0%20(Beta)-orange.svg>)](CHANGELOG.md)
 [![Dependabot](https://img.shields.io/badge/Dependabot-Active-brightgreen.svg)](https://github.com/features/security)
 [![Made with Love](https://img.shields.io/badge/Made%20with-Love-ff69b4.svg)](https://github.com/ahmifte/craftingbench)
 
 </div>
 
-> **⚠️ BETA STATUS:** CraftingBench v0.2.0 is currently in beta. APIs and usage may change before the stable 1.0.0 release. Please review our [Security Policy](SECURITY.md) for important information.
+> **⚠️ BETA STATUS:** CraftingBench v0.3.0 is currently in beta. APIs and usage may change before the stable 1.0.0 release. Please review our [Security Policy](SECURITY.md) for important information.
 
 ______________________________________________________________________
 
@@ -129,12 +129,12 @@ craftingbench/
 ### Option 1: Automated Install (Recommended)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ahmifte/craftingbench/v0.2.0/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ahmifte/craftingbench/v0.3.0/install.sh | bash
 ```
 
 This script will:
 
-- Download CraftingBench v0.2.0
+- Download CraftingBench v0.3.0
 - Install it to ~/.craftingbench
 - Configure your shell by adding the necessary source line to your .bashrc or .zshrc
 - Create command line tools: `craftingbench` and `cb` (shorthand alias)

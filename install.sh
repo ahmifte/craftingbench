@@ -12,7 +12,7 @@ CYAN='\033[0;36m'
 CLEAR='\033[0m'
 
 # Configuration
-CRAFTINGBENCH_VERSION="0.2.0"
+CRAFTINGBENCH_VERSION="0.3.0"
 REPO_URL="https://github.com/ahmifte/craftingbench"
 INSTALL_DIR="$HOME/.craftingbench"
 SHELL_CONFIG=""

@@ -25,28 +25,53 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
-          cache-dependency-path: 'src/tests/pnpm-lock.yaml'
+          # Disable caching in setup-node to avoid "paths were not resolved" error
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: |
+          # Install root dependencies
+          pnpm install
+          
+          # Install test dependencies
+          cd src/tests
+          pnpm install
+
+      - name: Generate Go dependencies
+        run: |
+          if [ -f "go.mod" ]; then
+            go mod tidy
+          fi
 
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
           go-version: '1.21'
 
+      - name: Install BATS
+        run: |
+          git clone https://github.com/bats-core/bats-core.git
+          cd bats-core
+          sudo ./install.sh /usr/local
+          bats --version
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-
-      - name: Install BATS
-        run: |
-          pnpm install -g bats-core
-          bats --version
-
-      - name: Install test dependencies
-        working-directory: ./src/tests
-        run: |
-          pnpm install --frozen-lockfile
 
       - name: Verify shell scripts
         run: |
