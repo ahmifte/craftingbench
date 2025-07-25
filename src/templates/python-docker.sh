@@ -137,54 +137,71 @@ _setup_python_docker_api() {
   # Initialize git repository
   git init
   
+  # Create an initial empty README.md
+  echo "# $project_name" > README.md
+  git add README.md
+  git commit -m "Initial commit"
+  
   # Check if the repository already exists
   if command_exists gh && gh repo view "$github_username/$project_name" &>/dev/null; then
-    echo "Repository already exists. Cloning existing repository..."
+    echo "Repository already exists. Please choose a different name."
     cd ..
     rm -rf "$project_name"
-    git clone "https://github.com/$github_username/$project_name.git"
-    cd "$project_name" || return 1
+    return 1
   elif command_exists gh; then
     # Create a new GitHub repository
     echo "Creating new GitHub repository '$project_name'..."
-    gh repo create "$project_name" --private
+    gh repo create "$project_name" --private --source=. --remote=origin --push
     
-    # Add remote
-    git remote add origin "https://github.com/$github_username/$project_name.git"
+    # Create and checkout feature branch
+    git checkout -b feat/initial-setup
+  else
+    # Without GitHub CLI, just set up the local repository
+    echo "GitHub CLI not found. Setting up local repository only."
+    echo "To create a GitHub repository, install gh CLI: https://cli.github.com/"
+    
+    # Create and checkout feature branch
+    git checkout -b feat/initial-setup
   fi
   
   # Create project structure
   mkdir -p src tests docs scripts
   mkdir -p src/api src/core src/services src/models src/utils
   
-  # Create README.md
+  # Create comprehensive README.md
   cat > README.md << EOF
 # $project_name
 
-A Python API project with Docker support and comprehensive CI/CD.
+A Python API project with Docker support, comprehensive CI/CD, and production-ready architecture.
 
-## Features
+## 🚀 Features
 
-- **Framework**: FastAPI with async support
-- **Container**: Multi-stage Docker build for minimal production images
-- **CI/CD**: GitHub Actions with testing, linting, and Docker image builds
-- **Testing**: pytest with coverage reporting
-- **Code Quality**: pre-commit hooks, mypy, ruff, black
-- **Documentation**: Auto-generated API docs with FastAPI
-- **Monitoring**: Health checks and structured logging
-$(if [[ "$ai_ready" == "true" ]]; then echo "- **AI/ML Ready**: Includes patterns for LLM integration and prompt management"; fi)
+- **Framework**: FastAPI with async support for high-performance APIs
+- **Container**: Multi-stage Docker builds producing minimal production images
+- **CI/CD**: GitHub Actions with automated testing, security scanning, and multi-platform builds
+- **Testing**: pytest with coverage reporting and integration test support
+- **Code Quality**: Pre-commit hooks with black, ruff, mypy for consistent code
+- **Documentation**: Auto-generated OpenAPI docs with ReDoc and Swagger UI
+- **Monitoring**: Built-in health checks, structured logging, and Prometheus metrics
+- **Security**: Automated vulnerability scanning with Trivy, bandit, and safety
+$(if [[ "$ai_ready" == "true" ]]; then echo "- **AI/ML Ready**: OpenAI/Anthropic integrations with prompt management system"; fi)
 
-## Prerequisites
+## 📋 Prerequisites
 
-- Python 3.11+
+- Python 3.11 or higher
 - Docker and Docker Compose
 - Make (optional but recommended)
+- GitHub CLI (optional, for repository creation)
 
-## Quick Start
+## 🏃‍♂️ Quick Start
 
 ### Using Docker (Recommended)
 
 \`\`\`bash
+# Clone the repository
+git clone https://github.com/$github_username/$project_name.git
+cd $project_name
+
 # Build and run with Docker Compose
 make docker-up
 
@@ -192,8 +209,12 @@ make docker-up
 docker-compose up --build
 \`\`\`
 
-The API will be available at http://localhost:8000
-API documentation at http://localhost:8000/docs
+The API will be available at:
+- API Endpoint: http://localhost:8000
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
+- Health Check: http://localhost:8000/health
+- Metrics: http://localhost:8000/metrics
 
 ### Local Development
 
@@ -202,75 +223,279 @@ API documentation at http://localhost:8000/docs
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\\Scripts\\activate
 
-# Install dependencies
-make install
+# Install development dependencies
+make install-dev
 
-# Run development server
+# Run development server with auto-reload
 make dev
 \`\`\`
 
-## Testing
+## 🐳 Docker Commands
 
 \`\`\`bash
-# Run tests with coverage
+# Build Docker image
+make docker-build
+
+# Run Docker container
+docker run -p 8000:8000 --env-file .env ${project_name}:latest
+
+# Run with Docker Compose
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+\`\`\`
+
+## 🧪 Testing
+
+\`\`\`bash
+# Run all tests with coverage
 make test
+
+# Run specific test file
+pytest tests/test_health.py -v
 
 # Run tests in Docker
 make docker-test
+
+# Run integration tests
+docker-compose up -d
+pytest tests/integration -v
+docker-compose down
 \`\`\`
 
-## Development Workflow
+## 🛠️ Development Workflow
 
-1. Create a feature branch: \`git checkout -b feature/your-feature\`
-2. Make changes and test locally
-3. Run linting: \`make lint\`
-4. Run tests: \`make test\`
-5. Commit changes (pre-commit hooks will run automatically)
-6. Push and create a pull request
+1. **Setup**: Fork and clone the repository
+2. **Branch**: Create a feature branch (\`git checkout -b feature/amazing-feature\`)
+3. **Develop**: Make your changes with TDD approach
+4. **Lint**: Run \`make lint\` to check code quality
+5. **Test**: Run \`make test\` to ensure all tests pass
+6. **Commit**: Commit with conventional commits (\`feat:`, \`fix:`, \`docs:\`, etc.)
+7. **Push**: Push to your fork and create a Pull Request
 
-## Project Structure
+## 📁 Project Structure
 
 \`\`\`
-.
-├── src/
-│   ├── api/              # API endpoints
-│   ├── core/             # Core configuration
-│   ├── models/           # Data models
-│   ├── services/         # Business logic
-│   └── utils/            # Utilities
-├── tests/                # Test files
-├── scripts/              # Utility scripts
-├── docker/               # Docker configurations
-├── .github/workflows/    # CI/CD pipelines
-└── docs/                 # Documentation
+$project_name/
+├── src/                      # Application source code
+│   ├── api/                  # API endpoints and routes
+│   │   ├── v1/              # API version 1
+│   │   └── health.py        # Health check endpoints
+│   ├── core/                # Core application components
+│   │   ├── config.py        # Configuration management
+│   │   └── logging.py       # Logging configuration
+│   ├── models/              # Pydantic models
+│   ├── services/            # Business logic layer
+│   └── utils/               # Utility functions
+├── tests/                   # Test suite
+│   ├── unit/               # Unit tests
+│   ├── integration/        # Integration tests
+│   └── conftest.py         # Pytest configuration
+├── docker/                  # Docker configurations
+├── scripts/                 # Utility scripts
+├── .github/                 # GitHub configurations
+│   └── workflows/          # CI/CD pipelines
+├── Dockerfile              # Multi-stage Docker build
+├── docker-compose.yml      # Local development setup
+├── Makefile               # Common commands
+├── pyproject.toml         # Python package configuration
+└── README.md              # This file
 \`\`\`
 
-## Configuration
+## ⚙️ Configuration
 
-Environment variables can be set in \`.env\` file:
+### Environment Variables
+
+Create a \`.env\` file based on \`.env.example\`:
 
 \`\`\`env
-# Application
+# Application Settings
 APP_NAME=$project_name
-APP_ENV=development
-LOG_LEVEL=info
+APP_ENV=development  # development, staging, production
+DEBUG=true
+LOG_LEVEL=info      # debug, info, warning, error, critical
+LOG_FORMAT=json     # json or text
 
-# API
+# API Configuration
 API_HOST=0.0.0.0
 API_PORT=8000
-API_WORKERS=1
+API_WORKERS=1       # Number of Uvicorn workers
+
+# Redis Cache (optional)
+REDIS_URL=redis://localhost:6379/0
 
 $(if [[ "$ai_ready" == "true" ]]; then echo "# AI/ML Configuration
-OPENAI_API_KEY=your-key-here
-ANTHROPIC_API_KEY=your-key-here
-MODEL_NAME=gpt-4
-MAX_TOKENS=1000
-TEMPERATURE=0.7"; fi)
+OPENAI_API_KEY=sk-...      # Your OpenAI API key
+ANTHROPIC_API_KEY=sk-...   # Your Anthropic API key
+MODEL_NAME=gpt-4          # Default model to use
+MAX_TOKENS=1000           # Maximum tokens for completion
+TEMPERATURE=0.7           # Model temperature (0.0-2.0)
+
+# Prompt Engineering Best Practices
+# 1. System prompts are defined in src/prompts/*.j2
+# 2. Use temperature 0.0-0.3 for consistent/factual outputs
+# 3. Use temperature 0.7-1.0 for creative outputs
+# 4. Always validate and sanitize LLM outputs
+# 5. Implement retry logic with exponential backoff
+# 6. Monitor token usage and implement rate limiting"; fi)
 \`\`\`
 
-## License
+## 📝 API Documentation
 
-MIT
+Once the application is running, you can access:
+
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+- **OpenAPI Schema**: http://localhost:8000/openapi.json
+
+### Example API Usage
+
+\`\`\`bash
+# Health check
+curl http://localhost:8000/health
+
+# Create an example
+curl -X POST http://localhost:8000/api/v1/examples \\
+  -H "Content-Type: application/json" \\
+  -d '{"name": "Test", "description": "Test example"}'
+
+# Get all examples
+curl http://localhost:8000/api/v1/examples
+\`\`\`
+
+$(if [[ "$ai_ready" == "true" ]]; then echo "## 🤖 AI/ML Features
+
+### Prompt Management
+
+Prompts are managed using Jinja2 templates in the \`prompts/\` directory:
+
+\`\`\`python
+from src.ai.prompts import get_prompt_manager
+
+prompt_mgr = get_prompt_manager()
+prompt = prompt_mgr.load_prompt(\"example\", 
+    app_name=\"$project_name\",
+    context=\"User asking about features\",
+    query=\"What can you do?\"
+)
+\`\`\`
+
+### Using the LLM Service
+
+\`\`\`python
+from src.ai.llm import get_llm_service
+
+llm = get_llm_service()
+response = await llm.complete(
+    prompt=\"Explain quantum computing\",
+    system_prompt=\"You are a helpful physics teacher\",
+    temperature=0.7
+)
+\`\`\`
+
+### Prompt Engineering Best Practices
+
+1. **Be Specific**: Clear, detailed prompts yield better results
+2. **Set Context**: Always provide relevant context via system prompts
+3. **Temperature Control**: Use low temperature (0.0-0.3) for factual tasks
+4. **Output Format**: Specify desired output format explicitly
+5. **Validation**: Always validate LLM outputs before using them
+6. **Token Optimization**: Monitor and optimize token usage
+7. **Error Handling**: Implement robust error handling for API failures
+
+### Example Prompt Template
+
+\`\`\`jinja2
+{# prompts/analysis.j2 #}
+You are an expert {{ role }} assistant for {{ app_name }}.
+
+{% if context %}
+Context: {{ context }}
+{% endif %}
+
+Task: {{ task }}
+
+Requirements:
+- Provide clear, actionable insights
+- Use specific examples when possible
+- Format output as {{ output_format }}
+
+User Query: {{ query }}
+\`\`\`"; fi)
+
+## 🔧 Make Commands
+
+Run \`make help\` to see all available commands:
+
+\`\`\`bash
+make help         # Show this help message
+make install      # Install production dependencies
+make install-dev  # Install development dependencies
+make dev          # Run development server
+make test         # Run tests with coverage
+make lint         # Run linting checks
+make format       # Format code
+make clean        # Clean build artifacts
+make docker-build # Build Docker image
+make docker-up    # Start services with Docker Compose
+make docker-down  # Stop Docker services
+make docker-test  # Run tests in Docker
+\`\`\`
+
+## 🚀 Deployment
+
+### GitHub Actions CI/CD
+
+The project includes comprehensive CI/CD pipelines that run on every push:
+
+1. **Linting & Type Checking**: Ensures code quality
+2. **Testing**: Runs unit and integration tests
+3. **Security Scanning**: Checks for vulnerabilities
+4. **Docker Build**: Builds multi-platform images
+5. **Container Scanning**: Scans Docker images for vulnerabilities
+
+### Production Deployment
+
+For production deployment:
+
+1. Tag a release: \`git tag v1.0.0 && git push --tags\`
+2. GitHub Actions will automatically:
+   - Run all tests and checks
+   - Build and push Docker images
+   - Create a GitHub release
+   - Publish to PyPI (if configured)
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Code Style
+
+- We use \`black\` for code formatting
+- We use \`ruff\` for linting
+- We use \`mypy\` for type checking
+- All code must have type hints
+- All code must have docstrings
+- All code must have tests
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built with [FastAPI](https://fastapi.tiangolo.com/)
+- Containerized with [Docker](https://www.docker.com/)
+- CI/CD with [GitHub Actions](https://github.com/features/actions)
+$(if [[ "$ai_ready" == "true" ]]; then echo "- AI powered by [OpenAI](https://openai.com/) and [Anthropic](https://anthropic.com/)"; fi)
+
+---
+
+Made with ❤️ by $github_username
 EOF
 
   # Create .gitignore
@@ -1566,26 +1791,73 @@ updates:
       interval: "weekly"
 EOF
 
-  # Initialize git and make initial commit
+  # Add all project files and commit on feature branch
   git add .
-  git commit -m "Initial commit: Python Docker API project setup"
+  git commit -m "feat: Add Python Docker API project with comprehensive setup
+
+- FastAPI application with async support
+- Multi-stage Docker build for production
+- GitHub Actions CI/CD pipeline
+- pytest with coverage reporting
+- Pre-commit hooks and code quality tools
+- Structured logging and health checks
+$(if [[ "$ai_ready" == "true" ]]; then echo "- AI/ML integrations with OpenAI and Anthropic"; fi)"
   
-  # Create and push feature branch
-  git checkout -b feat/initial-setup
-  
-  # Push to GitHub if remote exists
+  # Push feature branch to GitHub if remote exists
   if git remote get-url origin &>/dev/null; then
-    echo "Pushing to GitHub..."
+    echo "Pushing feature branch to GitHub..."
     git push -u origin feat/initial-setup
     
     # Create PR if gh CLI is available
     if command_exists gh; then
       echo "Creating pull request..."
       gh pr create \
-        --title "Initial project setup" \
-        --body "This PR contains the initial project setup with Docker, CI/CD, and testing infrastructure." \
+        --title "feat: Initial Python Docker API project setup" \
+        --body "## Description
+
+This PR contains the initial project setup for $project_name with:
+
+### Features
+- ✅ FastAPI framework with async support
+- ✅ Multi-stage Docker builds for minimal production images
+- ✅ Comprehensive GitHub Actions CI/CD pipeline
+- ✅ Testing setup with pytest and coverage reporting
+- ✅ Code quality tools (black, ruff, mypy, pre-commit)
+- ✅ Structured logging and monitoring
+- ✅ API documentation with Swagger/ReDoc
+$(if [[ "$ai_ready" == "true" ]]; then echo "- ✅ AI/ML integrations with prompt management"; fi)
+
+### Infrastructure
+- Docker and Docker Compose configuration
+- GitHub Actions workflows for testing and deployment
+- Security scanning with Trivy, bandit, and safety
+- Multi-platform Docker image builds
+
+### Development Experience
+- Makefile for common commands
+- Pre-commit hooks for code quality
+- Comprehensive README with setup instructions
+- Environment-based configuration
+
+## Testing
+- Run \`make test\` for unit tests
+- Run \`make docker-test\` for containerized tests
+- All tests should pass before merging
+
+## Next Steps
+After merging, developers can:
+1. Clone the repository
+2. Run \`make install-dev\` to set up the development environment
+3. Run \`make dev\` to start the development server
+4. Access API docs at http://localhost:8000/docs" \
         --base main
     fi
+  else
+    echo ""
+    echo "To push to GitHub later:"
+    echo "1. Create a repository on GitHub"
+    echo "2. Add remote: git remote add origin https://github.com/$github_username/$project_name.git"
+    echo "3. Push: git push -u origin main && git push -u origin feat/initial-setup"
   fi
   
   log_success "Python Docker API project '$project_name' created successfully!"
@@ -1622,134 +1894,439 @@ _setup_python_docker_cli() {
   # Initialize git repository
   git init
   
-  # Setup GitHub repository
+  # Create an initial empty README.md
+  echo "# $project_name" > README.md
+  git add README.md
+  git commit -m "Initial commit"
+  
+  # Check if the repository already exists
   if command_exists gh && gh repo view "$github_username/$project_name" &>/dev/null; then
-    echo "Repository already exists. Cloning existing repository..."
+    echo "Repository already exists. Please choose a different name."
     cd ..
     rm -rf "$project_name"
-    git clone "https://github.com/$github_username/$project_name.git"
-    cd "$project_name" || return 1
+    return 1
   elif command_exists gh; then
+    # Create a new GitHub repository
     echo "Creating new GitHub repository '$project_name'..."
-    gh repo create "$project_name" --private
-    git remote add origin "https://github.com/$github_username/$project_name.git"
+    gh repo create "$project_name" --private --source=. --remote=origin --push
+    
+    # Create and checkout feature branch
+    git checkout -b feat/initial-setup
+  else
+    # Without GitHub CLI, just set up the local repository
+    echo "GitHub CLI not found. Setting up local repository only."
+    echo "To create a GitHub repository, install gh CLI: https://cli.github.com/"
+    
+    # Create and checkout feature branch
+    git checkout -b feat/initial-setup
   fi
   
   # Create project structure
   mkdir -p src tests docs scripts
   mkdir -p src/commands src/core src/utils
   
-  # Create README.md
+  # Create comprehensive README.md
   cat > README.md << EOF
 # $project_name
 
-A Python CLI application with Docker support and comprehensive CI/CD.
+A Python CLI application with Docker support, comprehensive CI/CD, and production-ready architecture.
 
-## Features
+## 🚀 Features
 
-- **Framework**: Click for CLI with rich output
-- **Container**: Multi-stage Docker build for minimal images
-- **CI/CD**: GitHub Actions with testing and Docker builds
-- **Testing**: pytest with coverage reporting
-- **Code Quality**: pre-commit hooks, mypy, ruff, black
-- **Distribution**: Installable via pip, Docker, or standalone binary
-$(if [[ "$ai_ready" == "true" ]]; then echo "- **AI/ML Ready**: Includes patterns for LLM integration"; fi)
+- **Framework**: Click framework with rich terminal output and interactive prompts
+- **Container**: Multi-stage Docker builds for minimal, secure images
+- **CI/CD**: GitHub Actions with automated testing, releases, and multi-platform builds
+- **Testing**: pytest with coverage reporting and CLI command testing
+- **Code Quality**: Pre-commit hooks with black, ruff, mypy for consistent code
+- **Distribution**: Installable via pip, Docker, or standalone executables
+- **Configuration**: Flexible config via environment variables or YAML files
+- **Documentation**: Auto-generated help text and command documentation
+$(if [[ "$ai_ready" == "true" ]]; then echo "- **AI/ML Ready**: OpenAI/Anthropic integrations for AI-powered commands"; fi)
 
-## Installation
+## 📋 Prerequisites
 
-### Using pip
+- Python 3.11 or higher
+- Docker (optional, for containerized distribution)
+- Make (optional but recommended)
+- GitHub CLI (optional, for repository creation)
+
+## 🏃‍♂️ Quick Start
+
+### Installation Options
+
+#### Via pip (Recommended)
 
 \`\`\`bash
 pip install $project_name
 \`\`\`
 
-### Using Docker
+#### Via Docker
 
 \`\`\`bash
-docker run --rm -it ${project_name}:latest --help
+# Pull the latest image
+docker pull ghcr.io/$github_username/${project_name}:latest
+
+# Run with Docker
+docker run --rm -it ghcr.io/$github_username/${project_name}:latest --help
 \`\`\`
 
-### From source
+#### From Source
 
 \`\`\`bash
+# Clone the repository
 git clone https://github.com/$github_username/$project_name.git
 cd $project_name
+
+# Install in development mode
 pip install -e .
 \`\`\`
 
-## Usage
+## 📖 Usage
+
+### Basic Commands
 
 \`\`\`bash
-# Show help
+# Show help and available commands
 $project_name --help
 
-# Run example command
-$project_name hello --name World
+# Show version information
+$project_name version --full
 
-# With Docker
-docker run --rm -it ${project_name}:latest hello --name Docker
+# Run the hello command
+$project_name hello --name "Your Name" --color cyan
+
+# List all available commands
+$project_name list-commands
 \`\`\`
 
-## Development
-
-### Setup
+### Docker Usage
 
 \`\`\`bash
+# Run with Docker (using alias for convenience)
+alias ${project_name}="docker run --rm -it ghcr.io/$github_username/${project_name}:latest"
+
+# Now use normally
+$project_name hello --name Docker
+
+# Mount local files if needed
+docker run --rm -it -v \$(pwd):/data ghcr.io/$github_username/${project_name}:latest process /data/input.txt
+\`\`\`
+
+### Configuration
+
+\`\`\`bash
+# Via environment variables
+export ${project_name^^}_LOG_LEVEL=debug
+export ${project_name^^}_LOG_FORMAT=text
+$project_name hello
+
+# Via config file
+$project_name --config config.yaml hello
+\`\`\`
+
+$(if [[ "$ai_ready" == "true" ]]; then echo "### AI-Powered Commands
+
+\`\`\`bash
+# Get AI completion
+$project_name ai complete -p \"Explain quantum computing\" -t 0.7
+
+# Analyze a file with AI
+$project_name ai analyze -f document.txt -q \"What are the key points?\"
+
+# Configure AI settings via environment
+export ${project_name^^}_OPENAI_API_KEY=sk-...
+export ${project_name^^}_MODEL_NAME=gpt-4
+\`\`\`"; fi)
+
+## 🐳 Docker Commands
+
+\`\`\`bash
+# Build Docker image locally
+make docker-build
+
+# Run with custom arguments
+make docker-run ARGS="hello --name Developer"
+
+# Open shell in container for debugging
+make docker-shell
+
+# Push to registry
+docker tag ${project_name}:latest ghcr.io/$github_username/${project_name}:latest
+docker push ghcr.io/$github_username/${project_name}:latest
+\`\`\`
+
+## 🧪 Testing
+
+\`\`\`bash
+# Run all tests with coverage
+make test
+
+# Run specific test file
+pytest tests/test_cli.py -v
+
+# Run with different Python versions
+tox
+
+# Test the Docker image
+docker run --rm ${project_name}:latest version --full
+\`\`\`
+
+## 🛠️ Development
+
+### Setup Development Environment
+
+\`\`\`bash
+# Clone the repository
+git clone https://github.com/$github_username/$project_name.git
+cd $project_name
+
 # Create virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\\Scripts\\activate
 
-# Install development dependencies
+# Install in development mode with all dependencies
 make install-dev
 
-# Run tests
-make test
+# Setup pre-commit hooks
+pre-commit install
 \`\`\`
 
-### Docker Development
+### Development Workflow
+
+1. **Create Feature Branch**: \`git checkout -b feature/new-command\`
+2. **Add New Command**: Create file in \`src/commands/\`
+3. **Write Tests**: Add tests in \`tests/\`
+4. **Run Tests**: \`make test\`
+5. **Format Code**: \`make format\`
+6. **Lint**: \`make lint\`
+7. **Commit**: Use conventional commits
+8. **Push**: Create pull request
+
+### Adding a New Command
+
+1. Create command file \`src/commands/mycommand.py\`:
+
+\`\`\`python
+import click
+from rich.console import Console
+
+console = Console()
+
+@click.command()
+@click.option("--name", default="World", help="Name to greet")
+def mycommand(name):
+    \"\"\"My new command description.\"\"\"
+    console.print(f"Hello from mycommand, {name}!")
+\`\`\`
+
+2. Register in \`src/cli.py\`:
+
+\`\`\`python
+from src.commands import mycommand
+
+cli.add_command(mycommand.mycommand)
+\`\`\`
+
+3. Add tests in \`tests/test_mycommand.py\`
+
+## 📁 Project Structure
+
+\`\`\`
+$project_name/
+├── src/                      # Application source code
+│   ├── __main__.py          # Entry point for python -m
+│   ├── cli.py               # CLI application definition
+│   ├── commands/            # CLI command implementations
+│   │   ├── hello.py         # Example hello command
+│   │   └── version.py       # Version information command
+│   ├── core/                # Core functionality
+│   │   ├── config.py        # Configuration management
+│   │   └── logging.py       # Logging setup
+│   └── utils/               # Utility functions
+├── tests/                   # Test suite
+│   ├── test_cli.py         # CLI tests
+│   └── conftest.py         # Test configuration
+├── scripts/                 # Utility scripts
+├── .github/                 # GitHub configuration
+│   └── workflows/          # CI/CD pipelines
+│       └── ci.yml          # Main CI workflow
+├── Dockerfile              # Multi-stage Docker build
+├── Makefile               # Development commands
+├── pyproject.toml         # Package configuration
+├── .pre-commit-config.yaml # Code quality hooks
+└── README.md              # This file
+\`\`\`
+
+## ⚙️ Configuration
+
+### Configuration Hierarchy
+
+1. Command line arguments (highest priority)
+2. Environment variables
+3. Configuration file
+4. Default values (lowest priority)
+
+### Environment Variables
 
 \`\`\`bash
-# Build Docker image
-make docker-build
+# Application settings
+${project_name^^}_DEBUG=true           # Enable debug mode
+${project_name^^}_LOG_LEVEL=info       # Log level: debug, info, warning, error
+${project_name^^}_LOG_FORMAT=text      # Log format: text or json
+${project_name^^}_CONFIG_FILE=config.yaml  # Path to config file
 
-# Run in Docker
-make docker-run ARGS="hello --name Developer"
+$(if [[ "$ai_ready" == "true" ]]; then echo "# AI/ML settings
+${project_name^^}_OPENAI_API_KEY=sk-...     # OpenAI API key
+${project_name^^}_ANTHROPIC_API_KEY=sk-...  # Anthropic API key
+${project_name^^}_MODEL_NAME=gpt-4         # Model to use
+${project_name^^}_MAX_TOKENS=1000          # Max tokens for completion
+${project_name^^}_TEMPERATURE=0.7          # Temperature (0.0-2.0)"; fi)
 \`\`\`
 
-## Project Structure
+### Configuration File (config.yaml)
 
+\`\`\`yaml
+# Application configuration
+log_level: info
+log_format: text
+debug: false
+
+$(if [[ "$ai_ready" == "true" ]]; then echo "# AI/ML configuration
+openai_api_key: sk-...
+anthropic_api_key: sk-...
+model_name: gpt-4
+max_tokens: 1000
+temperature: 0.7
+
+# Prompt templates directory
+prompt_template_dir: prompts"; fi)
 \`\`\`
-.
-├── src/
-│   ├── __main__.py       # Entry point
-│   ├── cli.py            # CLI definition
-│   ├── commands/         # CLI commands
-│   ├── core/             # Core functionality
-│   └── utils/            # Utilities
-├── tests/                # Test files
-├── scripts/              # Utility scripts
-├── docker/               # Docker configurations
-└── .github/workflows/    # CI/CD pipelines
-\`\`\`
 
-## Configuration
+$(if [[ "$ai_ready" == "true" ]]; then echo "## 🤖 AI/ML Features
 
-Configuration can be set via environment variables or config file:
+### AI Command Examples
 
 \`\`\`bash
-# Environment variables
-export ${project_name^^}_LOG_LEVEL=debug
-export ${project_name^^}_CONFIG_FILE=/path/to/config.yaml
+# Get AI completion with custom parameters
+$project_name ai complete \\
+  --prompt \"Write a haiku about Python\" \\
+  --model gpt-4 \\
+  --temperature 0.9
 
-# Or create config.yaml
-log_level: debug
-$(if [[ "$ai_ready" == "true" ]]; then echo "openai_api_key: your-key-here
-model_name: gpt-4"; fi)
+# Analyze a file
+$project_name ai analyze \\
+  --file code.py \\
+  --question \"What does this code do?\"
+
+# Use with system prompt
+$project_name ai complete \\
+  --prompt \"Explain Docker\" \\
+  --system \"You are a DevOps expert. Be concise.\"
 \`\`\`
 
-## License
+### Prompt Engineering Best Practices
 
-MIT
+1. **Clear Instructions**: Be specific about what you want
+2. **Context Setting**: Use system prompts to set behavior
+3. **Temperature Tuning**:
+   - 0.0-0.3: Deterministic, factual responses
+   - 0.7-1.0: Creative, varied responses
+4. **Output Formatting**: Request specific formats (JSON, markdown, etc.)
+5. **Error Handling**: Always handle API failures gracefully
+6. **Token Management**: Monitor usage to control costs
+7. **Response Validation**: Verify AI outputs before using them
+
+### Creating Custom AI Commands
+
+\`\`\`python
+from src.ai.llm import get_llm_service
+import click
+
+@click.command()
+@click.option(\"--input\", required=True)
+async def translate(input):
+    \"\"\"Translate text using AI.\"\"\"
+    llm = get_llm_service()
+    
+    prompt = f\"Translate to Spanish: {input}\"
+    result = await llm.complete(prompt, temperature=0.3)
+    
+    click.echo(f\"Translation: {result}\")
+\`\`\`"; fi)
+
+## 🔧 Make Commands
+
+\`\`\`bash
+make help         # Show all available commands
+make install      # Install production dependencies
+make install-dev  # Install with development dependencies
+make test         # Run tests with coverage
+make lint         # Run code quality checks
+make format       # Auto-format code
+make clean        # Remove build artifacts
+make docker-build # Build Docker image
+make docker-run   # Run CLI in Docker
+make docker-shell # Open shell in Docker
+\`\`\`
+
+## 🚀 Publishing & Distribution
+
+### PyPI Release
+
+1. Update version in \`pyproject.toml\`
+2. Create git tag: \`git tag v1.0.0\`
+3. Push tag: \`git push origin v1.0.0\`
+4. GitHub Actions will automatically publish to PyPI
+
+### Docker Distribution
+
+The CI/CD pipeline automatically:
+- Builds multi-platform images (amd64, arm64)
+- Pushes to GitHub Container Registry
+- Tags with version and latest
+
+### Standalone Executables
+
+Consider using PyInstaller for standalone executables:
+
+\`\`\`bash
+pip install pyinstaller
+pyinstaller --onefile --name $project_name src/__main__.py
+\`\`\`
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these guidelines:
+
+1. Fork the repository
+2. Create a feature branch
+3. Write tests for new functionality
+4. Ensure all tests pass
+5. Submit a pull request
+
+### Code Style
+
+- **Formatting**: black (line length 88)
+- **Linting**: ruff
+- **Type Checking**: mypy with strict mode
+- **Docstrings**: Google style
+- **Commits**: Conventional commits (feat:, fix:, docs:, etc.)
+
+## 📄 License
+
+This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
+
+## 🙏 Acknowledgments
+
+- Built with [Click](https://click.palletsprojects.com/)
+- Terminal UI with [Rich](https://rich.readthedocs.io/)
+- Containerized with [Docker](https://www.docker.com/)
+- CI/CD with [GitHub Actions](https://github.com/features/actions)
+$(if [[ "$ai_ready" == "true" ]]; then echo "- AI powered by [OpenAI](https://openai.com/) and [Anthropic](https://anthropic.com/)"; fi)
+
+---
+
+Made with ❤️ by $github_username
 EOF
 
   # Create .gitignore (same as API project)
@@ -2918,6 +3495,211 @@ EOF
 EOF
   fi
 
+  # Create command generator script
+  cat > scripts/generate_command.py << 'EOF'
+#!/usr/bin/env python3
+"""Generate a new CLI command with boilerplate code and tests."""
+
+import os
+import sys
+from pathlib import Path
+from textwrap import dedent
+
+def generate_command(name: str, description: str = ""):
+    """Generate a new CLI command."""
+    # Validate name
+    if not name.replace("_", "").isalnum():
+        print(f"Error: Command name '{name}' must contain only letters, numbers, and underscores.")
+        sys.exit(1)
+    
+    # Convert to lowercase
+    name = name.lower()
+    
+    # Default description
+    if not description:
+        description = f"Description for {name} command"
+    
+    # Create command file
+    command_file = Path(f"src/commands/{name}.py")
+    if command_file.exists():
+        print(f"Error: Command '{name}' already exists at {command_file}")
+        sys.exit(1)
+    
+    command_code = dedent(f'''
+        """Command: {name} - {description}"""
+        
+        import click
+        from rich.console import Console
+        from rich.table import Table
+        import structlog
+        
+        from src.core.config import settings
+        
+        console = Console()
+        logger = structlog.get_logger()
+        
+        
+        @click.command()
+        @click.option(
+            "--example",
+            "-e",
+            default="default",
+            help="Example option for {name} command.",
+        )
+        @click.option(
+            "--verbose",
+            "-v",
+            is_flag=True,
+            help="Enable verbose output.",
+        )
+        @click.pass_context
+        def {name}(ctx, example: str, verbose: bool):
+            """{description}"""
+            if verbose or ctx.obj.get("debug"):
+                logger.info("Running {name} command", example=example)
+            
+            # TODO: Implement your command logic here
+            table = Table(title="{name.title()} Results")
+            table.add_column("Parameter", style="cyan")
+            table.add_column("Value", style="green")
+            
+            table.add_row("Example", example)
+            table.add_row("Debug Mode", str(ctx.obj.get("debug", False)))
+            
+            console.print(table)
+            console.print(f"[green]✓[/green] {name.title()} command completed successfully!")
+    ''').strip()
+    
+    command_file.write_text(command_code)
+    print(f"✓ Created command file: {command_file}")
+    
+    # Create test file
+    test_file = Path(f"tests/test_{name}.py")
+    test_code = dedent(f'''
+        """Tests for {name} command."""
+        
+        import pytest
+        from click.testing import CliRunner
+        from src.cli import cli
+        
+        
+        def test_{name}_command(runner):
+            """Test basic {name} command."""
+            result = runner.invoke(cli, ["{name}"])
+            assert result.exit_code == 0
+            assert "{name.title()} command completed successfully!" in result.output
+        
+        
+        def test_{name}_with_options(runner):
+            """Test {name} command with options."""
+            result = runner.invoke(cli, ["{name}", "--example", "test", "--verbose"])
+            assert result.exit_code == 0
+            assert "test" in result.output
+        
+        
+        def test_{name}_help(runner):
+            """Test {name} command help."""
+            result = runner.invoke(cli, ["{name}", "--help"])
+            assert result.exit_code == 0
+            assert "{description}" in result.output
+            assert "--example" in result.output
+            assert "--verbose" in result.output
+    ''').strip()
+    
+    test_file.write_text(test_code)
+    print(f"✓ Created test file: {test_file}")
+    
+    # Update commands/__init__.py
+    init_file = Path("src/commands/__init__.py")
+    if init_file.exists():
+        content = init_file.read_text()
+        
+        # Add import
+        imports = content.split('\\n\\n')[0]
+        if f"from . import {name}" not in imports:
+            new_import = f"from . import {name}"
+            imports_list = imports.split('\\n')
+            imports_list.insert(-1, new_import)
+            
+            # Update __all__
+            all_line = next((i for i, line in enumerate(imports_list) if line.startswith("__all__")), None)
+            if all_line is not None:
+                # Parse existing __all__
+                import ast
+                all_list = ast.literal_eval(imports_list[all_line].split(" = ")[1])
+                all_list.append(name)
+                all_list.sort()
+                imports_list[all_line] = f'__all__ = {all_list}'
+            
+            new_content = '\\n'.join(imports_list)
+            init_file.write_text(new_content)
+            print(f"✓ Updated commands/__init__.py")
+    
+    # Update cli.py
+    cli_file = Path("src/cli.py")
+    if cli_file.exists():
+        content = cli_file.read_text()
+        
+        # Add import
+        import_line = f"from src.commands import {name}"
+        if import_line not in content:
+            # Find the last command import
+            lines = content.split('\\n')
+            import_idx = None
+            for i, line in enumerate(lines):
+                if line.startswith("from src.commands import"):
+                    import_idx = i
+            
+            if import_idx is not None:
+                # Update existing import
+                existing = lines[import_idx]
+                if ", " in existing:
+                    modules = existing.split("import ")[1].split(", ")
+                    modules.append(name)
+                    modules.sort()
+                    lines[import_idx] = f"from src.commands import {', '.join(modules)}"
+                else:
+                    lines[import_idx] = existing.replace("import ", "import ") + f", {name}"
+            
+            # Add command registration
+            register_line = f"cli.add_command({name}.{name})"
+            if register_line not in content:
+                # Find last add_command
+                last_add = None
+                for i, line in enumerate(lines):
+                    if "cli.add_command(" in line:
+                        last_add = i
+                
+                if last_add is not None:
+                    lines.insert(last_add + 1, register_line)
+            
+            cli_file.write_text('\\n'.join(lines))
+            print(f"✓ Updated cli.py")
+    
+    print(f"""
+✅ Successfully generated command '{name}'!
+
+Next steps:
+1. Implement your command logic in src/commands/{name}.py
+2. Run tests: pytest tests/test_{name}.py
+3. Try your command: python -m src {name} --help
+""")
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python scripts/generate_command.py <command_name> [description]")
+        print("Example: python scripts/generate_command.py analyze 'Analyze files with AI'")
+        sys.exit(1)
+    
+    name = sys.argv[1]
+    description = " ".join(sys.argv[2:]) if len(sys.argv) > 2 else ""
+    
+    generate_command(name, description)
+EOF
+
+  chmod +x scripts/generate_command.py
+
   # Create GitHub dependabot configuration
   mkdir -p .github
   cat > .github/dependabot.yml << 'EOF'
@@ -2940,26 +3722,73 @@ updates:
       interval: "weekly"
 EOF
 
-  # Initialize git and make initial commit
+  # Add all project files and commit on feature branch
   git add .
-  git commit -m "Initial commit: Python Docker CLI project setup"
+  git commit -m "feat: Add Python Docker CLI project with comprehensive setup
+
+- Click CLI framework with rich terminal output
+- Multi-stage Docker build for minimal images
+- GitHub Actions CI/CD pipeline with releases
+- pytest with CLI command testing
+- Pre-commit hooks and code quality tools
+- Flexible configuration system
+$(if [[ "$ai_ready" == "true" ]]; then echo "- AI-powered commands with OpenAI and Anthropic"; fi)"
   
-  # Create and push feature branch
-  git checkout -b feat/initial-setup
-  
-  # Push to GitHub if remote exists
+  # Push feature branch to GitHub if remote exists
   if git remote get-url origin &>/dev/null; then
-    echo "Pushing to GitHub..."
+    echo "Pushing feature branch to GitHub..."
     git push -u origin feat/initial-setup
     
     # Create PR if gh CLI is available
     if command_exists gh; then
       echo "Creating pull request..."
       gh pr create \
-        --title "Initial project setup" \
-        --body "This PR contains the initial CLI project setup with Docker, CI/CD, and testing infrastructure." \
+        --title "feat: Initial Python Docker CLI project setup" \
+        --body "## Description
+
+This PR contains the initial project setup for $project_name CLI with:
+
+### Features
+- ✅ Click framework for rich CLI experience
+- ✅ Multi-stage Docker builds for distribution
+- ✅ Comprehensive GitHub Actions CI/CD pipeline
+- ✅ Testing setup with pytest and CLI command tests
+- ✅ Code quality tools (black, ruff, mypy, pre-commit)
+- ✅ Flexible configuration via env vars or YAML
+- ✅ Rich terminal output with colors and tables
+$(if [[ "$ai_ready" == "true" ]]; then echo "- ✅ AI-powered commands with LLM integrations"; fi)
+
+### Infrastructure
+- Docker configuration for easy distribution
+- GitHub Actions workflows for testing and releases
+- Multi-platform Docker image builds
+- PyPI publishing workflow
+
+### Developer Experience
+- Makefile for common commands
+- Pre-commit hooks for code quality
+- Comprehensive README with examples
+- Well-structured command architecture
+
+## Testing
+- Run \`make test\` for unit tests
+- Run \`make docker-test\` for containerized tests
+- All tests should pass before merging
+
+## Next Steps
+After merging, developers can:
+1. Install via pip: \`pip install -e .\`
+2. Try the CLI: \`$project_name --help\`
+3. Run example: \`$project_name hello --name World\`
+4. Build Docker: \`make docker-build\`" \
         --base main
     fi
+  else
+    echo ""
+    echo "To push to GitHub later:"
+    echo "1. Create a repository on GitHub"
+    echo "2. Add remote: git remote add origin https://github.com/$github_username/$project_name.git"
+    echo "3. Push: git push -u origin main && git push -u origin feat/initial-setup"
   fi
   
   log_success "Python Docker CLI project '$project_name' created successfully!"
