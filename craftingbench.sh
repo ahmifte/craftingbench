@@ -41,7 +41,21 @@
 # ================================================================
 
 # Get the directory of this script
-CRAFTINGBENCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Handle both sourcing and direct execution
+if [ -n "${BASH_SOURCE[0]}" ]; then
+  CRAFTINGBENCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+elif [ -n "$0" ] && [ "$0" != "-bash" ] && [ "$0" != "-zsh" ]; then
+  CRAFTINGBENCH_DIR="$(cd "$(dirname "$0")" && pwd)"
+else
+  # Fallback: assume we're in the craftingbench directory
+  if [ -f "./craftingbench.sh" ]; then
+    CRAFTINGBENCH_DIR="$(pwd)"
+  else
+    echo "Error: Cannot determine CraftingBench directory"
+    echo "Please run this script from the CraftingBench directory or use an absolute path"
+    return 1 2>/dev/null || exit 1
+  fi
+fi
 
 # Export this variable so template scripts can use it
 export CRAFTINGBENCH_DIR
@@ -61,7 +75,11 @@ if [ -f "$CRAFTINGBENCH_DIR/src/helpers/common.sh" ]; then
   source "$CRAFTINGBENCH_DIR/src/helpers/common.sh"
 else
   echo "Error: Helper file not found at $CRAFTINGBENCH_DIR/src/helpers/common.sh"
-  return 1
+  echo "CRAFTINGBENCH_DIR is set to: $CRAFTINGBENCH_DIR"
+  echo "Current working directory: $(pwd)"
+  echo "Script source: ${BASH_SOURCE[0]:-$0}"
+  echo "Please ensure you're running from the correct directory or the script path is correct"
+  return 1 2>/dev/null || exit 1
 fi
 
 # Source utility functions
