@@ -96,6 +96,7 @@ ______________________________________________________________________
 | Icon | Template            | Description                                                          |
 | :--: | ------------------- | -------------------------------------------------------------------- |
 |  🐍  | **Python Projects** | Modern Python package with testing, linting, and CI/CD setup         |
+|  🐳  | **Python Docker**   | Python API/CLI with Docker, comprehensive CI/CD, and AI/ML options   |
 |  🚀  | **Node.js Backend** | Express-based API with TypeScript and testing framework              |
 |  🔷  | **Golang API**      | Go-based REST API with standard project layout                       |
 |  ⚛️  | **React Frontend**  | TypeScript + React application with Material UI components           |
@@ -196,6 +197,11 @@ After installation, you should see the CraftingBench banner when your shell star
 🛠️  CraftingBench loaded!
 Available commands:
   - setup_python_project <n>       : Create a Python project
+  - setup_python_docker_project <n>: Create a Python project with Docker & CI/CD
+    Options:
+      --type=api                      : Create API project with FastAPI (required)
+      --type=cli                      : Create CLI project with Click (required)
+      --ai-ready                      : Include AI/ML integrations (optional)
   - setup_nodejs_backend <n>       : Create a TypeScript Node.js backend
   - setup_react_frontend <n>       : Create a TypeScript React frontend with Material UI
   - setup_go_project <n>           : Create a Golang project
@@ -222,6 +228,9 @@ CraftingBench provides three ways to use its functionality:
 1. **Using the `craftingbench` command**:
    ```bash
    craftingbench setup_python_project my_awesome_package
+   
+   # Create a Python API with Docker and CI/CD
+   craftingbench setup_python_docker_api my_api_service
    ```
 
 2. **Using the shorthand alias `cb`**:

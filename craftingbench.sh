@@ -20,6 +20,11 @@
 #   setup_python_library <project_name>
 #   setup_python_backend <project_name>
 #
+#   Python with Docker:
+#   setup_python_docker_project <project_name> [--type=api|cli] [--ai-ready]
+#   setup_python_docker_api <project_name>
+#   setup_python_docker_cli <project_name>
+#
 #   Go:
 #   setup_go_project <project_name> [--type=library|backend]
 #   setup_go_library <project_name>
@@ -67,7 +72,7 @@ else
 fi
 
 # Source template modules - only source if they exist
-for template in python nodejs go react fullstack pre-commit; do
+for template in python python-docker nodejs go react fullstack pre-commit; do
   template_path="$CRAFTINGBENCH_DIR/src/templates/${template}.sh"
   if [ -f "$template_path" ]; then
     # shellcheck disable=SC1090
