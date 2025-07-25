@@ -34,10 +34,11 @@ setup_python_docker_cli() {
 show_python_docker_help() {
   echo "Python Docker Project Setup Commands:"
   echo ""
-  echo "  setup_python_docker_project <project_name> --type=<type> [--ai-ready]"
+  echo "  setup_python_docker_project <project_name> --type=<type> [--ai-ready] [--with-mock-data]"
   echo "      Creates a new Python project with Docker and CI/CD"
   echo "      Required: --type=api|cli"
   echo "      Optional: --ai-ready (includes AI/ML dependencies and patterns)"
+  echo "      Optional: --with-mock-data (includes mock data, RAG, and context management - implies --ai-ready)"
   echo ""
   echo "  setup_python_docker_api <project_name>"
   echo "      Creates a new Python API project with Docker"
@@ -48,6 +49,7 @@ show_python_docker_help() {
   echo "Examples:"
   echo "  setup_python_docker_project myapi --type=api"
   echo "  setup_python_docker_project myai --type=api --ai-ready"
+  echo "  setup_python_docker_project myrag --type=api --with-mock-data"
   echo "  setup_python_docker_api myservice"
   echo "  setup_python_docker_cli mytool"
 }
@@ -68,6 +70,7 @@ setup_python_docker_project() {
   local project_name="$1"
   local project_type=""
   local ai_ready=false
+  local with_mock_data=false
   
   # Parse options
   shift 1
@@ -79,6 +82,11 @@ setup_python_docker_project() {
         type_specified=true
         ;;
       --ai-ready)
+        ai_ready=true
+        ;;
+      --with-mock-data)
+        with_mock_data=true
+        # Mock data implies AI-ready
         ai_ready=true
         ;;
       *) 
@@ -101,10 +109,10 @@ setup_python_docker_project() {
   
   case "$project_type" in
     api)
-      _setup_python_docker_api "$project_name" "$ai_ready"
+      _setup_python_docker_api "$project_name" "$ai_ready" "$with_mock_data"
       ;;
     cli)
-      _setup_python_docker_cli "$project_name" "$ai_ready"
+      _setup_python_docker_cli "$project_name" "$ai_ready" "$with_mock_data"
       ;;
     *)
       echo "Error: Unsupported project type: $project_type"
@@ -118,6 +126,7 @@ setup_python_docker_project() {
 _setup_python_docker_api() {
   local project_name="$1"
   local ai_ready="$2"
+  local with_mock_data="$3"
   local github_username=$(git config user.name | tr -d ' ' | tr '[:upper:]' '[:lower:]')
   
   # Check dependencies
@@ -126,7 +135,9 @@ _setup_python_docker_api() {
   fi
   
   echo "🚀 Setting up Python Docker API project: $project_name"
-  if [[ "$ai_ready" == "true" ]]; then
+  if [[ "$with_mock_data" == "true" ]]; then
+    echo "   Including AI/ML dependencies, RAG system, mock data, and context management"
+  elif [[ "$ai_ready" == "true" ]]; then
     echo "   Including AI/ML dependencies and patterns"
   fi
   
@@ -183,8 +194,11 @@ A Python API project with Docker support, comprehensive CI/CD, and production-re
 - **Code Quality**: Pre-commit hooks with black, ruff, mypy for consistent code
 - **Documentation**: Auto-generated OpenAPI docs with ReDoc and Swagger UI
 - **Monitoring**: Built-in health checks, structured logging, and Prometheus metrics
-- **Security**: Automated vulnerability scanning with Trivy, bandit, and safety
-$(if [[ "$ai_ready" == "true" ]]; then echo "- **AI/ML Ready**: OpenAI/Anthropic integrations with prompt management system"; fi)
+ - **Security**: Automated vulnerability scanning with Trivy, bandit, and safety
+ $(if [[ "$with_mock_data" == "true" ]]; then echo "- **AI/ML Ready**: OpenAI/Anthropic integrations with prompt management system
+ - **RAG System**: Production-ready retrieval-augmented generation with ChromaDB
+ - **Mock Data**: Comprehensive test dataset with 100+ documents and conversations
+ - **Context Management**: Session-based conversation tracking and context windows"; elif [[ "$ai_ready" == "true" ]]; then echo "- **AI/ML Ready**: OpenAI/Anthropic integrations with prompt management system"; fi)
 
 ## 📋 Prerequisites
 
@@ -690,7 +704,16 @@ dependencies = [
     "httpx>=0.26.0",
     "structlog>=24.1.0",
     "prometheus-client>=0.19.0",
-$(if [[ "$ai_ready" == "true" ]]; then echo '    "openai>=1.10.0",
+$(if [[ "$with_mock_data" == "true" ]]; then echo '    "openai>=1.10.0",
+    "anthropic>=0.18.0",
+    "langchain>=0.1.0",
+    "langchain-community>=0.0.10",
+    "chromadb>=0.4.22",
+    "sentence-transformers>=2.3.0",
+    "tiktoken>=0.5.0",
+    "faker>=22.0.0",
+    "pandas>=2.1.0",
+    "numpy>=1.26.0",'; elif [[ "$ai_ready" == "true" ]]; then echo '    "openai>=1.10.0",
     "anthropic>=0.18.0",
     "langchain>=0.1.0",
     "tiktoken>=0.5.0",'; fi)
@@ -1769,6 +1792,1622 @@ Please provide a helpful and accurate response.
 EOF
   fi
 
+  # Create additional RAG and mock data components
+  if [[ "$with_mock_data" == "true" ]]; then
+    mkdir -p src/rag src/data scripts/data
+
+    # Create RAG module
+    cat > src/rag/__init__.py << 'EOF'
+"""RAG (Retrieval-Augmented Generation) system."""
+EOF
+
+    cat > src/rag/vectorstore.py << 'EOF'
+"""Vector store implementation for RAG."""
+
+import os
+from typing import List, Dict, Any, Optional
+from pathlib import Path
+
+import chromadb
+from chromadb.utils import embedding_functions
+import structlog
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.embeddings import HuggingFaceEmbeddings
+
+from src.core.config import settings
+
+logger = structlog.get_logger()
+
+
+class VectorStore:
+    """ChromaDB-based vector store for document embeddings."""
+    
+    def __init__(self, collection_name: str = "documents"):
+        """Initialize vector store."""
+        self.collection_name = collection_name
+        
+        # Initialize embedding function
+        self.embeddings = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2",
+            model_kwargs={'device': 'cpu'},
+            encode_kwargs={'normalize_embeddings': True}
+        )
+        
+        # Initialize ChromaDB
+        persist_directory = Path("data/chroma")
+        persist_directory.mkdir(parents=True, exist_ok=True)
+        
+        self.client = chromadb.PersistentClient(
+            path=str(persist_directory)
+        )
+        
+        # Get or create collection
+        self.collection = self.client.get_or_create_collection(
+            name=self.collection_name,
+            embedding_function=embedding_functions.HuggingFaceEmbeddingFunction(
+                api_key="",  # Not needed for local models
+                model_name="sentence-transformers/all-MiniLM-L6-v2"
+            )
+        )
+        
+        # Text splitter for chunking documents
+        self.text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000,
+            chunk_overlap=200,
+            length_function=len,
+            separators=["\n\n", "\n", " ", ""]
+        )
+    
+    async def add_documents(self, documents: List[Dict[str, Any]]) -> None:
+        """Add documents to the vector store."""
+        texts = []
+        metadatas = []
+        ids = []
+        
+        for i, doc in enumerate(documents):
+            # Split text into chunks
+            chunks = self.text_splitter.split_text(doc['content'])
+            
+            for j, chunk in enumerate(chunks):
+                texts.append(chunk)
+                metadatas.append({
+                    'source': doc.get('source', 'unknown'),
+                    'title': doc.get('title', ''),
+                    'doc_id': doc.get('id', f'doc_{i}'),
+                    'chunk_id': j,
+                    'type': doc.get('type', 'document')
+                })
+                ids.append(f"{doc.get('id', f'doc_{i}')}_{j}")
+        
+        # Add to ChromaDB
+        if texts:
+            self.collection.add(
+                documents=texts,
+                metadatas=metadatas,
+                ids=ids
+            )
+            logger.info(f"Added {len(texts)} chunks to vector store")
+    
+    async def search(
+        self, 
+        query: str, 
+        n_results: int = 5,
+        filter_dict: Optional[Dict[str, Any]] = None
+    ) -> List[Dict[str, Any]]:
+        """Search for similar documents."""
+        results = self.collection.query(
+            query_texts=[query],
+            n_results=n_results,
+            where=filter_dict
+        )
+        
+        # Format results
+        formatted_results = []
+        if results['documents'] and results['documents'][0]:
+            for i, doc in enumerate(results['documents'][0]):
+                formatted_results.append({
+                    'content': doc,
+                    'metadata': results['metadatas'][0][i] if results['metadatas'] else {},
+                    'distance': results['distances'][0][i] if results['distances'] else 0
+                })
+        
+        return formatted_results
+    
+    async def clear(self) -> None:
+        """Clear all documents from the collection."""
+        # Delete and recreate collection
+        self.client.delete_collection(self.collection_name)
+        self.collection = self.client.get_or_create_collection(
+            name=self.collection_name,
+            embedding_function=embedding_functions.HuggingFaceEmbeddingFunction(
+                api_key="",
+                model_name="sentence-transformers/all-MiniLM-L6-v2"
+            )
+        )
+        logger.info("Cleared vector store")
+
+
+@lru_cache()
+def get_vector_store() -> VectorStore:
+    """Get vector store instance."""
+    return VectorStore()
+EOF
+
+    cat > src/rag/context_manager.py << 'EOF'
+"""Context management for RAG system."""
+
+from typing import List, Dict, Any, Optional, Tuple
+from datetime import datetime
+import json
+from pathlib import Path
+
+import structlog
+from pydantic import BaseModel, Field
+
+from src.rag.vectorstore import get_vector_store
+from src.ai.prompts import get_prompt_manager
+
+logger = structlog.get_logger()
+
+
+class ConversationTurn(BaseModel):
+    """Single turn in a conversation."""
+    role: str
+    content: str
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class ContextWindow(BaseModel):
+    """Manages context window for LLM interactions."""
+    max_tokens: int = 4096
+    conversation_history: List[ConversationTurn] = Field(default_factory=list)
+    retrieved_context: List[Dict[str, Any]] = Field(default_factory=list)
+    system_prompt: Optional[str] = None
+    
+    def add_turn(self, role: str, content: str, metadata: Optional[Dict] = None) -> None:
+        """Add a conversation turn."""
+        turn = ConversationTurn(
+            role=role,
+            content=content,
+            metadata=metadata or {}
+        )
+        self.conversation_history.append(turn)
+        
+        # Trim history if needed (simple approach - keep last N turns)
+        max_turns = 10
+        if len(self.conversation_history) > max_turns:
+            self.conversation_history = self.conversation_history[-max_turns:]
+    
+    def set_retrieved_context(self, contexts: List[Dict[str, Any]]) -> None:
+        """Set retrieved context from vector search."""
+        self.retrieved_context = contexts
+    
+    def build_prompt(self, query: str, template_name: str = "rag_query") -> str:
+        """Build prompt with context."""
+        prompt_mgr = get_prompt_manager()
+        
+        # Format retrieved contexts
+        context_texts = []
+        for ctx in self.retrieved_context:
+            source = ctx.get('metadata', {}).get('source', 'Unknown')
+            content = ctx.get('content', '')
+            context_texts.append(f"[Source: {source}]\n{content}")
+        
+        # Format conversation history
+        history_text = ""
+        for turn in self.conversation_history[-5:]:  # Last 5 turns
+            history_text += f"{turn.role.capitalize()}: {turn.content}\n"
+        
+        # Build prompt
+        prompt = prompt_mgr.load_prompt(
+            template_name,
+            query=query,
+            contexts="\n\n".join(context_texts),
+            conversation_history=history_text,
+            system_prompt=self.system_prompt or ""
+        )
+        
+        return prompt
+    
+    def export_history(self, filepath: Path) -> None:
+        """Export conversation history to file."""
+        data = {
+            'conversation': [turn.dict() for turn in self.conversation_history],
+            'system_prompt': self.system_prompt,
+            'exported_at': datetime.utcnow().isoformat()
+        }
+        
+        with open(filepath, 'w') as f:
+            json.dump(data, f, indent=2, default=str)
+    
+    def import_history(self, filepath: Path) -> None:
+        """Import conversation history from file."""
+        with open(filepath, 'r') as f:
+            data = json.load(f)
+        
+        self.conversation_history = [
+            ConversationTurn(**turn) for turn in data['conversation']
+        ]
+        self.system_prompt = data.get('system_prompt')
+
+
+class ContextManager:
+    """Manages context for RAG-enhanced conversations."""
+    
+    def __init__(self):
+        """Initialize context manager."""
+        self.vector_store = get_vector_store()
+        self.contexts: Dict[str, ContextWindow] = {}
+    
+    def get_or_create_context(self, session_id: str) -> ContextWindow:
+        """Get or create a context window for a session."""
+        if session_id not in self.contexts:
+            self.contexts[session_id] = ContextWindow()
+        return self.contexts[session_id]
+    
+    async def prepare_context(
+        self,
+        session_id: str,
+        query: str,
+        n_results: int = 5,
+        search_filter: Optional[Dict[str, Any]] = None
+    ) -> Tuple[ContextWindow, List[Dict[str, Any]]]:
+        """Prepare context by retrieving relevant documents."""
+        # Get context window
+        context = self.get_or_create_context(session_id)
+        
+        # Search for relevant documents
+        search_results = await self.vector_store.search(
+            query=query,
+            n_results=n_results,
+            filter_dict=search_filter
+        )
+        
+        # Update context with retrieved documents
+        context.set_retrieved_context(search_results)
+        
+        return context, search_results
+    
+    def clear_context(self, session_id: str) -> None:
+        """Clear context for a session."""
+        if session_id in self.contexts:
+            del self.contexts[session_id]
+    
+    def export_session(self, session_id: str, filepath: Path) -> None:
+        """Export a session's context."""
+        if session_id in self.contexts:
+            self.contexts[session_id].export_history(filepath)
+EOF
+
+    cat > src/rag/pipeline.py << 'EOF'
+"""RAG pipeline orchestration."""
+
+from typing import Optional, Dict, Any, List
+import asyncio
+
+import structlog
+from langchain.chains import RetrievalQA
+from langchain.prompts import PromptTemplate
+
+from src.ai.llm import get_llm_service
+from src.rag.context_manager import ContextManager
+from src.rag.vectorstore import get_vector_store
+from src.core.config import settings
+
+logger = structlog.get_logger()
+
+
+class RAGPipeline:
+    """Orchestrates the RAG pipeline."""
+    
+    def __init__(self):
+        """Initialize RAG pipeline."""
+        self.llm_service = get_llm_service()
+        self.context_manager = ContextManager()
+        self.vector_store = get_vector_store()
+    
+    async def query(
+        self,
+        question: str,
+        session_id: str = "default",
+        n_results: int = 5,
+        search_filter: Optional[Dict[str, Any]] = None,
+        model: Optional[str] = None,
+        temperature: Optional[float] = None
+    ) -> Dict[str, Any]:
+        """Execute RAG query."""
+        try:
+            # Prepare context
+            context, search_results = await self.context_manager.prepare_context(
+                session_id=session_id,
+                query=question,
+                n_results=n_results,
+                search_filter=search_filter
+            )
+            
+            # Build prompt with context
+            prompt = context.build_prompt(question)
+            
+            # Get LLM response
+            response = await self.llm_service.complete(
+                prompt=prompt,
+                model=model,
+                temperature=temperature
+            )
+            
+            # Add to conversation history
+            context.add_turn("user", question)
+            context.add_turn("assistant", response)
+            
+            # Log metrics
+            logger.info(
+                "RAG query completed",
+                session_id=session_id,
+                n_contexts=len(search_results),
+                response_length=len(response)
+            )
+            
+            return {
+                "answer": response,
+                "contexts": search_results,
+                "session_id": session_id,
+                "metadata": {
+                    "model": model or settings.MODEL_NAME,
+                    "temperature": temperature or settings.TEMPERATURE,
+                    "n_contexts": len(search_results)
+                }
+            }
+            
+        except Exception as e:
+            logger.error(f"RAG query failed: {str(e)}")
+            raise
+    
+    async def ingest_documents(
+        self,
+        documents: List[Dict[str, Any]],
+        batch_size: int = 10
+    ) -> Dict[str, Any]:
+        """Ingest documents into the vector store."""
+        total_docs = len(documents)
+        processed = 0
+        
+        try:
+            # Process in batches
+            for i in range(0, total_docs, batch_size):
+                batch = documents[i:i + batch_size]
+                await self.vector_store.add_documents(batch)
+                processed += len(batch)
+                
+                logger.info(
+                    f"Ingested batch",
+                    batch_num=i // batch_size + 1,
+                    batch_size=len(batch),
+                    total_processed=processed
+                )
+            
+            return {
+                "status": "success",
+                "documents_processed": processed,
+                "message": f"Successfully ingested {processed} documents"
+            }
+            
+        except Exception as e:
+            logger.error(f"Document ingestion failed: {str(e)}")
+            return {
+                "status": "error",
+                "documents_processed": processed,
+                "error": str(e)
+            }
+    
+    def get_session_history(self, session_id: str) -> List[Dict[str, Any]]:
+        """Get conversation history for a session."""
+        context = self.context_manager.get_or_create_context(session_id)
+        return [turn.dict() for turn in context.conversation_history]
+    
+    def clear_session(self, session_id: str) -> None:
+        """Clear a session's context."""
+        self.context_manager.clear_context(session_id)
+    
+    async def clear_vector_store(self) -> None:
+        """Clear all documents from vector store."""
+        await self.vector_store.clear()
+EOF
+
+    # Create mock data generator
+    cat > src/data/__init__.py << 'EOF'
+"""Data generation and management modules."""
+EOF
+
+    cat > src/data/generator.py << 'EOF'
+"""Mock data generator for testing and development."""
+
+import json
+import random
+from datetime import datetime, timedelta
+from typing import List, Dict, Any
+from pathlib import Path
+
+from faker import Faker
+import pandas as pd
+import structlog
+
+logger = structlog.get_logger()
+
+fake = Faker()
+
+
+class MockDataGenerator:
+    """Generates mock data for RAG system."""
+    
+    def __init__(self, seed: int = 42):
+        """Initialize generator with seed for reproducibility."""
+        self.seed = seed
+        Faker.seed(seed)
+        random.seed(seed)
+    
+    def generate_documents(self, count: int = 100) -> List[Dict[str, Any]]:
+        """Generate mock documents for vector store."""
+        documents = []
+        
+        # Document categories
+        categories = [
+            "technical_documentation",
+            "user_guide",
+            "api_reference",
+            "troubleshooting",
+            "best_practices",
+            "tutorial",
+            "faq"
+        ]
+        
+        # Technologies for technical docs
+        technologies = [
+            "Python", "FastAPI", "Docker", "Kubernetes",
+            "PostgreSQL", "Redis", "React", "TypeScript",
+            "AWS", "Azure", "Machine Learning", "DevOps"
+        ]
+        
+        for i in range(count):
+            category = random.choice(categories)
+            
+            if category == "technical_documentation":
+                doc = self._generate_technical_doc(i, technologies)
+            elif category == "user_guide":
+                doc = self._generate_user_guide(i)
+            elif category == "api_reference":
+                doc = self._generate_api_reference(i)
+            elif category == "troubleshooting":
+                doc = self._generate_troubleshooting(i)
+            elif category == "best_practices":
+                doc = self._generate_best_practices(i, technologies)
+            elif category == "tutorial":
+                doc = self._generate_tutorial(i, technologies)
+            else:  # faq
+                doc = self._generate_faq(i)
+            
+            documents.append(doc)
+        
+        logger.info(f"Generated {count} mock documents")
+        return documents
+    
+    def _generate_technical_doc(self, doc_id: int, technologies: List[str]) -> Dict[str, Any]:
+        """Generate technical documentation."""
+        tech = random.choice(technologies)
+        
+        content = f"""
+# {tech} Technical Documentation
+
+## Overview
+{fake.paragraph(nb_sentences=3)}
+
+## Architecture
+{fake.paragraph(nb_sentences=5)}
+
+### Key Components
+- {fake.sentence()}
+- {fake.sentence()}
+- {fake.sentence()}
+
+## Configuration
+{fake.paragraph(nb_sentences=4)}
+
+### Environment Variables
+- `{fake.word().upper()}_HOST`: {fake.sentence()}
+- `{fake.word().upper()}_PORT`: {fake.sentence()}
+- `{fake.word().upper()}_TIMEOUT`: {fake.sentence()}
+
+## Performance Considerations
+{fake.paragraph(nb_sentences=6)}
+
+## Security
+{fake.paragraph(nb_sentences=4)}
+
+### Best Practices
+1. {fake.sentence()}
+2. {fake.sentence()}
+3. {fake.sentence()}
+
+## Monitoring
+{fake.paragraph(nb_sentences=3)}
+"""
+        
+        return {
+            "id": f"tech_doc_{doc_id}",
+            "title": f"{tech} Technical Documentation",
+            "content": content,
+            "type": "technical_documentation",
+            "source": f"docs/technical/{tech.lower()}.md",
+            "created_at": fake.date_time_between(start_date="-1y", end_date="now"),
+            "tags": [tech.lower(), "technical", "documentation"],
+            "version": f"v{random.randint(1, 5)}.{random.randint(0, 9)}.{random.randint(0, 20)}"
+        }
+    
+    def _generate_user_guide(self, doc_id: int) -> Dict[str, Any]:
+        """Generate user guide."""
+        feature = fake.catch_phrase()
+        
+        content = f"""
+# User Guide: {feature}
+
+## Getting Started
+{fake.paragraph(nb_sentences=4)}
+
+## Prerequisites
+- {fake.sentence()}
+- {fake.sentence()}
+- {fake.sentence()}
+
+## Step-by-Step Instructions
+
+### Step 1: {fake.sentence(nb_words=4)}
+{fake.paragraph(nb_sentences=3)}
+
+### Step 2: {fake.sentence(nb_words=4)}
+{fake.paragraph(nb_sentences=3)}
+
+### Step 3: {fake.sentence(nb_words=4)}
+{fake.paragraph(nb_sentences=3)}
+
+## Common Use Cases
+1. **{fake.sentence(nb_words=3)}**: {fake.paragraph(nb_sentences=2)}
+2. **{fake.sentence(nb_words=3)}**: {fake.paragraph(nb_sentences=2)}
+3. **{fake.sentence(nb_words=3)}**: {fake.paragraph(nb_sentences=2)}
+
+## Tips and Tricks
+- {fake.sentence()}
+- {fake.sentence()}
+- {fake.sentence()}
+"""
+        
+        return {
+            "id": f"user_guide_{doc_id}",
+            "title": f"User Guide: {feature}",
+            "content": content,
+            "type": "user_guide",
+            "source": f"docs/guides/user_{doc_id}.md",
+            "created_at": fake.date_time_between(start_date="-1y", end_date="now"),
+            "tags": ["user-guide", "tutorial", feature.lower().replace(" ", "-")]
+        }
+    
+    def _generate_api_reference(self, doc_id: int) -> Dict[str, Any]:
+        """Generate API reference."""
+        endpoint = f"/{fake.word()}/{fake.word()}"
+        
+        content = f"""
+# API Reference: {endpoint}
+
+## Endpoint
+`{random.choice(['GET', 'POST', 'PUT', 'DELETE'])} {endpoint}`
+
+## Description
+{fake.paragraph(nb_sentences=2)}
+
+## Authentication
+This endpoint requires {random.choice(['Bearer token', 'API key', 'OAuth 2.0'])} authentication.
+
+## Request Parameters
+
+### Path Parameters
+- `id` (string, required): {fake.sentence()}
+
+### Query Parameters
+- `limit` (integer, optional): {fake.sentence()} Default: 10
+- `offset` (integer, optional): {fake.sentence()} Default: 0
+- `sort` (string, optional): {fake.sentence()} Values: asc, desc
+
+### Request Body
+```json
+{{
+    "{fake.word()}": "string",
+    "{fake.word()}": "number",
+    "{fake.word()}": {{
+        "{fake.word()}": "boolean"
+    }}
+}}
+```
+
+## Response
+
+### Success Response (200 OK)
+```json
+{{
+    "status": "success",
+    "data": {{
+        "id": "123",
+        "{fake.word()}": "{fake.word()}",
+        "{fake.word()}": {random.randint(1, 100)}
+    }},
+    "metadata": {{
+        "timestamp": "2024-01-01T00:00:00Z",
+        "version": "1.0"
+    }}
+}}
+```
+
+### Error Responses
+- `400 Bad Request`: {fake.sentence()}
+- `401 Unauthorized`: {fake.sentence()}
+- `404 Not Found`: {fake.sentence()}
+- `500 Internal Server Error`: {fake.sentence()}
+
+## Rate Limiting
+{fake.paragraph(nb_sentences=2)}
+
+## Examples
+
+### cURL
+```bash
+curl -X GET "https://api.example.com{endpoint}" \\
+     -H "Authorization: Bearer YOUR_TOKEN" \\
+     -H "Content-Type: application/json"
+```
+
+### Python
+```python
+import requests
+
+response = requests.get(
+    f"https://api.example.com{endpoint}",
+    headers={{"Authorization": "Bearer YOUR_TOKEN"}}
+)
+```
+"""
+        
+        return {
+            "id": f"api_ref_{doc_id}",
+            "title": f"API Reference: {endpoint}",
+            "content": content,
+            "type": "api_reference",
+            "source": f"docs/api/{endpoint.replace('/', '_')}.md",
+            "created_at": fake.date_time_between(start_date="-1y", end_date="now"),
+            "tags": ["api", "reference", endpoint.replace('/', '-')]
+        }
+    
+    def _generate_troubleshooting(self, doc_id: int) -> Dict[str, Any]:
+        """Generate troubleshooting guide."""
+        error = fake.sentence(nb_words=4)
+        
+        content = f"""
+# Troubleshooting: {error}
+
+## Problem Description
+{fake.paragraph(nb_sentences=2)}
+
+## Common Causes
+1. **{fake.sentence(nb_words=3)}**: {fake.paragraph(nb_sentences=2)}
+2. **{fake.sentence(nb_words=3)}**: {fake.paragraph(nb_sentences=2)}
+3. **{fake.sentence(nb_words=3)}**: {fake.paragraph(nb_sentences=2)}
+
+## Solutions
+
+### Solution 1: {fake.sentence(nb_words=4)}
+{fake.paragraph(nb_sentences=3)}
+
+```bash
+{fake.sentence()}
+{fake.sentence()}
+```
+
+### Solution 2: {fake.sentence(nb_words=4)}
+{fake.paragraph(nb_sentences=3)}
+
+### Solution 3: {fake.sentence(nb_words=4)}
+{fake.paragraph(nb_sentences=3)}
+
+## Prevention
+{fake.paragraph(nb_sentences=4)}
+
+## Related Issues
+- {fake.sentence()}
+- {fake.sentence()}
+- {fake.sentence()}
+"""
+        
+        return {
+            "id": f"troubleshoot_{doc_id}",
+            "title": f"Troubleshooting: {error}",
+            "content": content,
+            "type": "troubleshooting",
+            "source": f"docs/troubleshooting/issue_{doc_id}.md",
+            "created_at": fake.date_time_between(start_date="-1y", end_date="now"),
+            "tags": ["troubleshooting", "error", error.lower().replace(" ", "-")]
+        }
+    
+    def _generate_best_practices(self, doc_id: int, technologies: List[str]) -> Dict[str, Any]:
+        """Generate best practices guide."""
+        tech = random.choice(technologies)
+        topic = fake.catch_phrase()
+        
+        content = f"""
+# Best Practices: {tech} {topic}
+
+## Overview
+{fake.paragraph(nb_sentences=3)}
+
+## Core Principles
+
+### 1. {fake.sentence(nb_words=3)}
+{fake.paragraph(nb_sentences=4)}
+
+**Do:**
+- {fake.sentence()}
+- {fake.sentence()}
+
+**Don't:**
+- {fake.sentence()}
+- {fake.sentence()}
+
+### 2. {fake.sentence(nb_words=3)}
+{fake.paragraph(nb_sentences=4)}
+
+### 3. {fake.sentence(nb_words=3)}
+{fake.paragraph(nb_sentences=4)}
+
+## Implementation Guidelines
+
+### Code Organization
+{fake.paragraph(nb_sentences=3)}
+
+```python
+# Good example
+{fake.sentence()}
+{fake.sentence()}
+
+# Bad example
+{fake.sentence()}
+```
+
+### Performance Optimization
+{fake.paragraph(nb_sentences=5)}
+
+### Security Considerations
+{fake.paragraph(nb_sentences=4)}
+
+## Common Pitfalls
+1. {fake.sentence()}
+2. {fake.sentence()}
+3. {fake.sentence()}
+
+## Recommended Tools
+- **{fake.word()}**: {fake.sentence()}
+- **{fake.word()}**: {fake.sentence()}
+- **{fake.word()}**: {fake.sentence()}
+"""
+        
+        return {
+            "id": f"best_practices_{doc_id}",
+            "title": f"Best Practices: {tech} {topic}",
+            "content": content,
+            "type": "best_practices",
+            "source": f"docs/best-practices/{tech.lower()}_{doc_id}.md",
+            "created_at": fake.date_time_between(start_date="-1y", end_date="now"),
+            "tags": ["best-practices", tech.lower(), topic.lower().replace(" ", "-")]
+        }
+    
+    def _generate_tutorial(self, doc_id: int, technologies: List[str]) -> Dict[str, Any]:
+        """Generate tutorial."""
+        tech = random.choice(technologies)
+        project = fake.catch_phrase()
+        
+        content = f"""
+# Tutorial: Building {project} with {tech}
+
+## Introduction
+{fake.paragraph(nb_sentences=3)}
+
+## What You'll Learn
+- {fake.sentence()}
+- {fake.sentence()}
+- {fake.sentence()}
+- {fake.sentence()}
+
+## Prerequisites
+- {fake.sentence()}
+- {fake.sentence()}
+- {fake.sentence()}
+
+## Part 1: Setting Up the Environment
+{fake.paragraph(nb_sentences=4)}
+
+```bash
+# Install dependencies
+{fake.sentence()}
+{fake.sentence()}
+```
+
+## Part 2: Creating the Basic Structure
+{fake.paragraph(nb_sentences=5)}
+
+```python
+# main.py
+{fake.sentence()}
+{fake.sentence()}
+{fake.sentence()}
+```
+
+## Part 3: Implementing Core Features
+{fake.paragraph(nb_sentences=6)}
+
+### Feature 1: {fake.sentence(nb_words=3)}
+{fake.paragraph(nb_sentences=3)}
+
+### Feature 2: {fake.sentence(nb_words=3)}
+{fake.paragraph(nb_sentences=3)}
+
+## Part 4: Testing
+{fake.paragraph(nb_sentences=4)}
+
+## Part 5: Deployment
+{fake.paragraph(nb_sentences=5)}
+
+## Conclusion
+{fake.paragraph(nb_sentences=3)}
+
+## Next Steps
+- {fake.sentence()}
+- {fake.sentence()}
+- {fake.sentence()}
+
+## Additional Resources
+- [{fake.sentence(nb_words=3)}]({fake.url()})
+- [{fake.sentence(nb_words=3)}]({fake.url()})
+- [{fake.sentence(nb_words=3)}]({fake.url()})
+"""
+        
+        return {
+            "id": f"tutorial_{doc_id}",
+            "title": f"Tutorial: Building {project} with {tech}",
+            "content": content,
+            "type": "tutorial",
+            "source": f"docs/tutorials/{tech.lower()}_tutorial_{doc_id}.md",
+            "created_at": fake.date_time_between(start_date="-1y", end_date="now"),
+            "tags": ["tutorial", tech.lower(), project.lower().replace(" ", "-")]
+        }
+    
+    def _generate_faq(self, doc_id: int) -> Dict[str, Any]:
+        """Generate FAQ entry."""
+        questions = []
+        
+        for _ in range(random.randint(5, 10)):
+            q = fake.sentence().rstrip('.') + '?'
+            a = fake.paragraph(nb_sentences=random.randint(2, 4))
+            questions.append(f"**Q: {q}**\n\nA: {a}")
+        
+        content = f"""
+# Frequently Asked Questions
+
+## General Questions
+
+{chr(10).join(questions[:len(questions)//2])}
+
+## Technical Questions
+
+{chr(10).join(questions[len(questions)//2:])}
+
+## Still Have Questions?
+{fake.paragraph(nb_sentences=2)}
+
+Contact us at: support@example.com
+"""
+        
+        return {
+            "id": f"faq_{doc_id}",
+            "title": "Frequently Asked Questions",
+            "content": content,
+            "type": "faq",
+            "source": f"docs/faq/faq_{doc_id}.md",
+            "created_at": fake.date_time_between(start_date="-1y", end_date="now"),
+            "tags": ["faq", "questions", "support"]
+        }
+    
+    def generate_conversations(self, count: int = 50) -> List[Dict[str, Any]]:
+        """Generate mock conversations for testing context management."""
+        conversations = []
+        
+        for i in range(count):
+            turns = []
+            n_turns = random.randint(2, 8)
+            
+            for j in range(n_turns):
+                if j % 2 == 0:  # User turn
+                    turns.append({
+                        "role": "user",
+                        "content": fake.sentence().rstrip('.') + '?',
+                        "timestamp": fake.date_time_between(start_date="-30d", end_date="now")
+                    })
+                else:  # Assistant turn
+                    turns.append({
+                        "role": "assistant",
+                        "content": fake.paragraph(nb_sentences=random.randint(2, 5)),
+                        "timestamp": fake.date_time_between(start_date="-30d", end_date="now")
+                    })
+            
+            conversations.append({
+                "session_id": f"session_{i}",
+                "turns": turns,
+                "metadata": {
+                    "user_id": f"user_{random.randint(1, 20)}",
+                    "topic": fake.catch_phrase(),
+                    "satisfaction_score": random.uniform(3.0, 5.0)
+                }
+            })
+        
+        return conversations
+    
+    def save_to_file(self, data: List[Dict[str, Any]], filepath: Path) -> None:
+        """Save generated data to JSON file."""
+        filepath.parent.mkdir(parents=True, exist_ok=True)
+        
+        with open(filepath, 'w') as f:
+            json.dump(data, f, indent=2, default=str)
+        
+        logger.info(f"Saved {len(data)} items to {filepath}")
+    
+    def save_to_csv(self, data: List[Dict[str, Any]], filepath: Path) -> None:
+        """Save generated data to CSV file."""
+        filepath.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Flatten nested data for CSV
+        flattened = []
+        for item in data:
+            flat_item = {}
+            for key, value in item.items():
+                if isinstance(value, (list, dict)):
+                    flat_item[key] = json.dumps(value)
+                else:
+                    flat_item[key] = value
+            flattened.append(flat_item)
+        
+        df = pd.DataFrame(flattened)
+        df.to_csv(filepath, index=False)
+        
+        logger.info(f"Saved {len(data)} items to {filepath}")
+
+
+# Convenience function
+def generate_mock_dataset(output_dir: Path = Path("data/mock")) -> Dict[str, Path]:
+    """Generate complete mock dataset."""
+    generator = MockDataGenerator()
+    
+    # Generate documents
+    documents = generator.generate_documents(count=100)
+    doc_path = output_dir / "documents.json"
+    generator.save_to_file(documents, doc_path)
+    
+    # Generate conversations
+    conversations = generator.generate_conversations(count=50)
+    conv_path = output_dir / "conversations.json"
+    generator.save_to_file(conversations, conv_path)
+    
+    # Also save as CSV for easy viewing
+    generator.save_to_csv(documents, output_dir / "documents.csv")
+    
+    logger.info(f"Generated mock dataset in {output_dir}")
+    
+    return {
+        "documents": doc_path,
+        "conversations": conv_path,
+        "documents_csv": output_dir / "documents.csv"
+    }
+EOF
+
+    # Create data initialization script
+    cat > scripts/data/init_mock_data.py << 'EOF'
+#!/usr/bin/env python3
+"""Initialize mock data and vector store."""
+
+import asyncio
+import sys
+from pathlib import Path
+
+# Add src to Python path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+from src.data.generator import generate_mock_dataset
+from src.rag.vectorstore import get_vector_store
+from src.rag.pipeline import RAGPipeline
+
+import structlog
+
+# Configure structured logging
+structlog.configure(
+    processors=[
+        structlog.stdlib.filter_by_level,
+        structlog.stdlib.add_logger_name,
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.dev.ConsoleRenderer()
+    ],
+    context_class=dict,
+    logger_factory=structlog.stdlib.LoggerFactory(),
+    cache_logger_on_first_use=True,
+)
+
+logger = structlog.get_logger()
+
+
+async def init_mock_data():
+    """Initialize mock data and populate vector store."""
+    logger.info("Starting mock data initialization")
+    
+    # Generate mock dataset
+    logger.info("Generating mock documents...")
+    paths = generate_mock_dataset()
+    
+    # Load documents
+    import json
+    with open(paths["documents"], 'r') as f:
+        documents = json.load(f)
+    
+    logger.info(f"Generated {len(documents)} mock documents")
+    
+    # Initialize RAG pipeline
+    logger.info("Initializing RAG pipeline...")
+    rag = RAGPipeline()
+    
+    # Clear existing data
+    logger.info("Clearing existing vector store...")
+    await rag.clear_vector_store()
+    
+    # Ingest documents
+    logger.info("Ingesting documents into vector store...")
+    result = await rag.ingest_documents(documents, batch_size=20)
+    
+    logger.info(f"Ingestion result: {result}")
+    
+    # Test search
+    logger.info("Testing vector search...")
+    test_queries = [
+        "How do I configure Docker?",
+        "What are the best practices for Python?",
+        "API authentication methods",
+        "Troubleshooting connection errors"
+    ]
+    
+    for query in test_queries:
+        results = await rag.vector_store.search(query, n_results=3)
+        logger.info(f"Query: '{query}' returned {len(results)} results")
+        if results:
+            logger.info(f"Top result: {results[0]['metadata'].get('title', 'Unknown')}")
+    
+    logger.info("Mock data initialization complete!")
+    
+    # Print summary
+    print("\n" + "="*60)
+    print("Mock Data Initialization Summary")
+    print("="*60)
+    print(f"✓ Generated {len(documents)} documents")
+    print(f"✓ Document types: {set(doc['type'] for doc in documents)}")
+    print(f"✓ Vector store populated and tested")
+    print(f"✓ Data saved to: {paths['documents'].parent}")
+    print("\nYou can now test the RAG system with queries like:")
+    for query in test_queries:
+        print(f"  - {query}")
+    print("="*60)
+
+
+if __name__ == "__main__":
+    asyncio.run(init_mock_data())
+EOF
+
+    chmod +x scripts/data/init_mock_data.py
+
+    # Create API endpoints for RAG
+    cat > src/api/v1/rag.py << 'EOF'
+"""RAG API endpoints."""
+
+from typing import Optional, List, Dict, Any
+from uuid import uuid4
+
+from fastapi import APIRouter, HTTPException, Query, Depends
+from pydantic import BaseModel, Field
+import structlog
+
+from src.rag.pipeline import RAGPipeline
+from src.core.config import settings
+
+router = APIRouter(prefix="/rag", tags=["RAG"])
+logger = structlog.get_logger()
+
+# Initialize RAG pipeline
+rag_pipeline = RAGPipeline()
+
+
+class RAGQuery(BaseModel):
+    """RAG query request."""
+    question: str = Field(..., description="Question to answer using RAG")
+    session_id: Optional[str] = Field(default_factory=lambda: str(uuid4()), description="Session ID for context management")
+    n_results: int = Field(5, ge=1, le=20, description="Number of context documents to retrieve")
+    filter: Optional[Dict[str, Any]] = Field(None, description="Metadata filter for document search")
+    model: Optional[str] = Field(None, description="LLM model to use")
+    temperature: Optional[float] = Field(None, ge=0.0, le=2.0, description="Temperature for LLM")
+
+
+class RAGResponse(BaseModel):
+    """RAG query response."""
+    answer: str
+    contexts: List[Dict[str, Any]]
+    session_id: str
+    metadata: Dict[str, Any]
+
+
+class DocumentIngestion(BaseModel):
+    """Document ingestion request."""
+    documents: List[Dict[str, Any]] = Field(..., description="Documents to ingest")
+    batch_size: int = Field(10, ge=1, le=100, description="Batch size for ingestion")
+
+
+@router.post("/query", response_model=RAGResponse)
+async def query_rag(request: RAGQuery) -> RAGResponse:
+    """Query the RAG system."""
+    try:
+        result = await rag_pipeline.query(
+            question=request.question,
+            session_id=request.session_id,
+            n_results=request.n_results,
+            search_filter=request.filter,
+            model=request.model,
+            temperature=request.temperature
+        )
+        
+        return RAGResponse(**result)
+        
+    except Exception as e:
+        logger.error(f"RAG query failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/ingest")
+async def ingest_documents(request: DocumentIngestion) -> Dict[str, Any]:
+    """Ingest documents into the vector store."""
+    try:
+        result = await rag_pipeline.ingest_documents(
+            documents=request.documents,
+            batch_size=request.batch_size
+        )
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Document ingestion failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/sessions/{session_id}/history")
+async def get_session_history(session_id: str) -> List[Dict[str, Any]]:
+    """Get conversation history for a session."""
+    try:
+        history = rag_pipeline.get_session_history(session_id)
+        return history
+        
+    except Exception as e:
+        logger.error(f"Failed to get session history: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/sessions/{session_id}")
+async def clear_session(session_id: str) -> Dict[str, str]:
+    """Clear a session's context."""
+    try:
+        rag_pipeline.clear_session(session_id)
+        return {"message": f"Session {session_id} cleared successfully"}
+        
+    except Exception as e:
+        logger.error(f"Failed to clear session: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/vectorstore")
+async def clear_vectorstore() -> Dict[str, str]:
+    """Clear all documents from vector store (admin operation)."""
+    try:
+        await rag_pipeline.clear_vector_store()
+        return {"message": "Vector store cleared successfully"}
+        
+    except Exception as e:
+        logger.error(f"Failed to clear vector store: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/health")
+async def rag_health() -> Dict[str, Any]:
+    """Check RAG system health."""
+    try:
+        # Test vector store
+        test_results = await rag_pipeline.vector_store.search("test", n_results=1)
+        
+        return {
+            "status": "healthy",
+            "vector_store": "operational",
+            "llm_service": "operational" if rag_pipeline.llm_service else "not configured"
+        }
+        
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "error": str(e)
+        }
+EOF
+
+    # Create additional prompt templates for RAG
+    cat > prompts/rag_query.j2 << 'EOF'
+{# RAG Query Prompt Template #}
+You are a helpful AI assistant with access to a knowledge base. Use the provided context documents to answer the user's question accurately and comprehensively.
+
+{% if system_prompt %}
+{{ system_prompt }}
+{% endif %}
+
+{% if contexts %}
+## Relevant Context Documents:
+{{ contexts }}
+{% endif %}
+
+{% if conversation_history %}
+## Previous Conversation:
+{{ conversation_history }}
+{% endif %}
+
+## User Question:
+{{ query }}
+
+Instructions:
+1. Answer based primarily on the provided context documents
+2. If the context doesn't contain enough information, acknowledge this limitation
+3. Be accurate and cite specific sources when possible
+4. Maintain consistency with the conversation history
+5. Format your response clearly and professionally
+
+Response:
+EOF
+
+    cat > prompts/context_synthesis.j2 << 'EOF'
+{# Context Synthesis Prompt Template #}
+You are tasked with synthesizing information from multiple sources to provide a comprehensive answer.
+
+## Source Documents:
+{% for ctx in contexts %}
+### Source {{ loop.index }}: {{ ctx.metadata.source }}
+{{ ctx.content }}
+
+{% endfor %}
+
+## Task:
+Synthesize the above information to answer: {{ query }}
+
+Requirements:
+- Combine information from multiple sources coherently
+- Identify and reconcile any contradictions
+- Highlight the most relevant and reliable information
+- Provide a structured, comprehensive response
+
+Synthesis:
+EOF
+
+    # Update the v1 __init__.py to include RAG routes
+    if [ -f "src/api/v1/__init__.py" ]; then
+      # Add import
+      sed -i.bak '/from . import examples/a\
+from . import rag' src/api/v1/__init__.py
+      
+      # Add router registration
+      sed -i.bak '/router.include_router(examples.router/a\
+router.include_router(rag.router, prefix="/rag", tags=["rag"])' src/api/v1/__init__.py
+      
+      # Clean up backup files
+      rm -f src/api/v1/__init__.py.bak
+    fi
+
+    # Create a comprehensive setup guide
+    cat > docs/RAG_SETUP_GUIDE.md << 'EOF'
+# RAG System Setup and Usage Guide
+
+## Overview
+
+This project includes a production-ready Retrieval-Augmented Generation (RAG) system with:
+- Vector storage using ChromaDB
+- Context management for conversations
+- Mock data generation for testing
+- Advanced prompt engineering
+- RESTful API endpoints
+
+## Quick Start
+
+### 1. Initialize Mock Data
+
+```bash
+# Activate virtual environment
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Initialize mock data and vector store
+python scripts/data/init_mock_data.py
+```
+
+This will:
+- Generate 100 mock documents (technical docs, tutorials, FAQs, etc.)
+- Generate 50 mock conversations
+- Populate the ChromaDB vector store
+- Test the search functionality
+
+### 2. Start the API Server
+
+```bash
+# Using Make
+make dev
+
+# Or directly
+uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### 3. Test RAG Endpoints
+
+Visit http://localhost:8000/docs for interactive API documentation.
+
+#### Example: Query the RAG System
+
+```bash
+curl -X POST "http://localhost:8000/api/v1/rag/query" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "How do I configure Docker for Python applications?",
+    "n_results": 5
+  }'
+```
+
+#### Example: Ingest New Documents
+
+```bash
+curl -X POST "http://localhost:8000/api/v1/rag/ingest" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "documents": [
+      {
+        "id": "custom_doc_1",
+        "title": "My Custom Documentation",
+        "content": "This is a custom document about Docker and Python...",
+        "type": "technical_documentation",
+        "source": "custom/my_doc.md"
+      }
+    ]
+  }'
+```
+
+## RAG System Architecture
+
+### Components
+
+1. **Vector Store** (`src/rag/vectorstore.py`)
+   - ChromaDB for embeddings storage
+   - Sentence transformers for text embeddings
+   - Configurable chunk size and overlap
+
+2. **Context Manager** (`src/rag/context_manager.py`)
+   - Session-based conversation tracking
+   - Context window management
+   - Conversation export/import
+
+3. **RAG Pipeline** (`src/rag/pipeline.py`)
+   - Orchestrates retrieval and generation
+   - Handles document ingestion
+   - Manages LLM interactions
+
+4. **Mock Data Generator** (`src/data/generator.py`)
+   - Creates realistic test documents
+   - Generates various document types
+   - Produces test conversations
+
+## Advanced Usage
+
+### Custom Document Ingestion
+
+```python
+from src.rag.pipeline import RAGPipeline
+
+# Initialize pipeline
+rag = RAGPipeline()
+
+# Prepare documents
+documents = [
+    {
+        "id": "doc_1",
+        "title": "Python Best Practices",
+        "content": "Your content here...",
+        "type": "best_practices",
+        "source": "docs/python.md",
+        "tags": ["python", "best-practices"]
+    }
+]
+
+# Ingest
+result = await rag.ingest_documents(documents)
+```
+
+### Context-Aware Conversations
+
+```python
+# Continue a conversation
+result = await rag.query(
+    question="What about error handling?",
+    session_id="existing_session_123",
+    n_results=3
+)
+
+# Get conversation history
+history = rag.get_session_history("existing_session_123")
+```
+
+### Filtered Search
+
+```python
+# Search only specific document types
+result = await rag.query(
+    question="How to troubleshoot connection errors?",
+    search_filter={"type": "troubleshooting"},
+    n_results=5
+)
+```
+
+## Prompt Engineering Best Practices
+
+### 1. System Prompts
+- Define clear roles and behaviors
+- Set output format expectations
+- Specify constraints and guidelines
+
+### 2. Context Management
+- Limit context window to relevant information
+- Prioritize recent and high-quality sources
+- Handle contradictory information gracefully
+
+### 3. Temperature Tuning
+- Use 0.0-0.3 for factual, consistent responses
+- Use 0.7-1.0 for creative, varied outputs
+- Adjust based on use case requirements
+
+### 4. Response Validation
+- Always validate LLM outputs
+- Implement fallback strategies
+- Monitor for hallucinations
+
+## Configuration
+
+### Environment Variables
+
+```env
+# Vector Store Configuration
+CHROMA_PERSIST_DIR=data/chroma
+EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+CHUNK_SIZE=1000
+CHUNK_OVERLAP=200
+
+# RAG Configuration
+RAG_TOP_K=5
+RAG_SEARCH_TYPE=similarity
+RAG_SCORE_THRESHOLD=0.7
+
+# Context Management
+MAX_CONVERSATION_TURNS=10
+CONTEXT_WINDOW_SIZE=4096
+```
+
+### Customizing Prompts
+
+Edit prompt templates in the `prompts/` directory:
+- `rag_query.j2` - Main RAG query prompt
+- `context_synthesis.j2` - Multi-source synthesis
+- Add custom templates as needed
+
+## Monitoring and Debugging
+
+### Logging
+- Structured logging with context
+- Request/response tracking
+- Performance metrics
+
+### Health Checks
+```bash
+# Check RAG system health
+curl http://localhost:8000/api/v1/rag/health
+```
+
+### Debug Mode
+Set `DEBUG=true` in `.env` for verbose logging
+
+## Performance Optimization
+
+1. **Batch Processing**
+   - Ingest documents in batches
+   - Use appropriate batch sizes (10-50)
+
+2. **Caching**
+   - LRU cache for embeddings
+   - Redis for session storage (optional)
+
+3. **Async Operations**
+   - All RAG operations are async
+   - Concurrent document processing
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Out of Memory**
+   - Reduce batch size
+   - Use smaller embedding model
+   - Increase system memory
+
+2. **Slow Search**
+   - Optimize chunk size
+   - Reduce search results
+   - Use filters when possible
+
+3. **Poor Results**
+   - Improve document quality
+   - Adjust chunk overlap
+   - Tune retrieval parameters
+
+## Next Steps
+
+1. Customize document types for your domain
+2. Fine-tune embedding model
+3. Implement custom scoring algorithms
+4. Add authentication and rate limiting
+5. Deploy with production vector database
+
+For more information, see the API documentation at http://localhost:8000/docs
+EOF
+
+    # Update Makefile to include RAG commands
+    # Find the docker-test target and insert before it
+    if grep -q "^docker-test:" Makefile; then
+      # Create a temporary file with the new content
+      cat > makefile_rag_insert.tmp << 'MAKEEOF'
+
+.PHONY: init-rag
+init-rag: ## Initialize RAG system with mock data
+	@echo "Initializing RAG system..."
+	@python scripts/data/init_mock_data.py
+
+.PHONY: test-rag
+test-rag: ## Test RAG system
+	@echo "Testing RAG system..."
+	@curl -X POST "http://localhost:8000/api/v1/rag/query" \
+		-H "Content-Type: application/json" \
+		-d '{"question": "How do I configure Docker?"}' | python -m json.tool
+
+MAKEEOF
+      
+      # Insert the content before docker-test
+      awk '/^docker-test:/ {system("cat makefile_rag_insert.tmp")} 1' Makefile > Makefile.tmp
+      mv Makefile.tmp Makefile
+      rm -f makefile_rag_insert.tmp
+    fi
+  fi
+
   # Create GitHub dependabot configuration
   mkdir -p .github
   cat > .github/dependabot.yml << 'EOF'
@@ -1869,12 +3508,29 @@ After merging, developers can:
   echo "4. Run 'make dev' to start the development server"
   echo "5. Run 'make docker-up' to start with Docker"
   echo ""
-  echo "For more commands, run: make help"
+  echo "For more commands, run: make help
+$(if [[ "$with_mock_data" == "true" ]]; then echo "
+## 🚀 RAG System Quick Start
+
+1. Initialize the mock data and vector store:
+   \`\`\`bash
+   make init-rag
+   \`\`\`
+
+2. Test the RAG system:
+   \`\`\`bash
+   make test-rag
+   \`\`\`
+
+3. Access RAG endpoints at http://localhost:8000/docs#/RAG
+
+For detailed RAG setup instructions, see docs/RAG_SETUP_GUIDE.md"; fi)"
 }
 
 _setup_python_docker_cli() {
   local project_name="$1"
   local ai_ready="$2"
+  local with_mock_data="$3"
   local github_username=$(git config user.name | tr -d ' ' | tr '[:upper:]' '[:lower:]')
   
   # Check dependencies
@@ -1883,7 +3539,9 @@ _setup_python_docker_cli() {
   fi
   
   echo "🚀 Setting up Python Docker CLI project: $project_name"
-  if [[ "$ai_ready" == "true" ]]; then
+  if [[ "$with_mock_data" == "true" ]]; then
+    echo "   Including AI/ML dependencies, RAG system, mock data, and context management"
+  elif [[ "$ai_ready" == "true" ]]; then
     echo "   Including AI/ML dependencies and patterns"
   fi
   
@@ -1940,8 +3598,11 @@ A Python CLI application with Docker support, comprehensive CI/CD, and productio
 - **Code Quality**: Pre-commit hooks with black, ruff, mypy for consistent code
 - **Distribution**: Installable via pip, Docker, or standalone executables
 - **Configuration**: Flexible config via environment variables or YAML files
-- **Documentation**: Auto-generated help text and command documentation
-$(if [[ "$ai_ready" == "true" ]]; then echo "- **AI/ML Ready**: OpenAI/Anthropic integrations for AI-powered commands"; fi)
+ - **Documentation**: Auto-generated help text and command documentation
+ $(if [[ "$with_mock_data" == "true" ]]; then echo "- **AI/ML Ready**: OpenAI/Anthropic integrations for AI-powered commands
+ - **RAG System**: Built-in RAG capabilities for context-aware CLI responses
+ - **Mock Data**: Test dataset for development and demonstrations
+ - **Context Management**: Persistent conversation history across CLI sessions"; elif [[ "$ai_ready" == "true" ]]; then echo "- **AI/ML Ready**: OpenAI/Anthropic integrations for AI-powered commands"; fi)
 
 ## 📋 Prerequisites
 
@@ -3699,6 +5360,36 @@ if __name__ == "__main__":
 EOF
 
   chmod +x scripts/generate_command.py
+
+  # Add RAG-enabled CLI commands when with_mock_data is true
+  if [[ "$with_mock_data" == "true" ]]; then
+    # The RAG functionality for CLI would be in the AI commands
+    # Update the existing AI commands to include RAG capabilities
+    cat >> src/commands/ai.py << 'EOF'
+
+@click.command()
+@click.argument("question", nargs=-1, required=True)
+@click.option("--context", "-c", default=5, help="Number of context documents to retrieve")
+@click.option("--session", "-s", default="cli_session", help="Session ID for conversation continuity")
+async def ask(question, context, session):
+    """Ask questions using RAG system with context-aware responses."""
+    from src.rag.pipeline import RAGPipeline
+    
+    question_text = " ".join(question)
+    rag = RAGPipeline()
+    
+    result = await rag.query(
+        question=question_text,
+        session_id=session,
+        n_results=context
+    )
+    
+    console.print(Panel(result["answer"], title="Answer", border_style="green"))
+    
+    if result["contexts"]:
+        console.print(f"\n[dim]Based on {len(result['contexts'])} sources[/dim]")
+EOF
+  fi
 
   # Create GitHub dependabot configuration
   mkdir -p .github
