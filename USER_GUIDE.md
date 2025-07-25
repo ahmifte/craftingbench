@@ -65,6 +65,7 @@ CraftingBench offers several project templates with TypeScript integration:
 | **react**     | TypeScript React app with Material UI     | `craftingbench create my-ui react`          |
 | **go**        | Go service with modern project structure  | `craftingbench create my-service go`        |
 | **python**    | Python application with package structure | `craftingbench create my-app python`        |
+| **python-docker** | Python with Docker & CI/CD           | `craftingbench create my-api python-docker` |
 | **fullstack** | TypeScript fullstack application          | `craftingbench create my-project fullstack` |
 
 ## ⚙️ Template Options
@@ -151,6 +152,56 @@ Structure:
 ```bash
 craftingbench create my-app fullstack --backend go
 ```
+
+## 🐳 Python Docker Projects
+
+CraftingBench provides comprehensive Python project templates with Docker containerization and CI/CD pipelines:
+
+### Python Docker API
+
+```bash
+# Create a Python API with Docker and CI/CD
+craftingbench setup_python_docker_api my-api
+
+# Or use the full command with options
+craftingbench setup_python_docker_project my-api --type=api
+
+# Create an AI-ready API with LLM integrations
+craftingbench setup_python_docker_project my-ai-api --type=api --ai-ready
+```
+
+Features:
+- **FastAPI** framework with async support
+- **Multi-stage Docker** builds for minimal production images
+- **GitHub Actions CI/CD** with testing, linting, and security scanning
+- **pytest** with coverage reporting
+- **Pre-commit hooks** with black, ruff, and mypy
+- **Structured logging** with structlog
+- **Health checks** and metrics endpoints
+- **Docker Compose** for local development
+- **AI/ML Ready** option includes OpenAI/Anthropic integrations
+
+### Python Docker CLI
+
+```bash
+# Create a Python CLI with Docker
+craftingbench setup_python_docker_cli my-cli
+
+# Or use the full command
+craftingbench setup_python_docker_project my-cli --type=cli
+
+# Create an AI-powered CLI tool
+craftingbench setup_python_docker_project my-ai-cli --type=cli --ai-ready
+```
+
+Features:
+- **Click** framework with rich output
+- **Docker packaging** for easy distribution
+- **GitHub Actions** with multi-platform builds
+- **PyPI publishing** workflow
+- **Comprehensive testing** setup
+- **Configuration management** via environment or YAML
+- **AI/ML Ready** option for LLM-powered commands
 
 Structure:
 

@@ -16,9 +16,23 @@ check_dependencies() {
 
   # Check each dependency in the space-separated list
   for dep in $deps; do
-    if ! command_exists "$dep"; then
-      missing_deps+=("$dep")
-      fi
+    case "$dep" in
+      python)
+        # Check for python3 first, then python
+        if command_exists python3; then
+          continue
+        elif command_exists python; then
+          continue
+        else
+          missing_deps+=("python (try: python3)")
+        fi
+        ;;
+      *)
+        if ! command_exists "$dep"; then
+          missing_deps+=("$dep")
+        fi
+        ;;
+    esac
   done
 
   # Check GitHub CLI (optional)
