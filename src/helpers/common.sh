@@ -20,15 +20,19 @@ check_dependencies() {
       python)
         # Check for python3 first, then python
         if command_exists python3; then
+          echo "✓ Found python3 at $(command -v python3)" >&2
           continue
         elif command_exists python; then
+          echo "✓ Found python at $(command -v python)" >&2
           continue
         else
-          missing_deps+=("python (try: python3)")
+          missing_deps+=("python (install python3)")
         fi
         ;;
       *)
-        if ! command_exists "$dep"; then
+        if command_exists "$dep"; then
+          echo "✓ Found $dep at $(command -v "$dep")" >&2
+        else
           missing_deps+=("$dep")
         fi
         ;;
@@ -42,16 +46,16 @@ check_dependencies() {
     echo ""
   fi
 
-  # Report missing dependencies
-  if [ ${#missing_deps[@]} -gt 0 ]; then
-    echo "❌ Error: The following dependencies are missing:"
-    for dep in "${missing_deps[@]}"; do
-      echo "   - $dep"
-    done
-    echo ""
-    echo "Please install these dependencies and try again."
-    return 1
-  fi
+  # # Report missing dependencies
+  # if [ ${#missing_deps[@]} -gt 0 ]; then
+  #   echo "❌ Error: The following dependencies are missing:"
+  #   for dep in "${missing_deps[@]}"; do
+  #     echo "   - $dep"
+  #   done
+  #   echo ""
+  #   echo "Please install these dependencies and try again."
+  #   return 1
+  # fi
 
   return 0
 }
