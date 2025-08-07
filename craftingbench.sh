@@ -43,7 +43,7 @@
 # Get the directory of this script
 # Handle both sourcing and direct execution
 if [ -n "${BASH_SOURCE[0]}" ]; then
-  CRAFTINGBENCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CRAFTINGBENCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 elif [ -n "$0" ] && [ "$0" != "-bash" ] && [ "$0" != "-zsh" ]; then
   CRAFTINGBENCH_DIR="$(cd "$(dirname "$0")" && pwd)"
 else
@@ -90,7 +90,7 @@ else
 fi
 
 # Source template modules - only source if they exist
-for template in python python-docker nodejs go react fullstack pre-commit; do
+for template in python python-docker nodejs go react fullstack flask-react nextjs-fastapi pre-commit; do
   template_path="$CRAFTINGBENCH_DIR/src/templates/${template}.sh"
   if [ -f "$template_path" ]; then
     # shellcheck disable=SC1090
