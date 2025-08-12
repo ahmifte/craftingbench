@@ -186,9 +186,8 @@ EOF
 }
 
 setup_flask_backend() {
-  local project_dir="$1"
+  local backend_dir="$1"
   local python_pkg_manager="$2"
-  local backend_dir="$project_dir/backend"
 
   log_info "Setting up Flask backend..."
 
@@ -431,9 +430,8 @@ EOF
 }
 
 setup_react_frontend() {
-  local project_dir="$1"
+  local frontend_dir="$1"
   local node_pkg_manager="$2"
-  local frontend_dir="$project_dir/frontend"
 
   log_info "Setting up React frontend..."
 

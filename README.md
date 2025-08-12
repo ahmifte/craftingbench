@@ -96,7 +96,7 @@ ______________________________________________________________________
 | Icon | Template            | Description                                                          |
 | :--: | ------------------- | -------------------------------------------------------------------- |
 |  🐍  | **Python Projects** | Modern Python package with testing, linting, and CI/CD setup         |
-|  🐳  | **Python Docker**   | Python API/CLI with Docker, comprehensive CI/CD, and AI/ML options   |
+|  🐳  | **Python Docker**   | Python API/CLI with Docker, CI/CD, AI/ML, and RAG system options     |
 |  🚀  | **Node.js Backend** | Express-based API with TypeScript and testing framework              |
 |  🔷  | **Golang API**      | Go-based REST API with standard project layout                       |
 |  ⚛️  | **React Frontend**  | TypeScript + React application with Material UI components           |
@@ -229,8 +229,11 @@ CraftingBench provides three ways to use its functionality:
    ```bash
    craftingbench setup_python_project my_awesome_package
    
-   # Create a Python API with Docker and CI/CD
-   craftingbench setup_python_docker_api my_api_service
+       # Create a Python API with Docker and CI/CD
+    craftingbench setup_python_docker_api my_api_service
+    
+    # Create a RAG-enabled API with mock data
+    craftingbench setup_python_docker_project my_rag_api --type=api --with-mock-data
    ```
 
 2. **Using the shorthand alias `cb`**:

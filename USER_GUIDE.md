@@ -168,6 +168,9 @@ craftingbench setup_python_docker_project my-api --type=api
 
 # Create an AI-ready API with LLM integrations
 craftingbench setup_python_docker_project my-ai-api --type=api --ai-ready
+
+# Create an API with RAG system, mock data, and context management
+craftingbench setup_python_docker_project my-rag-api --type=api --with-mock-data
 ```
 
 Features:
@@ -192,6 +195,9 @@ craftingbench setup_python_docker_project my-cli --type=cli
 
 # Create an AI-powered CLI tool
 craftingbench setup_python_docker_project my-ai-cli --type=cli --ai-ready
+
+# Create a CLI with RAG capabilities and mock data
+craftingbench setup_python_docker_project my-rag-cli --type=cli --with-mock-data
 ```
 
 Features:
@@ -202,6 +208,8 @@ Features:
 - **Comprehensive testing** setup
 - **Configuration management** via environment or YAML
 - **AI/ML Ready** option for LLM-powered commands
+- **RAG System** option with vector storage and context management
+- **Mock Data Generation** for testing and demonstrations
 
 Structure:
 
@@ -381,5 +389,138 @@ For more help, run:
 ```bash
 craftingbench help
 ```
+
+## 🤖 RAG-Enhanced AI Projects
+
+### Overview
+
+The `--with-mock-data` flag creates projects with a production-ready Retrieval-Augmented Generation (RAG) system. This includes:
+
+- **Vector Database**: ChromaDB for storing and searching document embeddings
+- **Context Management**: Session-based conversation tracking
+- **Mock Data Generator**: 100+ realistic documents for testing
+- **Advanced Prompt Engineering**: Templates and best practices
+
+### Quick Start with RAG
+
+```bash
+# Create a RAG-enabled API
+craftingbench setup_python_docker_project my-rag-api --type=api --with-mock-data
+
+cd my-rag-api
+
+# Initialize the RAG system with mock data
+make init-rag
+
+# Start the API server
+make dev
+
+# Test RAG endpoint
+curl -X POST "http://localhost:8000/api/v1/rag/query" \
+  -H "Content-Type: application/json" \
+  -d '{"question": "How do I configure Docker?"}'
+```
+
+### RAG System Architecture
+
+```
+src/
+├── rag/                    # RAG system components
+│   ├── vectorstore.py      # ChromaDB integration
+│   ├── context_manager.py  # Conversation management
+│   └── pipeline.py         # RAG orchestration
+├── data/                   # Data management
+│   └── generator.py        # Mock data generation
+└── api/v1/
+    └── rag.py             # RAG API endpoints
+```
+
+### Key Features
+
+1. **Vector Storage**
+   - Automatic document chunking
+   - Semantic search capabilities
+   - Metadata filtering
+
+2. **Context Management**
+   - Multi-turn conversations
+   - Session persistence
+   - Context window optimization
+
+3. **Mock Data**
+   - Technical documentation
+   - API references
+   - Tutorials and FAQs
+   - Best practices guides
+
+4. **API Endpoints**
+   ```
+   POST   /api/v1/rag/query         # Query with context
+   POST   /api/v1/rag/ingest        # Add documents
+   GET    /api/v1/rag/sessions/{id} # Get history
+   DELETE /api/v1/rag/sessions/{id} # Clear session
+   ```
+
+### Prompt Engineering Best Practices
+
+The RAG system includes:
+
+1. **Template Management**
+   - Jinja2 templates in `prompts/`
+   - Context-aware prompts
+   - Multi-source synthesis
+
+2. **Temperature Control**
+   - 0.0-0.3 for factual queries
+   - 0.7-1.0 for creative tasks
+
+3. **Context Optimization**
+   - Relevant document retrieval
+   - Source attribution
+   - Conversation continuity
+
+### CLI with RAG
+
+For CLI projects with `--with-mock-data`:
+
+```bash
+# Ask questions with context
+my-rag-cli ask "How to troubleshoot Docker issues?"
+
+# Ingest new documents
+my-rag-cli ingest document.md --type technical
+
+# View conversation history
+my-rag-cli history --format table
+
+# Run interactive demo
+my-rag-cli demo --feature all
+```
+
+### Configuration
+
+Key environment variables:
+
+```env
+# Vector Store
+CHROMA_PERSIST_DIR=data/chroma
+EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+
+# RAG Settings
+RAG_TOP_K=5
+RAG_SEARCH_TYPE=similarity
+
+# Context Management
+MAX_CONVERSATION_TURNS=10
+CONTEXT_WINDOW_SIZE=4096
+```
+
+### Advanced Usage
+
+See `docs/RAG_SETUP_GUIDE.md` in generated projects for:
+- Custom document ingestion
+- Fine-tuning embeddings
+- Production deployment
+- Performance optimization
 
 Or report issues at [GitHub Issues](https://github.com/ahmifte/craftingbench/issues)
