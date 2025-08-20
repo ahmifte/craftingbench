@@ -201,7 +201,7 @@ make update
 ## Usage
 
 \`\`\`python
-import $project_name
+import ${project_name//-/_}
 
 # Add your usage examples here
 \`\`\`
@@ -285,12 +285,12 @@ profile = "black"
 line_length = 88
 EOF
   
-  # Create main Python module
-  mkdir -p "$project_name"
-  touch "$project_name/__init__.py"
+  # Create main Python module directory with the project name
+  mkdir -p "${project_name//-/_}"
+  touch "${project_name//-/_}/__init__.py"
   
   # Create main.py
-  cat > "$project_name/main.py" << EOF
+  cat > "${project_name//-/_}/main.py" << EOF
 def hello():
     """Return a friendly greeting."""
     return "Hello from $project_name!"
@@ -304,7 +304,7 @@ EOF
 
   cat > tests/test_main.py << EOF
 import pytest
-from $project_name.main import hello
+from ${project_name//-/_}.main import hello
 
 def test_hello():
     assert hello() == "Hello from $project_name!"
@@ -345,7 +345,7 @@ format:
 
 lint:
 	@echo "Linting code..."
-	flake8 $project_name tests
+	flake8 ${project_name//-/_} tests
 
 test:
 	@echo "Running tests..."
