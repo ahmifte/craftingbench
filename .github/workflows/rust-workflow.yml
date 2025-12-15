@@ -166,7 +166,7 @@ jobs:
 
       - name: Upload coverage report
         if: inputs.coverage == true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-report-rust-${{ matrix.rust-version }}-${{ matrix.os }}
           path: lcov.info
@@ -208,7 +208,7 @@ jobs:
         run: cargo build --release ${{ inputs.cargo_args }}
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: rust-build-${{ runner.os }}
           path: |
