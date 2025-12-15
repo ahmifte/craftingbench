@@ -107,7 +107,7 @@ jobs:
           esac
 
       - name: Setup package manager cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ steps.cache-dir.outputs.dir }}
           key: ${{ runner.os }}-${{ inputs.package_manager }}-${{ hashFiles('**/package-lock.json', '**/pnpm-lock.yaml', '**/yarn.lock') }}
