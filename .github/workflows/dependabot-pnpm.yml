@@ -24,7 +24,7 @@ jobs:
           version: 9.3.0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
           # Disable caching in setup-node to avoid "paths were not resolved" error
